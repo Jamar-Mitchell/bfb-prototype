@@ -44,3 +44,8 @@ npm run build
 - Vite
 - Lucide icons
 - Custom responsive CSS
+
+## Product planning
+
+- [Legal and compliance framework](./LEGAL.md)
+- [Market research](./MARKET_RESEARCH.md)
