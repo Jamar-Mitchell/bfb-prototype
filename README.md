@@ -29,6 +29,10 @@ The `main` branch automatically deploys to GitHub Pages:
 
 <https://blacktagdevs.github.io/bfb-frontend/>
 
+Interactive brand exploration:
+
+<https://blacktagdevs.github.io/bfb-frontend/artifacts/bfb-logo-ideas.html>
+
 Deployment is managed by `.github/workflows/deploy-pages.yml`.
 
 ## Production build

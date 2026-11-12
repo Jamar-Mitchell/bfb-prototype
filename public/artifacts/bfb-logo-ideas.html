@@ -1,0 +1,954 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Interactive BFB logo explorations built around a two-way exchange between the F and final B."
+    />
+    <title>BFB Logo Ideas</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family:
+          Inter, Avenir, "Segoe UI", Helvetica, Arial, sans-serif;
+        --ink: #071d36;
+        --accent: #087fe5;
+        --paper: #ffffff;
+        --canvas: #edf4fb;
+        --muted: #64748b;
+        --border: rgba(7, 29, 54, 0.13);
+        --shadow: 0 24px 70px rgba(7, 29, 54, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        background:
+          radial-gradient(circle at 8% 0%, rgba(8, 127, 229, 0.11), transparent 25rem),
+          linear-gradient(180deg, #f8fbff 0%, #edf3f8 100%);
+        color: var(--ink);
+        margin: 0;
+        min-height: 100vh;
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      .shell {
+        margin: 0 auto;
+        max-width: 1540px;
+        padding: 28px;
+      }
+
+      header {
+        align-items: flex-start;
+        display: flex;
+        gap: 30px;
+        justify-content: space-between;
+        margin-bottom: 28px;
+      }
+
+      .eyebrow {
+        align-items: center;
+        color: var(--accent);
+        display: flex;
+        font-size: 11px;
+        font-weight: 850;
+        gap: 8px;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+      }
+
+      .eyebrow::before {
+        background: var(--accent);
+        border-radius: 50%;
+        box-shadow: 0 0 0 5px rgba(8, 127, 229, 0.11);
+        content: "";
+        height: 7px;
+        width: 7px;
+      }
+
+      h1 {
+        font-size: clamp(36px, 5vw, 72px);
+        letter-spacing: -0.06em;
+        line-height: 0.98;
+        margin: 18px 0 16px;
+        max-width: 760px;
+      }
+
+      .intro {
+        color: var(--muted);
+        font-size: 16px;
+        line-height: 1.65;
+        margin: 0;
+        max-width: 720px;
+      }
+
+      .header-note {
+        background: rgba(255, 255, 255, 0.72);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.6;
+        max-width: 310px;
+        padding: 18px 20px;
+      }
+
+      .header-note strong {
+        color: var(--ink);
+        display: block;
+        font-size: 13px;
+        margin-bottom: 4px;
+      }
+
+      .workspace {
+        display: grid;
+        gap: 22px;
+        grid-template-columns: minmax(0, 1fr) 330px;
+      }
+
+      .stage {
+        background: var(--paper);
+        border: 1px solid var(--border);
+        border-radius: 30px;
+        box-shadow: var(--shadow);
+        min-height: 650px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .stage-grid {
+        background-image:
+          linear-gradient(rgba(7, 29, 54, 0.035) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(7, 29, 54, 0.035) 1px, transparent 1px);
+        background-size: 28px 28px;
+        inset: 0;
+        mask-image: linear-gradient(to bottom, black 0%, transparent 90%);
+        pointer-events: none;
+        position: absolute;
+      }
+
+      .stage-label {
+        align-items: center;
+        display: flex;
+        justify-content: space-between;
+        left: 28px;
+        position: absolute;
+        right: 28px;
+        top: 24px;
+        z-index: 2;
+      }
+
+      .stage-label span {
+        color: var(--muted);
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .status {
+        align-items: center;
+        background: rgba(22, 131, 93, 0.09);
+        border-radius: 999px;
+        color: #16835d !important;
+        display: flex;
+        gap: 6px;
+        letter-spacing: 0 !important;
+        padding: 6px 9px;
+        text-transform: none !important;
+      }
+
+      .status::before {
+        background: #16835d;
+        border-radius: 50%;
+        content: "";
+        height: 6px;
+        width: 6px;
+      }
+
+      .hero-logo {
+        align-items: center;
+        display: flex;
+        inset: 70px 35px 140px;
+        justify-content: center;
+        position: absolute;
+      }
+
+      .hero-logo svg {
+        height: auto;
+        max-height: 330px;
+        max-width: 790px;
+        overflow: visible;
+        transition: 240ms ease;
+        width: var(--logo-width, 72%);
+      }
+
+      .signature {
+        align-items: center;
+        bottom: 38px;
+        display: flex;
+        flex-direction: column;
+        left: 28px;
+        position: absolute;
+        right: 28px;
+        text-align: center;
+      }
+
+      .signature strong {
+        color: var(--ink);
+        font-size: 14px;
+        letter-spacing: 0.18em;
+      }
+
+      .signature span {
+        color: var(--muted);
+        font-size: 11px;
+        margin-top: 7px;
+      }
+
+      .controls {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .panel {
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        box-shadow: 0 14px 40px rgba(7, 29, 54, 0.07);
+        padding: 18px;
+      }
+
+      .panel h2 {
+        font-size: 12px;
+        letter-spacing: 0.09em;
+        margin: 0 0 14px;
+        text-transform: uppercase;
+      }
+
+      .concept-title {
+        font-size: 20px !important;
+        letter-spacing: -0.03em !important;
+        margin-bottom: 7px !important;
+        text-transform: none !important;
+      }
+
+      .concept-description {
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.6;
+        margin: 0;
+      }
+
+      .palette-grid {
+        display: grid;
+        gap: 8px;
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .palette {
+        align-items: center;
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 11px;
+        color: var(--ink);
+        display: flex;
+        font-size: 11px;
+        font-weight: 750;
+        gap: 8px;
+        padding: 9px;
+      }
+
+      .palette.active {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 15%, transparent);
+      }
+
+      .swatches {
+        display: flex;
+      }
+
+      .swatches i {
+        border: 2px solid #fff;
+        border-radius: 50%;
+        display: block;
+        height: 18px;
+        margin-left: -5px;
+        width: 18px;
+      }
+
+      .swatches i:first-child {
+        margin-left: 0;
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .field + .field {
+        margin-top: 15px;
+      }
+
+      .field-label {
+        align-items: center;
+        color: var(--muted);
+        display: flex;
+        font-size: 11px;
+        font-weight: 700;
+        justify-content: space-between;
+      }
+
+      .field-label output {
+        color: var(--ink);
+      }
+
+      input[type="range"] {
+        accent-color: var(--accent);
+        width: 100%;
+      }
+
+      .toggle-row {
+        display: grid;
+        gap: 8px;
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .toggle-row button,
+      .action {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        color: var(--ink);
+        font-size: 11px;
+        font-weight: 750;
+        min-height: 40px;
+      }
+
+      .toggle-row button.active {
+        background: var(--ink);
+        border-color: var(--ink);
+        color: #fff;
+      }
+
+      .action {
+        align-items: center;
+        display: flex;
+        justify-content: center;
+        width: 100%;
+      }
+
+      .action.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: white;
+        margin-bottom: 8px;
+      }
+
+      .concepts {
+        display: grid;
+        gap: 14px;
+        grid-template-columns: repeat(5, minmax(180px, 1fr));
+        margin-top: 22px;
+      }
+
+      .concept-card {
+        background: rgba(255, 255, 255, 0.8);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        color: var(--ink);
+        padding: 10px;
+        text-align: left;
+        transition: 180ms ease;
+      }
+
+      .concept-card:hover {
+        transform: translateY(-3px);
+      }
+
+      .concept-card.active {
+        border-color: var(--accent);
+        box-shadow: 0 12px 30px rgba(8, 127, 229, 0.12);
+      }
+
+      .concept-thumb {
+        align-items: center;
+        background: #f4f7fa;
+        border-radius: 12px;
+        display: flex;
+        height: 115px;
+        justify-content: center;
+        overflow: hidden;
+        padding: 12px;
+      }
+
+      .concept-thumb svg {
+        max-height: 84px;
+        width: 100%;
+      }
+
+      .concept-card strong {
+        display: block;
+        font-size: 12px;
+        margin: 11px 5px 3px;
+      }
+
+      .concept-card span {
+        color: var(--muted);
+        display: block;
+        font-size: 10px;
+        line-height: 1.45;
+        margin: 0 5px 5px;
+      }
+
+      .applications {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: 1.25fr 0.75fr 0.75fr;
+        margin-top: 22px;
+      }
+
+      .application {
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        min-height: 190px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .application-label {
+        color: var(--muted);
+        font-size: 9px;
+        font-weight: 800;
+        left: 15px;
+        letter-spacing: 0.12em;
+        position: absolute;
+        text-transform: uppercase;
+        top: 13px;
+      }
+
+      .nav-preview {
+        background: #fff;
+        padding: 50px 22px 22px;
+      }
+
+      .fake-nav {
+        align-items: center;
+        border: 1px solid var(--border);
+        border-radius: 13px;
+        box-shadow: 0 10px 24px rgba(7, 29, 54, 0.07);
+        display: flex;
+        gap: 20px;
+        justify-content: space-between;
+        min-height: 74px;
+        padding: 0 18px;
+      }
+
+      .fake-brand {
+        align-items: center;
+        display: flex;
+        gap: 11px;
+      }
+
+      .fake-brand svg {
+        height: 40px;
+        width: 112px;
+      }
+
+      .fake-brand div {
+        border-left: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        padding-left: 10px;
+      }
+
+      .fake-brand strong {
+        font-size: 8px;
+        letter-spacing: 0.08em;
+      }
+
+      .fake-brand span {
+        color: var(--muted);
+        font-size: 7px;
+        margin-top: 2px;
+      }
+
+      .fake-links {
+        color: var(--muted);
+        display: flex;
+        font-size: 9px;
+        gap: 17px;
+      }
+
+      .app-preview {
+        align-items: center;
+        background: var(--ink);
+        display: flex;
+        justify-content: center;
+        padding-top: 28px;
+      }
+
+      .app-tile {
+        align-items: center;
+        background: var(--paper);
+        border-radius: 22%;
+        box-shadow: 0 18px 35px rgba(0, 0, 0, 0.25);
+        display: flex;
+        height: 96px;
+        justify-content: center;
+        width: 96px;
+      }
+
+      .app-tile svg {
+        height: 66px;
+        width: 75px;
+      }
+
+      .mono-preview {
+        align-items: center;
+        background: #f2efe7;
+        display: flex;
+        justify-content: center;
+        padding-top: 28px;
+      }
+
+      .mono-preview svg {
+        filter: grayscale(1);
+        max-height: 100px;
+        width: 78%;
+      }
+
+      .ink {
+        fill: var(--ink);
+      }
+
+      .accent {
+        fill: var(--accent);
+      }
+
+      .ink-stroke {
+        fill: none;
+        stroke: var(--ink);
+      }
+
+      .accent-stroke {
+        fill: none;
+        stroke: var(--accent);
+      }
+
+      .word {
+        fill: var(--ink);
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 91px;
+        font-weight: 900;
+        letter-spacing: -8px;
+      }
+
+      .concept-svg {
+        overflow: visible;
+      }
+
+      footer {
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.6;
+        margin: 28px auto 8px;
+        max-width: 820px;
+        text-align: center;
+      }
+
+      @media (max-width: 1050px) {
+        .workspace {
+          grid-template-columns: 1fr;
+        }
+
+        .controls {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .concepts {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+
+      @media (max-width: 720px) {
+        .shell {
+          padding: 18px;
+        }
+
+        header {
+          flex-direction: column;
+        }
+
+        .header-note {
+          max-width: none;
+        }
+
+        .stage {
+          min-height: 480px;
+        }
+
+        .hero-logo {
+          inset: 75px 15px 125px;
+        }
+
+        .controls,
+        .concepts,
+        .applications {
+          grid-template-columns: 1fr;
+        }
+
+        .fake-links {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <header>
+        <div>
+          <div class="eyebrow">BFB identity exploration</div>
+          <h1>Trade value.<br />Make the exchange visible.</h1>
+          <p class="intro">
+            Five logo directions built around your idea: a strong <strong>BFB</strong> monogram with
+            two-way arrows connecting the <strong>F</strong> and final <strong>B</strong>. Select a
+            direction, test palettes and scale, then download the SVG.
+          </p>
+        </div>
+        <aside class="header-note">
+          <strong>Design thought</strong>
+          The arrows should communicate reciprocity without making the mark look like shipping,
+          banking, or a generic transfer app. The strongest direction will still read as BFB at
+          favicon size.
+        </aside>
+      </header>
+
+      <section class="workspace">
+        <div class="stage" id="stage">
+          <div class="stage-grid"></div>
+          <div class="stage-label">
+            <span>Primary mark exploration</span>
+            <span class="status">Editable concept</span>
+          </div>
+          <div class="hero-logo" id="heroLogo"></div>
+          <div class="signature">
+            <strong>BUSINESS FOR BUSINESS</strong>
+            <span>Trade value. Grow together.</span>
+          </div>
+        </div>
+
+        <aside class="controls">
+          <div class="panel">
+            <h2 class="concept-title" id="conceptTitle">Exchange Bridge</h2>
+            <p class="concept-description" id="conceptDescription"></p>
+          </div>
+
+          <div class="panel">
+            <h2>Color direction</h2>
+            <div class="palette-grid" id="paletteGrid"></div>
+          </div>
+
+          <div class="panel">
+            <h2>Presentation</h2>
+            <div class="toggle-row">
+              <button type="button" class="active" data-surface="light">Light</button>
+              <button type="button" data-surface="dark">Dark</button>
+            </div>
+            <div class="field">
+              <label class="field-label" for="scale">
+                Logo scale
+                <output id="scaleOutput">72%</output>
+              </label>
+              <input id="scale" type="range" min="42" max="92" value="72" />
+            </div>
+          </div>
+
+          <div class="panel">
+            <h2>Export concept</h2>
+            <button type="button" class="action primary" id="downloadSvg">Download SVG</button>
+            <button type="button" class="action" id="copySvg">Copy SVG markup</button>
+          </div>
+        </aside>
+      </section>
+
+      <section class="concepts" id="concepts"></section>
+
+      <section class="applications">
+        <div class="application nav-preview">
+          <span class="application-label">Website navigation</span>
+          <div class="fake-nav">
+            <div class="fake-brand">
+              <div id="navLogo"></div>
+              <div>
+                <strong>BUSINESS FOR BUSINESS</strong>
+                <span>Trade value. Grow together.</span>
+              </div>
+            </div>
+            <div class="fake-links">
+              <span>How it works</span>
+              <span>Marketplace</span>
+              <span>Sign in</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="application app-preview">
+          <span class="application-label" style="color: rgba(255,255,255,.55)">App icon</span>
+          <div class="app-tile" id="appLogo"></div>
+        </div>
+
+        <div class="application mono-preview">
+          <span class="application-label">One color</span>
+          <div id="monoLogo"></div>
+        </div>
+      </section>
+
+      <footer>
+        These are concept explorations, not final production artwork. The selected direction should
+        be redrawn and optically refined before trademark review, final spacing, and export.
+      </footer>
+    </main>
+
+    <script>
+      const concepts = [
+        {
+          id: "bridge",
+          name: "Exchange Bridge",
+          note: "The clearest reading of B F ↔ B. Structured, credible, and easiest to scale.",
+          svg: `
+            <svg class="concept-svg" viewBox="0 0 360 125" xmlns="http://www.w3.org/2000/svg" aria-label="BFB Exchange Bridge logo">
+              <text class="word" x="3" y="98">BF</text>
+              <text class="word" x="270" y="98">B</text>
+              <path class="accent" d="M170 35h80l-16-16h18l27 27-27 27h-18l16-16h-80V35Z"/>
+              <path class="accent" d="M270 79h-80l16 16h-18l-27-27 27-27h18l-16 16h80v22Z" opacity=".58"/>
+            </svg>`,
+        },
+        {
+          id: "crossbar",
+          name: "Living Crossbar",
+          note: "The F itself creates the exchange. More ownable and compact than separate arrows.",
+          svg: `
+            <svg class="concept-svg" viewBox="0 0 350 125" xmlns="http://www.w3.org/2000/svg" aria-label="BFB Living Crossbar logo">
+              <text class="word" x="3" y="98">B</text>
+              <path class="ink" d="M105 16h26v93h-26z"/>
+              <path class="accent" d="M105 16h122l-18-16h23l28 28-28 28h-23l18-16H105V16Z"/>
+              <path class="accent" d="M279 62H131l18-16h-23L96 74l30 28h23l-18-16h148V62Z" opacity=".62"/>
+              <text class="word" x="270" y="98">B</text>
+            </svg>`,
+        },
+        {
+          id: "woven",
+          name: "Woven Exchange",
+          note: "Crossing paths suggest businesses contributing different value to one relationship.",
+          svg: `
+            <svg class="concept-svg" viewBox="0 0 360 125" xmlns="http://www.w3.org/2000/svg" aria-label="BFB Woven Exchange logo">
+              <text class="word" x="3" y="98">BF</text>
+              <text class="word" x="270" y="98">B</text>
+              <path class="accent-stroke" d="M170 37c37 0 48 52 95 52" stroke-width="17" stroke-linecap="round"/>
+              <path class="accent-stroke" d="M265 37c-37 0-48 52-95 52" stroke-width="17" stroke-linecap="round" opacity=".55"/>
+              <path class="accent" d="M251 76l27 13-27 13 7-13-7-13Z"/>
+              <path class="accent" d="M184 76l-27 13 27 13-7-13 7-13Z" opacity=".55"/>
+            </svg>`,
+        },
+        {
+          id: "orbit",
+          name: "Growth Loop",
+          note: "A continuous two-way loop communicates repeat exchange and long-term partnership.",
+          svg: `
+            <svg class="concept-svg" viewBox="0 0 360 125" xmlns="http://www.w3.org/2000/svg" aria-label="BFB Growth Loop logo">
+              <text class="word" x="3" y="98">B</text>
+              <text class="word" x="112" y="98">FB</text>
+              <path class="accent-stroke" d="M115 26c25-25 129-27 169 7" stroke-width="13" stroke-linecap="round"/>
+              <path class="accent" d="M271 18l29 27-38 4 11-13-2-18Z"/>
+              <path class="accent-stroke" d="M287 98c-30 25-132 26-173-8" stroke-width="13" stroke-linecap="round" opacity=".58"/>
+              <path class="accent" d="M127 105 98 78l38-4-11 13 2 18Z" opacity=".58"/>
+            </svg>`,
+        },
+        {
+          id: "badge",
+          name: "Exchange Badge",
+          note: "A confident compact badge for apps, social avatars, verification, and community use.",
+          svg: `
+            <svg class="concept-svg" viewBox="0 0 360 125" xmlns="http://www.w3.org/2000/svg" aria-label="BFB Exchange Badge logo">
+              <rect class="ink" x="3" y="5" width="354" height="115" rx="31"/>
+              <text x="28" y="94" fill="var(--paper)" font-family="Arial, Helvetica, sans-serif" font-size="82" font-weight="900" letter-spacing="-8">BF</text>
+              <text x="279" y="94" fill="var(--paper)" font-family="Arial, Helvetica, sans-serif" font-size="82" font-weight="900">B</text>
+              <path class="accent" d="M170 35h76l-14-14h18l25 25-25 25h-18l14-14h-76V35Z"/>
+              <path d="M268 80h-76l14 14h-18l-25-25 25-25h18l-14 14h76v22Z" fill="var(--paper)" opacity=".74"/>
+            </svg>`,
+        },
+      ]
+
+      const palettes = [
+        { id: "blue", name: "Trust blue", ink: "#071d36", accent: "#087fe5", paper: "#ffffff", canvas: "#edf4fb" },
+        { id: "green", name: "Growth green", ink: "#17241d", accent: "#2e9b69", paper: "#ffffff", canvas: "#eef6f1" },
+        { id: "violet", name: "Founder violet", ink: "#18142b", accent: "#7256e8", paper: "#ffffff", canvas: "#f1effb" },
+        { id: "orange", name: "Bold commerce", ink: "#231a16", accent: "#e56d2f", paper: "#fffdf9", canvas: "#f8f0e9" },
+      ]
+
+      let selectedConcept = concepts[0]
+      let selectedPalette = palettes[0]
+      let surface = "light"
+
+      const heroLogo = document.querySelector("#heroLogo")
+      const navLogo = document.querySelector("#navLogo")
+      const appLogo = document.querySelector("#appLogo")
+      const monoLogo = document.querySelector("#monoLogo")
+      const title = document.querySelector("#conceptTitle")
+      const description = document.querySelector("#conceptDescription")
+      const conceptsContainer = document.querySelector("#concepts")
+      const paletteGrid = document.querySelector("#paletteGrid")
+      const stage = document.querySelector("#stage")
+
+      function renderConceptCards() {
+        conceptsContainer.innerHTML = concepts
+          .map(
+            (concept) => `
+              <button class="concept-card ${concept.id === selectedConcept.id ? "active" : ""}" data-concept="${concept.id}" type="button">
+                <div class="concept-thumb">${concept.svg}</div>
+                <strong>${concept.name}</strong>
+                <span>${concept.note}</span>
+              </button>`,
+          )
+          .join("")
+
+        conceptsContainer.querySelectorAll("[data-concept]").forEach((button) => {
+          button.addEventListener("click", () => {
+            selectedConcept = concepts.find((concept) => concept.id === button.dataset.concept)
+            render()
+          })
+        })
+      }
+
+      function renderPalettes() {
+        paletteGrid.innerHTML = palettes
+          .map(
+            (palette) => `
+              <button class="palette ${palette.id === selectedPalette.id ? "active" : ""}" data-palette="${palette.id}" type="button">
+                <span class="swatches">
+                  <i style="background:${palette.ink}"></i>
+                  <i style="background:${palette.accent}"></i>
+                </span>
+                ${palette.name}
+              </button>`,
+          )
+          .join("")
+
+        paletteGrid.querySelectorAll("[data-palette]").forEach((button) => {
+          button.addEventListener("click", () => {
+            selectedPalette = palettes.find((palette) => palette.id === button.dataset.palette)
+            applyPalette()
+            renderPalettes()
+          })
+        })
+      }
+
+      function applyPalette() {
+        const root = document.documentElement
+        const dark = surface === "dark"
+        root.style.setProperty("--ink", dark ? selectedPalette.paper : selectedPalette.ink)
+        root.style.setProperty("--accent", selectedPalette.accent)
+        root.style.setProperty("--paper", dark ? selectedPalette.ink : selectedPalette.paper)
+        root.style.setProperty("--canvas", selectedPalette.canvas)
+        stage.style.background = dark ? selectedPalette.ink : selectedPalette.paper
+      }
+
+      function compactSvg(svg, mode) {
+        const node = document.createElement("div")
+        node.innerHTML = svg.trim()
+        const element = node.firstElementChild
+
+        if (mode === "app") {
+          element.setAttribute("viewBox", element.getAttribute("viewBox"))
+          element.style.width = "76px"
+        }
+
+        return element.outerHTML
+      }
+
+      function render() {
+        title.textContent = selectedConcept.name
+        description.textContent = selectedConcept.note
+        heroLogo.innerHTML = selectedConcept.svg
+        navLogo.innerHTML = compactSvg(selectedConcept.svg, "nav")
+        appLogo.innerHTML = compactSvg(selectedConcept.svg, "app")
+        monoLogo.innerHTML = compactSvg(selectedConcept.svg, "mono")
+        renderConceptCards()
+        renderPalettes()
+        applyPalette()
+      }
+
+      function getExportSvg() {
+        const exportStyles = `<style>
+          .ink{fill:${selectedPalette.ink}}
+          .accent{fill:${selectedPalette.accent}}
+          .ink-stroke{fill:none;stroke:${selectedPalette.ink}}
+          .accent-stroke{fill:none;stroke:${selectedPalette.accent}}
+          .word{fill:${selectedPalette.ink};font-family:Arial,Helvetica,sans-serif;font-size:91px;font-weight:900;letter-spacing:-8px}
+        </style>`
+
+        return selectedConcept.svg
+          .trim()
+          .replace(/(<svg[^>]*>)/, `$1${exportStyles}`)
+          .replaceAll("var(--ink)", selectedPalette.ink)
+          .replaceAll("var(--accent)", selectedPalette.accent)
+          .replaceAll("var(--paper)", selectedPalette.paper)
+      }
+
+      document.querySelectorAll("[data-surface]").forEach((button) => {
+        button.addEventListener("click", () => {
+          surface = button.dataset.surface
+          document.querySelectorAll("[data-surface]").forEach((item) => item.classList.remove("active"))
+          button.classList.add("active")
+          applyPalette()
+        })
+      })
+
+      document.querySelector("#scale").addEventListener("input", (event) => {
+        const value = event.target.value
+        document.documentElement.style.setProperty("--logo-width", `${value}%`)
+        document.querySelector("#scaleOutput").textContent = `${value}%`
+      })
+
+      document.querySelector("#downloadSvg").addEventListener("click", () => {
+        const svg = getExportSvg()
+        const blob = new Blob([svg], { type: "image/svg+xml" })
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement("a")
+        link.href = url
+        link.download = `bfb-${selectedConcept.id}.svg`
+        link.click()
+        URL.revokeObjectURL(url)
+      })
+
+      document.querySelector("#copySvg").addEventListener("click", async (event) => {
+        const svg = getExportSvg()
+        await navigator.clipboard.writeText(svg.trim())
+        const button = event.currentTarget
+        const previous = button.textContent
+        button.textContent = "Copied"
+        window.setTimeout(() => {
+          button.textContent = previous
+        }, 1400)
+      })
+
+      render()
+    </script>
+  </body>
+</html>
