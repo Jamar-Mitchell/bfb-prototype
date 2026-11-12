@@ -45,10 +45,10 @@ describe('toApiError', () => {
 
   it('keeps feature codes and falls back to the generic message for codes it does not know', () => {
     const error = toApiError(
-      responseError(409, { error: { code: 'email_already_registered', message: 'Taken.', details: null } }),
+      responseError(409, { error: { code: 'listing_already_archived', message: 'Archived.', details: null } }),
     )
 
-    expect(error.code).toBe('email_already_registered')
+    expect(error.code).toBe('listing_already_archived')
     expect(error.status).toBe(409)
     expect(error.fieldErrors).toEqual([])
     expect(error.userMessage).toBe(getErrorMessage('unknown_error'))

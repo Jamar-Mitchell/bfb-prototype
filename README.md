@@ -95,6 +95,12 @@ const health = await apiGet('/health')
 const business = await apiGet('/businesses/{business_id}', { path: { business_id: id } })
 ```
 
+## Authentication
+
+The flow follows the API's `docs/AUTHENTICATION.md`. Login stores the access and refresh tokens in `localStorage` (`src/lib/auth/tokens.ts`) and the user in `useSessionStore`. Registration returns no tokens, so the user logs in afterwards.
+
+When a request fails with `401`, the client (`src/lib/api/client.ts`) refreshes once and retries the request. One refresh runs at a time per tab, and a Web Lock keeps tabs from refreshing together. If the refresh token is rejected, the session is cleared and the user goes to login. A network error or `5xx` during refresh keeps the user logged in.
+
 ## Product planning
 
 - [Development plan](./docs/DEVELOPMENT_PLAN.md)

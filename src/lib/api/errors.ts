@@ -16,6 +16,13 @@ export type ApiErrorCode =
   | 'internal_error'
   | 'network_error'
   | 'unknown_error'
+  // Auth feature codes (API-1.1, API-1.2)
+  | 'email_already_registered'
+  | 'weak_password'
+  | 'terms_not_accepted'
+  | 'invalid_credentials'
+  | 'invalid_refresh_token'
+  | 'access_token_expired'
   // Feature codes are added by later packages; keep the type open for them.
   | (string & {})
 
@@ -38,6 +45,12 @@ export const API_ERROR_MESSAGES: Record<string, string> = {
   internal_error: 'Something went wrong on our side. Please try again in a moment.',
   network_error: 'We could not reach BFB. Check your connection and try again.',
   unknown_error: 'Something unexpected happened. Please try again.',
+  email_already_registered: 'An account with this email already exists. Log in instead.',
+  weak_password: 'Choose a stronger password.',
+  terms_not_accepted: 'Accept the Terms of Service and Privacy Policy to create an account.',
+  invalid_credentials: 'That email and password don’t match.',
+  invalid_refresh_token: 'Your session has ended. Log in again to continue.',
+  access_token_expired: 'Your session has ended. Log in again to continue.',
 }
 
 /** User-facing copy for an error code. Unknown codes fall back to the generic message. */
