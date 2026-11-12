@@ -25,8 +25,22 @@ const DELIVERY_FORMATS = [
   { value: 'hybrid', label: 'Hybrid' },
 ]
 
+const LOCATION_PREFERENCES = [
+  { value: 'remote', label: 'Remote' },
+  { value: 'local', label: 'Local' },
+  { value: 'either', label: 'Either' },
+]
+
+const URGENCIES = [
+  { value: 'low', label: 'Low' },
+  { value: 'medium', label: 'Medium' },
+  { value: 'high', label: 'High' },
+]
+
 interface ListingFormDialogProps {
   kind: ListingKind
+  /** When creating: the kinds the person may pick between, shown as a "Listing type" select. */
+  kindChoices?: readonly ListingKind[]
   businessId: string
   /** `null` while loading. */
   categories: Category[] | null
@@ -34,17 +48,19 @@ interface ListingFormDialogProps {
   onRetryCategories: () => void
   /** The listing to edit, or `null` to create one. */
   listing: Listing | null
-  onSaved: (listing: Listing) => void
+  onSaved: (listing: Listing, kind: ListingKind) => void
   /** The listing changed under the form (archived by someone else): reload the list. */
   onStale: () => void
   onClose: () => void
 }
 
 /** Create or edit an offer or need. Built from the prototype's "Add listing" modal. */
-export function ListingFormDialog({ kind, businessId, categories, categoriesFailed, onRetryCategories, listing, onSaved, onStale, onClose }: ListingFormDialogProps) {
+export function ListingFormDialog({ kind: initialKind, kindChoices, businessId, categories, categoriesFailed, onRetryCategories, listing, onSaved, onStale, onClose }: ListingFormDialogProps) {
   const titleId = useId()
   const dialogRef = useRef<HTMLDivElement>(null)
   const [problem, setProblem] = useState<string | null>(null)
+  const [kind, setKind] = useState(initialKind)
+  const choosingKind = !listing && kindChoices && kindChoices.length > 1
   const {
     register,
     control,
@@ -73,7 +89,7 @@ export function ListingFormDialog({ kind, businessId, categories, categoriesFail
     setProblem(null)
     try {
       const saved = listing ? await kind.update(businessId, listing.id, values) : await kind.create(businessId, values)
-      onSaved(saved)
+      onSaved(saved, kind)
     } catch (error) {
       const apiError = toApiError(error)
       switch (apiError.code) {
@@ -126,19 +142,30 @@ export function ListingFormDialog({ kind, businessId, categories, categoriesFail
     }
   }
 
-  const heading = listing ? `Edit ${kind.noun}` : kind.addLabel
+  const heading = listing ? `Edit ${kind.noun}` : choosingKind ? 'Add an offer or need' : kind.addLabel
+  const kicker = listing ? `EDIT ${kind.noun.toUpperCase()}` : choosingKind ? 'NEW LISTING' : `NEW ${kind.noun.toUpperCase()}`
 
   return (
     <div className="modal-backdrop">
       <div className="quick-modal listing-dialog" role="dialog" aria-modal="true" aria-labelledby={titleId} ref={dialogRef} onKeyDown={onKeyDown}>
         <div className="modal-head">
-          <div><span>{listing ? `EDIT ${kind.noun.toUpperCase()}` : `NEW ${kind.noun.toUpperCase()}`}</span><h2 id={titleId}>{heading}</h2></div>
+          <div><span>{kicker}</span><h2 id={titleId}>{heading}</h2></div>
           <button type="button" className="icon-button" aria-label="Close" onClick={onClose} disabled={isSubmitting}><X size={19} aria-hidden="true" /></button>
         </div>
         <form onSubmit={submit} noValidate>
           <div className="modal-body listing-dialog-body">
             {problem ? <p className="listing-notice listing-notice-error" role="alert">{problem}</p> : null}
             <div className="listing-form-grid">
+              {choosingKind ? (
+                <SelectField
+                  label="Listing type"
+                  className="form-full"
+                  options={kindChoices.map((choice) => ({ value: choice.id, label: choice.title }))}
+                  value={kind.id}
+                  onChange={(event) => setKind(kindChoices.find((choice) => choice.id === event.target.value) ?? kind)}
+                  hint={kind.id === 'offer' ? 'Something your business can provide.' : 'Something your business is looking for.'}
+                />
+              ) : null}
               <TextField label="Title" required className="form-full" placeholder="e.g. Brand identity sprint" error={errors.title?.message} {...register('title')} />
               <SelectField
                 label="Category"
@@ -162,7 +189,15 @@ export function ListingFormDialog({ kind, businessId, categories, categoriesFail
                   error={errors.description?.message}
                   {...register('description')}
                 />
-              ) : null}
+              ) : (
+                <TextareaField
+                  label="Desired outcome"
+                  className="form-full"
+                  placeholder="The problem to solve or the result you want."
+                  error={errors.desired_outcome?.message}
+                  {...register('desired_outcome')}
+                />
+              )}
               <Controller
                 control={control}
                 name="deliverables"
@@ -216,7 +251,33 @@ export function ListingFormDialog({ kind, businessId, categories, categoriesFail
                     {...register('location_restrictions')}
                   />
                 </>
-              ) : null}
+              ) : (
+                <>
+                  <SelectField
+                    label="Location preference"
+                    placeholder="Choose a preference"
+                    options={LOCATION_PREFERENCES}
+                    error={errors.location_preference?.message}
+                    {...register('location_preference')}
+                  />
+                  <SelectField label="Urgency" placeholder="Choose urgency" options={URGENCIES} error={errors.urgency?.message} {...register('urgency')} />
+                  <TextField label="Desired start date" type="date" error={errors.desired_start_date?.message} {...register('desired_start_date')} />
+                  <TextField
+                    label="Desired end date"
+                    type="date"
+                    hint="Either date can stay open."
+                    error={errors.desired_end_date?.message}
+                    {...register('desired_end_date')}
+                  />
+                  <TextField
+                    label="Location notes"
+                    className="form-full"
+                    placeholder="e.g. On-site in Detroit for the kickoff"
+                    error={errors.location_notes?.message}
+                    {...register('location_notes')}
+                  />
+                </>
+              )}
             </div>
           </div>
           <div className="modal-footer listing-dialog-footer">
