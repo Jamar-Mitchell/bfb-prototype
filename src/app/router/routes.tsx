@@ -14,6 +14,7 @@ import { MessagesPage } from '../../features/messages/MessagesPage'
 import { Onboarding } from '../../features/onboarding/Onboarding'
 import { businesses } from '../../mocks/businesses'
 import { getBusinessIdFromPath, paths } from './paths'
+import { RequireAuth } from './RequireAuth'
 import { useAppNavigate } from './useAppNavigate'
 
 function LandingRoute() {
@@ -64,15 +65,21 @@ export const routes: RouteObject[] = [
   { path: paths.login, element: <LoginPage /> },
   { path: paths.register, element: <RegisterPage /> },
   {
-    element: <ShellLayout />,
+    // App-shell routes need a logged-in user.
+    element: <RequireAuth />,
     children: [
-      { path: paths.dashboard, element: <DashboardRoute /> },
-      { path: paths.marketplace, element: <MarketplaceRoute /> },
-      { path: '/business/:id/*', element: <BusinessRoute /> },
-      { path: paths.exchanges, element: <ExchangesPage /> },
-      { path: paths.messages, element: <MessagesPage /> },
-      { path: paths.profile, element: <ProfileManagementPage /> },
-      { path: paths.listings, element: <ListingsPage /> },
+      {
+        element: <ShellLayout />,
+        children: [
+          { path: paths.dashboard, element: <DashboardRoute /> },
+          { path: paths.marketplace, element: <MarketplaceRoute /> },
+          { path: '/business/:id/*', element: <BusinessRoute /> },
+          { path: paths.exchanges, element: <ExchangesPage /> },
+          { path: paths.messages, element: <MessagesPage /> },
+          { path: paths.profile, element: <ProfileManagementPage /> },
+          { path: paths.listings, element: <ListingsPage /> },
+        ],
+      },
     ],
   },
   // The prototype showed the landing page for any unknown path.

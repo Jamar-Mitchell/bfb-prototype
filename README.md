@@ -101,6 +101,8 @@ The flow follows the API's `docs/AUTHENTICATION.md`. Login stores the access and
 
 When a request fails with `401`, the client (`src/lib/api/client.ts`) refreshes once and retries the request. One refresh runs at a time per tab, and a Web Lock keeps tabs from refreshing together. If the refresh token is rejected, the session is cleared and the user goes to login. A network error or `5xx` during refresh keeps the user logged in.
 
+On load, `restoreSession()` (`src/lib/auth/session.ts`) turns a stored refresh token into a live session while protected routes show a loading state. `RequireAuth` (`src/app/router/RequireAuth.tsx`) guards the app-shell routes and sends logged-out users to login, then back to the page they asked for. Logging out (sidebar account row) clears the tokens and ends the session on the API. Tabs follow each other's logouts and refreshes through `storage` events.
+
 ## Product planning
 
 - [Development plan](./docs/DEVELOPMENT_PLAN.md)

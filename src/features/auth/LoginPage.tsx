@@ -2,13 +2,14 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowRight } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useLocation } from 'react-router-dom'
 import { z } from 'zod'
 
 import { paths } from '../../app/router/paths'
 import { TextField } from '../../components/forms'
 import { toApiError } from '../../lib/api/errors'
 import { applyApiFieldErrors } from '../../lib/forms/applyApiFieldErrors'
+import { useSessionStore } from '../../stores/session'
 import { AuthLayout, AuthMessage } from './AuthLayout'
 import { login } from './authApi'
 
@@ -38,8 +39,8 @@ function noticeFor(state: LoginLocationState) {
 }
 
 export function LoginPage() {
-  const navigate = useNavigate()
   const location = useLocation()
+  const isAuthenticated = useSessionStore((session) => session.status === 'authenticated')
   const state = (location.state ?? {}) as LoginLocationState
   const notice = noticeFor(state)
   const [formError, setFormError] = useState<string | null>(null)
@@ -58,8 +59,8 @@ export function LoginPage() {
     setFormError(null)
 
     try {
+      // Logging in authenticates the session store; the redirect below takes it from there.
       await login(values)
-      navigate(state.from ?? paths.dashboard, { replace: true })
       window.scrollTo(0, 0)
     } catch (error) {
       const apiError = toApiError(error)
@@ -70,6 +71,8 @@ export function LoginPage() {
       }
     }
   })
+
+  if (isAuthenticated) return <Navigate to={state.from ?? paths.dashboard} replace />
 
   return (
     <AuthLayout kicker="WELCOME BACK" title="Log in to BFB" intro="Pick up where you left off with your business exchanges.">

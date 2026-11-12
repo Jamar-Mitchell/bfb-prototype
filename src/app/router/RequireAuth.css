@@ -1,0 +1,10 @@
+/* Full-page loading and error states while the session is restored. */
+.session-gate {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: var(--bg);
+}
+
+.session-gate .feedback-error { width: min(460px, 100%); }

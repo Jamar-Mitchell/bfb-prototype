@@ -4,7 +4,6 @@ import {
   Bell,
   BriefcaseBusiness,
   Building2,
-  ChevronDown,
   Compass,
   Handshake,
   LayoutDashboard,
@@ -18,12 +17,15 @@ import {
 
 import { businessPathPrefix, paths } from '../../app/router/paths'
 import { useAppNavigate } from '../../app/router/useAppNavigate'
+import { LogoutButton } from '../../features/auth/LogoutButton'
+import { useSessionStore } from '../../stores/session'
 import { Logo } from '../ui/Logo'
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { pathname } = useLocation()
   const go = useAppNavigate()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const userName = useSessionStore((state) => state.user?.displayName)
   const navItems = [
     { id: paths.dashboard, label: 'Dashboard', icon: LayoutDashboard },
     { id: paths.marketplace, label: 'Marketplace', icon: Compass },
@@ -62,8 +64,9 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
         <div className="account-row">
           <div className="account-avatar">ND</div>
-          <div><strong>Northstar Digital</strong><span>Alex Morgan</span></div>
-          <ChevronDown size={16} />
+          {/* The business stays demo data until businesses arrive (FE-1.4). */}
+          <div><strong>Northstar Digital</strong><span>{userName ?? 'Alex Morgan'}</span></div>
+          <LogoutButton />
         </div>
       </aside>
       <div className="app-main">

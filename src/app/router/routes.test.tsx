@@ -3,6 +3,8 @@ import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import App from '../../App'
+import { clearStoredSession } from '../../lib/auth/tokens'
+import { useSessionStore } from '../../stores/session'
 
 function renderAt(path: string) {
   return render(
@@ -29,11 +31,17 @@ const cases: Array<{ path: string; heading: RegExp; shell: boolean }> = [
 describe('route table', () => {
   beforeEach(() => {
     localStorage.clear()
+    // App-shell routes need a session; the guard itself is covered in sessionGuards.test.tsx.
+    useSessionStore.getState().setSession({
+      accessToken: 'access-token',
+      user: { id: 'user-1', email: 'founder@example.com', displayName: 'Alex Morgan' },
+    })
     vi.spyOn(window, 'scrollTo').mockImplementation(() => {})
   })
 
   afterEach(() => {
     cleanup()
+    clearStoredSession()
     vi.restoreAllMocks()
   })
 
