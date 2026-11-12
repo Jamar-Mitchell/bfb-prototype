@@ -53,7 +53,7 @@ Recommended order is S0 through S8. The frontend S0 packages need no API work an
 | FE-1.6 | Invite code at registration | FE-1.1, API-1.8 | done |
 | FE-2.1 | Onboarding saved to the API | FE-1.4, API-2.2 | todo |
 | FE-2.2 | Profile editor with logo and cover upload | FE-2.1, API-2.3 | todo |
-| FE-2.3 | Offers management | FE-1.4, API-2.4 | todo |
+| FE-2.3 | Offers management | FE-1.4, API-2.4 | in progress |
 | FE-2.4 | Needs management | FE-2.3, API-2.5 | todo |
 | FE-2.5 | Portfolio upload and reorder | FE-2.2, API-2.6 | todo |
 | FE-2.6 | Submit for review and status banner | FE-2.2, API-2.7 | todo |
@@ -193,18 +193,20 @@ Done when:
 
 Scope:
 - Wire the offers side of the listings page to the API: create, edit, pause, archive.
-- Show status on each offer. Publishing arrives in FE-2.6.
+- Show status on each offer, with a status filter and the details still missing before it can be published.
+- Lifecycle commands: publish, pause, resume and archive (archive asks first, since it is final). Publish and resume are enabled only when the business is approved and nothing is missing, and say why otherwise. Moved here from FE-2.6.
+- Members see listings read-only; owners and administrators manage them.
 
 Done when:
-- Tests cover creating an offer, a validation error, and pausing.
+- Tests cover creating an offer, a validation error (including `invalid_range`), pausing, publish disabled while the business is not approved, publishing an approved and complete offer, and the archive confirmation.
 
 ### FE-2.4 Needs management
 
 Scope:
-- The same as FE-2.3 for needs, reusing its components.
+- The same as FE-2.3 for needs, reusing its components, including the publish, resume and archive commands.
 
 Done when:
-- Tests cover creating a need, a validation error, and pausing.
+- Tests cover creating a need, a validation error, pausing, and publishing.
 
 ### FE-2.5 Portfolio upload and reorder
 
@@ -219,10 +221,10 @@ Done when:
 Scope:
 - A submit-for-review action, shown when the profile is complete.
 - A status banner for in review, changes requested (with the admin's notes) and approved.
-- Publish buttons on offers and needs, enabled once the business is approved.
+- Publish buttons on offers and needs moved to FE-2.3 and FE-2.4, which build all listing lifecycle commands. They already read the business's `profile_status`.
 
 Done when:
-- Tests cover each status and the publish button being enabled only when approved.
+- Tests cover each status.
 
 ### FE-2.7 Admin review queue
 
