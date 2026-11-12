@@ -105,6 +105,8 @@ On load, `restoreSession()` (`src/lib/auth/session.ts`) turns a stored refresh t
 
 Email verification and password reset follow the same document. The emailed links open `#/verify-email?token=…` and `#/reset-password?token=…` (`src/features/auth/`), which work logged in or not. A verification link is sent to the API once per page load, even under StrictMode, because it works only once. While the logged-in user's `emailVerified` is `false`, the app shell shows a banner with a "Resend email" button; the same button appears on the create-business step when the API answers `email_not_verified`. Resend buttons share a 30-second wait after each send. A completed reset clears the stored tokens (the API has ended every session) and opens login with a notice. "Forgot password?" on the login page opens `#/forgot-password`.
 
+Registration has an optional "Invite code" field for the pilot, prefilled from an invite link like `#/register?code=K7QM-3XRP`. The API checks it only while invites are required (`BFB_REGISTRATION_REQUIRES_INVITE`) and ignores it otherwise, so the field is always shown. The four invite errors appear on the field.
+
 ## Businesses
 
 A user acts for one business at a time. The API keeps no current business (`bfb-api` `docs/BUSINESSES.md`): business-scoped routes take the business ID in the path, and the frontend remembers which business is active.
