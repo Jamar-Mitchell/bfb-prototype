@@ -984,6 +984,8 @@ A feature is complete only when:
 
 ## Immediate implementation sequence
 
+Agent-sized work packages for Phases 1 and 2, grouped into demo-able slices, are in [WORK_PACKAGES.md](WORK_PACKAGES.md) (frontend) and `bfb-api/docs/WORK_PACKAGES.md` (API).
+
 The first development batch should be:
 
 1. Confirm the prototype repository contains every approved visual change.
