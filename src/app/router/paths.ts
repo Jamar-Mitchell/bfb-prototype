@@ -1,0 +1,18 @@
+export const paths = {
+  landing: '/',
+  onboarding: '/onboarding',
+  dashboard: '/dashboard',
+  marketplace: '/marketplace',
+  exchanges: '/exchanges',
+  messages: '/messages',
+  profile: '/profile',
+  listings: '/listings',
+  business: (id: number) => `/business/${id}`,
+} as const
+
+export const businessPathPrefix = '/business/'
+
+/** Same rule as the prototype: anything but `/business/<digits>` falls back to business 1. */
+export function getBusinessIdFromPath(pathname: string): number {
+  return Number(pathname.match(/^\/business\/(\d+)$/)?.[1] ?? 1)
+}

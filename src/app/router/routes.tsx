@@ -1,0 +1,74 @@
+import { Outlet, useLocation, useRoutes, type RouteObject } from 'react-router-dom'
+
+import { AppShell } from '../../components/layout/AppShell'
+import { BusinessProfile } from '../../features/businesses/BusinessProfile'
+import { ProfileManagementPage } from '../../features/businesses/ProfileManagementPage'
+import { Dashboard } from '../../features/dashboard/Dashboard'
+import { ExchangesPage } from '../../features/exchanges/ExchangesPage'
+import { LandingPage } from '../../features/landing/LandingPage'
+import { ListingsPage } from '../../features/listings/ListingsPage'
+import { Marketplace } from '../../features/matching/Marketplace'
+import { MessagesPage } from '../../features/messages/MessagesPage'
+import { Onboarding } from '../../features/onboarding/Onboarding'
+import { businesses } from '../../mocks/businesses'
+import { getBusinessIdFromPath, paths } from './paths'
+import { useAppNavigate } from './useAppNavigate'
+
+function LandingRoute() {
+  const go = useAppNavigate()
+  return <LandingPage enterApp={() => go(paths.onboarding)} signIn={() => go(paths.dashboard)} />
+}
+
+function OnboardingRoute() {
+  const go = useAppNavigate()
+  return <Onboarding complete={() => go(paths.dashboard)} exit={() => go(paths.landing)} />
+}
+
+function ShellLayout() {
+  return (
+    <AppShell>
+      <Outlet />
+    </AppShell>
+  )
+}
+
+function DashboardRoute() {
+  const go = useAppNavigate()
+  return <Dashboard goMarketplace={() => go(paths.marketplace)} openBusiness={(id) => go(paths.business(id))} />
+}
+
+function MarketplaceRoute() {
+  const go = useAppNavigate()
+  return <Marketplace openBusiness={(id) => go(paths.business(id))} />
+}
+
+function BusinessRoute() {
+  const go = useAppNavigate()
+  const { pathname } = useLocation()
+  const selectedId = getBusinessIdFromPath(pathname)
+  const selectedBusiness = businesses.find((business) => business.id === selectedId) ?? businesses[0]
+  return <BusinessProfile business={selectedBusiness} goBack={() => go(paths.marketplace)} />
+}
+
+export const routes: RouteObject[] = [
+  { path: paths.landing, element: <LandingRoute /> },
+  { path: paths.onboarding, element: <OnboardingRoute /> },
+  {
+    element: <ShellLayout />,
+    children: [
+      { path: paths.dashboard, element: <DashboardRoute /> },
+      { path: paths.marketplace, element: <MarketplaceRoute /> },
+      { path: '/business/:id/*', element: <BusinessRoute /> },
+      { path: paths.exchanges, element: <ExchangesPage /> },
+      { path: paths.messages, element: <MessagesPage /> },
+      { path: paths.profile, element: <ProfileManagementPage /> },
+      { path: paths.listings, element: <ListingsPage /> },
+    ],
+  },
+  // The prototype showed the landing page for any unknown path.
+  { path: '*', element: <LandingRoute /> },
+]
+
+export function AppRoutes() {
+  return useRoutes(routes)
+}
