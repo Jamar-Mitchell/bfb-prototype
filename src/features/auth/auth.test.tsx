@@ -163,6 +163,71 @@ describe('registration', () => {
   })
 })
 
+describe('invite code at registration', () => {
+  function submitRegistration() {
+    type('Your name', 'Alex Morgan')
+    type('Email', 'founder@example.com')
+    type('Password', 'correct horse 1')
+    fireEvent.click(screen.getByRole('checkbox', { name: /Terms of Service/ }))
+    fireEvent.click(screen.getByRole('button', { name: /Create account/ }))
+  }
+
+  it('sends a valid code with the registration', async () => {
+    const { calls } = serve(() => ({ status: 201, data: apiUser() }))
+    renderAt('/register')
+
+    type('Invite code', '  K7QM-3XRP ')
+    submitRegistration()
+
+    expect(await screen.findByRole('heading', { level: 1, name: 'Log in to BFB' })).toBeInTheDocument()
+    expect(JSON.parse(calls('post', '/auth/register')[0][0].data)).toMatchObject({
+      email: 'founder@example.com',
+      invite_code: 'K7QM-3XRP',
+    })
+  })
+
+  it('prefills the code from an invite link', async () => {
+    const { calls } = serve(() => ({ status: 201, data: apiUser() }))
+    renderAt('/register?code=spring-pilot')
+
+    expect(screen.getByLabelText('Invite code')).toHaveValue('spring-pilot')
+    submitRegistration()
+
+    await screen.findByRole('heading', { level: 1, name: 'Log in to BFB' })
+    // The API matches codes case-insensitively, so the code is sent as given.
+    expect(JSON.parse(calls('post', '/auth/register')[0][0].data)).toMatchObject({ invite_code: 'spring-pilot' })
+  })
+
+  it('leaves the code out when the field is empty', async () => {
+    const { calls } = serve(() => ({ status: 201, data: apiUser() }))
+    renderAt('/register')
+
+    submitRegistration()
+
+    await screen.findByRole('heading', { level: 1, name: 'Log in to BFB' })
+    expect(JSON.parse(calls('post', '/auth/register')[0][0].data)).not.toHaveProperty('invite_code')
+  })
+
+  it.each([
+    ['invalid_invite_code', 'We don’t recognise that invite code. Check it and try again.'],
+    ['invite_code_required', 'BFB is invite-only during the pilot. Enter your invite code.'],
+    ['invite_code_expired', 'That invite code has expired. Ask the person who sent it for a new one.'],
+    ['invite_code_exhausted', 'That invite code has been used up. Ask the person who sent it for a new one.'],
+  ])('shows %s on the invite-code field', async (code, message) => {
+    serve(() => ({ status: 422, data: apiErrorBody(code) }))
+    renderAt('/register?code=NOPE-0000')
+
+    submitRegistration()
+
+    const field = screen.getByLabelText('Invite code')
+    await waitFor(() => expect(field).toHaveAttribute('aria-invalid', 'true'))
+    expect(field).toHaveAccessibleDescription(new RegExp(message.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))
+    expect(field).toHaveFocus()
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: 'Create your account' })).toBeInTheDocument()
+  })
+})
+
 describe('landing page', () => {
   it('opens login from "Sign in" and registration from "Get started"', () => {
     renderAt('/')

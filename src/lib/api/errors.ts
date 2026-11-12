@@ -31,6 +31,11 @@ export type ApiErrorCode =
   | 'verification_token_expired'
   | 'invalid_password_reset_token'
   | 'password_reset_token_expired'
+  // Pilot invite codes at registration (API-1.8)
+  | 'invite_code_required'
+  | 'invalid_invite_code'
+  | 'invite_code_expired'
+  | 'invite_code_exhausted'
   // Feature codes are added by later packages; keep the type open for them.
   | (string & {})
 
@@ -65,6 +70,10 @@ export const API_ERROR_MESSAGES: Record<string, string> = {
   verification_token_expired: 'This verification link has expired.',
   invalid_password_reset_token: 'This reset link no longer works.',
   password_reset_token_expired: 'This reset link has expired.',
+  invite_code_required: 'BFB is invite-only during the pilot. Enter your invite code.',
+  invalid_invite_code: 'We don’t recognise that invite code. Check it and try again.',
+  invite_code_expired: 'That invite code has expired. Ask the person who sent it for a new one.',
+  invite_code_exhausted: 'That invite code has been used up. Ask the person who sent it for a new one.',
 }
 
 /** User-facing copy for an error code. Unknown codes fall back to the generic message. */
