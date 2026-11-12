@@ -5,6 +5,9 @@
 .public-profile-header .text-button { color: var(--muted); font-size: var(--text-base); }
 .public-profile-main { width: min(var(--content-max), calc(100% - var(--app-gutter))); margin: 0 auto; padding: 43px 0 70px; }
 
+/* The prototype tints the last meta item (its rating) gold; here every item is plain text. */
+.public-profile-main .profile-meta span:last-child { color: white; }
+
 /* No cover image: the hero keeps its navy shade on its own. */
 .public-profile-hero-plain { background: var(--navy-deep); }
 
