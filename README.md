@@ -27,7 +27,7 @@ Open the URL Vite prints in the terminal.
 
 The `main` branch automatically deploys to GitHub Pages:
 
-<https://jamar-mitchell.github.io/bfb-prototype/>
+<https://blacktagdevs.github.io/bfb-frontend/>
 
 Deployment is managed by `.github/workflows/deploy-pages.yml`.
 
@@ -42,10 +42,29 @@ npm run build
 - React
 - TypeScript
 - Vite
+- React Router
+- Zustand
+- Axios
+- Zod
 - Lucide icons
 - Custom responsive CSS
+- Vitest and Testing Library
+
+## Application foundation
+
+- URL-backed routes using a GitHub Pages-compatible hash router
+- Environment-validated API configuration
+- Shared Axios client prepared for the BFB API
+- In-memory session and active-business store
+- Application-level error boundary
+- Continuous integration for typing, linting, tests, and production builds
+
+Copy `.env.example` to `.env` when connecting a local API.
 
 ## Product planning
 
-- [Legal and compliance framework](./LEGAL.md)
-- [Market research](./MARKET_RESEARCH.md)
+- [Development plan](./docs/DEVELOPMENT_PLAN.md)
+- [Business strategy](./docs/BUSINESS_STRATEGY.md)
+- [System design](./docs/SYSTEM_DESIGN.md)
+- [Legal and compliance framework](./docs/LEGAL.md)
+- [Market research](./docs/MARKET_RESEARCH.md)

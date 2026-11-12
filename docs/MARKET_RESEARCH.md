@@ -452,4 +452,3 @@ The immediate next step should be a **manual Atlanta or founder-community pilot*
 - Company claims about membership, transaction volume, conversion, or customer outcomes should be independently verified before use in investor materials.
 - Market-research aggregator figures were excluded where their methods could not be verified.
 - Legal and tax conclusions require professional review before launch.
-

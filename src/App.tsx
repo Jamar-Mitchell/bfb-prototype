@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import {
   ArrowLeft,
   ArrowRight,
@@ -33,6 +34,24 @@ import {
 import './App.css'
 
 type View = 'landing' | 'onboarding' | 'dashboard' | 'marketplace' | 'business' | 'exchanges' | 'messages' | 'profile' | 'listings'
+
+const viewRoutes: Record<Exclude<View, 'business'>, string> = {
+  landing: '/',
+  onboarding: '/onboarding',
+  dashboard: '/dashboard',
+  marketplace: '/marketplace',
+  exchanges: '/exchanges',
+  messages: '/messages',
+  profile: '/profile',
+  listings: '/listings',
+}
+
+function getViewFromPath(pathname: string): View {
+  if (pathname.startsWith('/business/')) return 'business'
+
+  const route = Object.entries(viewRoutes).find(([, path]) => path === pathname)
+  return route?.[0] as View ?? 'landing'
+}
 
 type Business = {
   id: number
@@ -1090,12 +1109,19 @@ function ListingsPage() {
 }
 
 function App() {
-  const [view, setView] = useState<View>(() => window.location.hash === '#dashboard' ? 'dashboard' : 'landing')
-  const [selectedId, setSelectedId] = useState(1)
+  const location = useLocation()
+  const navigate = useNavigate()
+  const view = getViewFromPath(location.pathname)
+  const selectedId = Number(location.pathname.match(/^\/business\/(\d+)$/)?.[1] ?? 1)
+
+  const setView = (nextView: View) => {
+    const path = nextView === 'business' ? `/business/${selectedId}` : viewRoutes[nextView]
+    navigate(path)
+    window.scrollTo(0, 0)
+  }
 
   const openBusiness = (id: number) => {
-    setSelectedId(id)
-    setView('business')
+    navigate(`/business/${id}`)
     window.scrollTo(0, 0)
   }
 

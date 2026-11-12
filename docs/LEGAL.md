@@ -353,4 +353,3 @@ Businesses exchanging regulated or higher-risk services may need to attest to pr
 8. What state privacy laws apply at the expected user and revenue thresholds?
 9. What verification and marketing claims can BFB accurately make?
 10. What insurance coverage and contractual risk allocation are appropriate?
-
