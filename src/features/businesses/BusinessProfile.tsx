@@ -52,7 +52,7 @@ export function BusinessProfile({ business, goBack }: { business: Business; goBa
         </aside>
       </div>
       {proposalOpen && <ProposalModal business={business} close={() => setProposalOpen(false)} submitted={submitProposal} />}
-      {toast && <div className="toast"><div><CircleCheck size={20} /></div><span><strong>Proposal sent!</strong><small>{business.name} will be notified in this demo.</small></span><button onClick={() => setToast(false)}><X size={16} /></button></div>}
+      {toast && <div className="proposal-toast"><div><CircleCheck size={20} /></div><span><strong>Proposal sent!</strong><small>{business.name} will be notified in this demo.</small></span><button onClick={() => setToast(false)}><X size={16} /></button></div>}
     </>
   )
 }

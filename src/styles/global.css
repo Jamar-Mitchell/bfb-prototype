@@ -1,5 +1,5 @@
 /* Shared layout and component styles used across features (app shell, buttons, brand, avatar,
-   status pills, modals, toast). Loaded globally before feature styles. */
+   status pills, modals). Loaded globally before feature styles. */
 
 .container { width: min(var(--content-max), calc(100% - var(--page-gutter))); margin: 0 auto; }
 .button { border: 0; border-radius: var(--radius-control); min-height: var(--control-height); padding: 0 19px; display: inline-flex; align-items: center; justify-content: center; gap: 9px; font-weight: 700; transition: .2s ease; }
@@ -90,12 +90,6 @@
 .full-field textarea { width: 100%; border: 1px solid var(--border); border-radius: var(--radius-sm); background: white; min-height: 38px; padding: 0 10px; color: var(--navy); font-size: var(--text-sm); }
 .full-field textarea { min-height: 80px; resize: vertical; padding: 10px; }
 .modal-footer { border-top: 1px solid var(--border); padding: 15px 24px; display: flex; justify-content: flex-end; gap: 8px; }
-.toast { position: fixed; right: 25px; bottom: 25px; z-index: 110; background: white; border: 1px solid var(--border); box-shadow: 0 18px 50px rgba(var(--navy-rgb), .18); border-radius: var(--radius-card); padding: 13px 14px; display: flex; align-items: center; gap: 10px; min-width: 285px; }
-.toast > div { width: 36px; height: 36px; background: var(--green-pale); color: var(--green); border-radius: var(--radius-md); display: grid; place-items: center; }
-.toast > span { display: flex; flex-direction: column; flex: 1; }
-.toast strong { color: var(--navy); font-size: var(--text-sm); }
-.toast small { color: var(--muted); font-size: var(--text-2xs); margin-top: 2px; }
-.toast button { border: 0; background: transparent; color: var(--muted); }
 .status-complete { color: var(--green) !important; background: var(--green-pale); }
 /* Keep the application readable at normal desktop viewing distance. */
 .content-heading h2 { font-size: 17px; }
