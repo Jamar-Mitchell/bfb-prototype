@@ -1,4 +1,4 @@
-import { apiGet, apiPatch } from '../../lib/api/requests'
+import { apiGet, apiPatch, apiPost } from '../../lib/api/requests'
 import type { components } from '../../lib/api/schema'
 
 export type Business = components['schemas']['BusinessResponse']
@@ -40,4 +40,12 @@ export function listCategories(): Promise<Category[]> {
 /** For tests: forget the loaded categories. */
 export function resetCategoriesCache() {
   categories = null
+}
+
+/**
+ * Submit the profile for review by BFB (owners and administrators). Allowed from `draft` and
+ * `changes_requested` with a complete profile; the profile is locked while `in_review`.
+ */
+export function submitForReview(businessId: string) {
+  return apiPost('/businesses/{business_id}/submit-for-review', undefined, { path: { business_id: businessId } })
 }

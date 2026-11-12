@@ -22,6 +22,7 @@ import { EmailVerificationBanner } from '../../features/auth/EmailVerificationBa
 import { LogoutButton } from '../../features/auth/LogoutButton'
 import { BusinessSwitcher } from '../../features/businesses/BusinessSwitcher'
 import { ProfileProgressCard } from '../../features/businesses/ProfileProgressCard'
+import { ProfileStatusBanner } from '../../features/businesses/ProfileStatusBanner'
 import { isPlatformStaff, useSessionStore } from '../../stores/session'
 import { Toaster } from '../feedback'
 import { Logo } from '../ui/Logo'
@@ -93,7 +94,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="topbar-search"><Search size={18} /><input aria-label="Search BFB" placeholder="Search BFB..." /><kbd>⌘ K</kbd></div>
           <div className="topbar-actions"><button className="icon-button"><Bell size={19} /><span className="notification-dot" /></button><button className="button button-primary button-small" onClick={() => go(paths.listings)}><Plus size={16} /> New listing</button></div>
         </header>
-        <main className="app-content"><EmailVerificationBanner />{children}</main>
+        <main className="app-content"><EmailVerificationBanner />{hasBusiness ? <ProfileStatusBanner openProfile={pathname === paths.profile ? undefined : () => go(paths.profile)} /> : null}{children}</main>
       </div>
       <Toaster />
       {mobileOpen && <button className="sidebar-scrim" onClick={() => setMobileOpen(false)} aria-label="Close menu" />}

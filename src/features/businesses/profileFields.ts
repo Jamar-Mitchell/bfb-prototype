@@ -91,3 +91,8 @@ export function isProfileLocked(status: ProfileStatus): boolean {
 export function canEditProfile(role: 'owner' | 'administrator' | 'member'): boolean {
   return role === 'owner' || role === 'administrator'
 }
+
+/** Statuses from which the business can submit for review (API-2.7). */
+export function canSubmitForReview(status: ProfileStatus): boolean {
+  return status === 'draft' || status === 'changes_requested'
+}
