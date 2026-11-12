@@ -65,6 +65,7 @@ Copy `.env.example` to `.env` when connecting a local API.
 
 - [Development plan](./docs/DEVELOPMENT_PLAN.md)
 - [Business strategy](./docs/BUSINESS_STRATEGY.md)
+- [Monetization plan](./docs/MONETIZATION_PLAN.md)
 - [System design](./docs/SYSTEM_DESIGN.md)
 - [Legal and compliance framework](./docs/LEGAL.md)
 - [Market research](./docs/MARKET_RESEARCH.md)

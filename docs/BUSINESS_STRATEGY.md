@@ -318,6 +318,8 @@ Trust must be visible before, during, and after an exchange.
 
 BFB should delay aggressive monetization until it demonstrates repeated completed exchanges.
 
+The detailed pricing hypotheses, experiments, unit economics, and rollout gates are maintained in the [BFB Monetization Plan](./MONETIZATION_PLAN.md).
+
 ### Stage 1: Learning and validation
 
 Revenue is optional during the design-partner alpha. The primary objective is learning.
@@ -723,4 +725,3 @@ Registrations and profile counts are supporting metrics, not the primary measure
 8. Define the first pilot scorecard.
 9. Decide which early services remain concierge-operated.
 10. Begin documenting case studies from the first completed exchange.
-
