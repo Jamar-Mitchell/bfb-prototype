@@ -15,6 +15,7 @@ import {
 import { Avatar } from '../../components/ui/Avatar'
 import { Logo } from '../../components/ui/Logo'
 import { businesses } from '../../mocks/businesses'
+import './Onboarding.css'
 
 const serviceOptions = [
   'Website design',

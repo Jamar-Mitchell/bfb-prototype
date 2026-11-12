@@ -14,6 +14,7 @@ import {
 
 import { Avatar } from '../../components/ui/Avatar'
 import { businesses } from '../../mocks/businesses'
+import './Dashboard.css'
 
 export function Dashboard({ goMarketplace, openBusiness }: { goMarketplace: () => void; openBusiness: (id: number) => void }) {
   const onboarding = useMemo(() => {

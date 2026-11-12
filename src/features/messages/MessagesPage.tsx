@@ -3,6 +3,7 @@ import { Paperclip, Search, Send } from 'lucide-react'
 
 import { Avatar } from '../../components/ui/Avatar'
 import { demoConversations } from '../../mocks/conversations'
+import './MessagesPage.css'
 
 export function MessagesPage() {
   const [selected, setSelected] = useState(0)

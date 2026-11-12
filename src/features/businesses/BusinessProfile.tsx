@@ -17,6 +17,7 @@ import {
 import { Avatar } from '../../components/ui/Avatar'
 import type { Business } from '../../mocks/businesses'
 import { ProposalModal } from '../proposals/ProposalModal'
+import './BusinessProfile.css'
 
 export function BusinessProfile({ business, goBack }: { business: Business; goBack: () => void }) {
   const [proposalOpen, setProposalOpen] = useState(false)

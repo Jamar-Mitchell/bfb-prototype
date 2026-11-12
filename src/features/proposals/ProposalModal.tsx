@@ -10,6 +10,7 @@ import {
 
 import { Avatar } from '../../components/ui/Avatar'
 import type { Business } from '../../mocks/businesses'
+import './ProposalModal.css'
 
 export function ProposalModal({ business, close, submitted }: { business: Business; close: () => void; submitted: () => void }) {
   const [step, setStep] = useState(1)

@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight, Plus } from 'lucide-react'
 
 import { Avatar } from '../../components/ui/Avatar'
 import { demoExchanges, demoExchangeStatuses, type ExchangeStatus } from '../../mocks/exchanges'
+import './ExchangesPage.css'
 
 export function ExchangesPage() {
   const [tab, setTab] = useState('Active')

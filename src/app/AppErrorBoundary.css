@@ -1,0 +1,51 @@
+.app-error {
+  align-items: center;
+  background: #f7f5ef;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.app-error div {
+  background: #fff;
+  border: 1px solid #dedbd2;
+  border-radius: 1.5rem;
+  box-shadow: 0 1.5rem 4rem rgb(26 35 31 / 10%);
+  max-width: 34rem;
+  padding: 3rem;
+}
+
+.app-error span {
+  color: #387c5b;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.app-error h1 {
+  color: var(--error-ink);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  margin: 0.75rem 0;
+}
+
+.app-error p {
+  color: #5a625e;
+  line-height: 1.7;
+}
+
+/* min-width and min-height below were carried over unchanged from the old index.css, where a
+   merge slip moved them from `body` into this rule. Kept as-is so FE-0.2 changes nothing visible. */
+.app-error button {
+  background: var(--error-ink);
+  border: 0;
+  border-radius: 999px;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  margin-top: 1rem;
+  padding: 0.9rem 1.25rem;
+  min-width: 320px;
+  min-height: 100vh;
+}

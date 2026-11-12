@@ -3,6 +3,7 @@ import { ChevronDown, MapPin, Search, Sparkles } from 'lucide-react'
 
 import { businesses } from '../../mocks/businesses'
 import { BusinessCard } from './BusinessCard'
+import './Marketplace.css'
 
 const categories = ['All', 'Marketing', 'Design', 'Photography', 'Business Services', 'Home Services']
 
