@@ -16,6 +16,8 @@ import { ListingsPage } from '../../features/listings/ListingsPage'
 import { Marketplace } from '../../features/matching/Marketplace'
 import { MessagesPage } from '../../features/messages/MessagesPage'
 import { Onboarding } from '../../features/onboarding/Onboarding'
+import { AcceptInvitePage } from '../../features/team/AcceptInvitePage'
+import { TeamPage } from '../../features/team/TeamPage'
 import { businesses } from '../../mocks/businesses'
 import { getBusinessIdFromPath, paths } from './paths'
 import { useActiveBusinessId } from '../../lib/businesses/useActiveBusiness'
@@ -76,6 +78,8 @@ export const routes: RouteObject[] = [
   { path: paths.verifyEmail, element: <VerifyEmailPage /> },
   { path: paths.forgotPassword, element: <ForgotPasswordPage /> },
   { path: paths.resetPassword, element: <ResetPasswordPage /> },
+  // Logged out, it asks the user to log in or register and brings them back.
+  { path: paths.acceptInvite, element: <AcceptInvitePage /> },
   {
     // App-shell routes need a logged-in user.
     element: <RequireAuth />,
@@ -95,6 +99,7 @@ export const routes: RouteObject[] = [
               { path: paths.messages, element: <MessagesPage /> },
               { path: paths.profile, element: <ProfileManagementPage /> },
               { path: paths.listings, element: <ListingsPage /> },
+              { path: paths.team, element: <TeamPage /> },
             ],
           },
         ],

@@ -71,6 +71,32 @@ export function addBusiness(business: SessionBusiness) {
   session.setMemberships(memberships, business)
 }
 
+/**
+ * A business the user no longer belongs to (they left it): drop it from their memberships.
+ * If it was active, the next one becomes active; with none left, business pages send the
+ * user to the create-business step. Returns the new active business.
+ */
+export function removeBusiness(businessId: string): SessionBusiness | null {
+  const session = useSessionStore.getState()
+  const memberships = (session.memberships ?? []).filter((item) => item.id !== businessId)
+  const active = session.activeBusiness?.id === businessId ? (memberships[0] ?? null) : session.activeBusiness
+
+  if (active) storeActiveBusinessId(active.id)
+  session.setMemberships(memberships, active)
+  return active
+}
+
+/** The user's role in one of their businesses changed, e.g. they handed over ownership. */
+export function updateBusinessRole(businessId: string, role: SessionBusiness['role']) {
+  const session = useSessionStore.getState()
+  if (session.activeBusiness?.id === businessId && session.activeBusiness.role === role) return
+
+  const update = (business: SessionBusiness) => (business.id === businessId ? { ...business, role } : business)
+  const active = session.activeBusiness ? update(session.activeBusiness) : null
+  if (session.memberships) session.setMemberships(session.memberships.map(update), active)
+  else session.setActiveBusiness(active)
+}
+
 let loading: Promise<void> | null = null
 
 /**

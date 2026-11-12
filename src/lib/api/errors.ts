@@ -36,6 +36,12 @@ export type ApiErrorCode =
   | 'invalid_invite_code'
   | 'invite_code_expired'
   | 'invite_code_exhausted'
+  // Team and invitations (API-1.7)
+  | 'already_business_member'
+  | 'last_business_owner'
+  | 'invalid_invitation_token'
+  | 'invitation_expired'
+  | 'invitation_email_mismatch'
   // Feature codes are added by later packages; keep the type open for them.
   | (string & {})
 
@@ -74,6 +80,11 @@ export const API_ERROR_MESSAGES: Record<string, string> = {
   invalid_invite_code: 'We don’t recognise that invite code. Check it and try again.',
   invite_code_expired: 'That invite code has expired. Ask the person who sent it for a new one.',
   invite_code_exhausted: 'That invite code has been used up. Ask the person who sent it for a new one.',
+  already_business_member: 'That person is already a member of this business.',
+  last_business_owner: 'A business needs at least one owner. Make another member an owner first.',
+  invalid_invitation_token: 'This invitation link no longer works.',
+  invitation_expired: 'This invitation has expired.',
+  invitation_email_mismatch: 'This invitation was sent to a different email address.',
 }
 
 /** User-facing copy for an error code. Unknown codes fall back to the generic message. */

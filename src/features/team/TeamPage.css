@@ -1,0 +1,64 @@
+/* Team page. Built from the prototype's cards, lists and modal (profile, offers & needs). */
+.team-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 18px; align-items: start; }
+.team-main, .team-side { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+
+.team-card { background: white; border: 1px solid var(--border); border-radius: var(--radius-xl); }
+.team-card-head { padding: 19px 21px 15px; border-bottom: 1px solid var(--border); }
+.team-card-head h2, .team-invite h2, .team-leave h2 { font-size: 16px; margin: 0 0 4px; }
+.team-card-head p, .team-invite > p, .team-leave p { color: var(--muted); font-size: var(--text-base); line-height: 1.5; margin: 0; }
+
+.team-list { list-style: none; margin: 0; padding: 0; }
+.team-row { display: grid; grid-template-columns: 38px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 14px 21px; }
+.team-row + .team-row { border-top: 1px solid var(--border); }
+.team-avatar { width: 38px; height: 38px; display: grid; place-items: center; border-radius: var(--radius-round); background: var(--navy); color: white; font: 800 var(--text-base) var(--font-heading); }
+.team-avatar-pending { background: var(--pale-blue); color: var(--blue); }
+.team-row-expired .team-avatar-pending { background: var(--amber-pale); color: var(--amber); }
+.team-person { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.team-person strong { color: var(--navy); font-size: var(--text-xl); display: flex; align-items: center; gap: 7px; flex-wrap: wrap; overflow-wrap: anywhere; }
+.team-person > span { color: var(--slate); font-size: var(--text-base); overflow-wrap: anywhere; }
+.team-person small { color: var(--text-subtle); font-size: var(--text-md); }
+
+.team-you, .team-expired, .team-role { border-radius: 999px; padding: 2px 8px; font-size: var(--text-sm); font-weight: 800; letter-spacing: .02em; }
+.team-you { background: var(--pale-blue); color: var(--blue); }
+.team-expired { background: var(--amber-pale); color: var(--amber); }
+.team-role { background: var(--surface-muted); border: 1px solid var(--border); color: var(--slate); font-size: var(--text-md); padding: 4px 10px; }
+.team-role-owner { background: var(--navy); border-color: var(--navy); color: white; }
+
+.team-row-actions { display: flex; align-items: center; gap: 6px; }
+.team-role-select { min-height: 34px; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0 8px; background: white; color: var(--navy); font-size: var(--text-base); font-weight: 600; }
+.team-role-select:focus { border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue); outline: none; }
+.team-role-select:disabled { opacity: .6; cursor: progress; }
+.team-icon-button { width: 34px; height: 34px; border: 1px solid var(--border); background: white; color: var(--muted); border-radius: var(--radius-sm); display: grid; place-items: center; }
+.team-icon-danger:hover:not(:disabled) { color: #c43d4b; border-color: #efcbd0; background: #fff7f8; }
+.team-icon-button:disabled { opacity: .5; cursor: progress; }
+.team-again { min-height: 34px; padding: 0 11px; font-size: var(--text-base); gap: 6px; }
+
+.team-empty { border: 0; padding: 30px 20px; }
+
+.team-invite, .team-leave { padding: 20px; }
+.team-invite-icon { width: 37px; height: 37px; display: grid; place-items: center; border-radius: var(--radius-md); background: var(--pale-blue); color: var(--blue); margin-bottom: 12px; }
+.team-invite form { margin-top: 18px; }
+.team-invite-submit { width: 100%; }
+.team-invite-notice { margin: 14px 0 0; }
+.team-leave-button { margin-top: 14px; width: 100%; color: #c43d4b; }
+.team-leave-button:hover { border-color: #efcbd0; background: #fff7f8; }
+
+.team-notice { border-radius: var(--radius-md); padding: 10px 13px; font-size: var(--text-base); line-height: 1.5; margin: -10px 0 16px; }
+.team-notice-success { background: #e9f8f2; border: 1px solid #ccecdf; color: var(--green); }
+.team-notice-error { background: #fff7f8; border: 1px solid #efcbd0; color: #a8323f; }
+
+/* Confirmation dialog for remove, leave and revoke. */
+.team-confirm { width: min(440px, 100%); background: white; border-radius: 14px; overflow: hidden; }
+.team-confirm-body p { color: var(--slate); font-size: var(--text-xl); line-height: 1.6; margin: 0; }
+.button-danger { background: #c43d4b; color: white; }
+.button-danger:hover:not(:disabled) { background: #a8323f; }
+.button-danger:disabled, .team-confirm .button-secondary:disabled { opacity: .6; cursor: progress; }
+
+@media (max-width: 960px) {
+  .team-layout { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 620px) {
+  .team-row { grid-template-columns: 38px minmax(0, 1fr); padding: 14px 16px; }
+  .team-row-actions { grid-column: 2; flex-wrap: wrap; }
+}
