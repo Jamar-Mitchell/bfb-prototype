@@ -2,6 +2,7 @@ import axios from 'axios'
 
 import { env } from '../config/env'
 import { useSessionStore } from '../../stores/session'
+import { toApiError } from './errors'
 
 export const apiClient = axios.create({
   baseURL: env.apiUrl,
@@ -29,7 +30,8 @@ apiClient.interceptors.response.use(
       useSessionStore.getState().clearSession()
     }
 
-    return Promise.reject(error)
+    // Every failed call rejects with an ApiError, so callers never handle raw Axios errors.
+    return Promise.reject(toApiError(error))
   },
 )
 
