@@ -42,6 +42,12 @@ export type ApiErrorCode =
   | 'invalid_invitation_token'
   | 'invitation_expired'
   | 'invitation_email_mismatch'
+  // Offers and needs (API-2.4, API-2.5, API-2.8)
+  | 'invalid_listing_status'
+  | 'business_not_approved'
+  | 'listing_incomplete'
+  | 'invalid_range'
+  | 'invalid_category'
   // Feature codes are added by later packages; keep the type open for them.
   | (string & {})
 
@@ -85,6 +91,11 @@ export const API_ERROR_MESSAGES: Record<string, string> = {
   invalid_invitation_token: 'This invitation link no longer works.',
   invitation_expired: 'This invitation has expired.',
   invitation_email_mismatch: 'This invitation was sent to a different email address.',
+  invalid_listing_status: 'This listing changed since you loaded it. Refresh and try again.',
+  business_not_approved: 'Your business must be approved before listings can go live.',
+  listing_incomplete: 'Add the missing details before this listing can go live.',
+  invalid_range: 'The end of a range can’t come before its start.',
+  invalid_category: 'That category is no longer available. Choose another.',
 }
 
 /** User-facing copy for an error code. Unknown codes fall back to the generic message. */
