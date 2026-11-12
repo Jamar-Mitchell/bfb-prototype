@@ -6,6 +6,13 @@ export type SessionUser = {
   displayName: string
   /** `false` until the user opens the link in their verification email. Unknown (`undefined`) if not loaded. */
   emailVerified?: boolean
+  /** BFB staff role. `support` and `administrator` may use the admin area. Unknown (`undefined`) if not loaded. */
+  platformRole?: 'user' | 'support' | 'administrator'
+}
+
+/** Support and administrator users can review businesses in the admin area. */
+export function isPlatformStaff(user: SessionUser | null | undefined): boolean {
+  return user?.platformRole === 'support' || user?.platformRole === 'administrator'
 }
 
 export type SessionBusiness = {

@@ -2,17 +2,19 @@ import { Navigate, Outlet } from 'react-router-dom'
 
 import { ErrorState, LoadingState } from '../../components/feedback'
 import { useMemberships } from '../../lib/businesses/useActiveBusiness'
-import { useSessionStore } from '../../stores/session'
+import { isPlatformStaff, useSessionStore } from '../../stores/session'
 import { paths } from './paths'
 import './RequireAuth.css'
 
 /**
  * Guards business pages (under `RequireAuth`). Loads the user's memberships and sends a
- * user without a business to the create-business step. Below it, an active business always exists.
+ * user without a business to the create-business step (support and administrator users to the
+ * admin area instead). Below it, an active business always exists.
  */
 export function RequireBusiness() {
   const { memberships, error, retry } = useMemberships()
   const activeBusiness = useSessionStore((state) => state.activeBusiness)
+  const staff = useSessionStore((state) => isPlatformStaff(state.user))
 
   if (memberships === null) {
     return (
@@ -26,7 +28,8 @@ export function RequireBusiness() {
     )
   }
 
-  if (!activeBusiness) return <Navigate to={paths.createBusiness} replace />
+  // Platform staff may have no business of their own: their home is the admin area.
+  if (!activeBusiness) return <Navigate to={staff ? paths.admin : paths.createBusiness} replace />
 
   return <Outlet />
 }

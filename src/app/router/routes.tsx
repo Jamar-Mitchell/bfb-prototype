@@ -1,6 +1,8 @@
 import { Navigate, Outlet, useLocation, useParams, useRoutes, type RouteObject } from 'react-router-dom'
 
 import { AppShell } from '../../components/layout/AppShell'
+import { AdminBusinessPage } from '../../features/admin/AdminBusinessPage'
+import { ReviewQueuePage } from '../../features/admin/ReviewQueuePage'
 import { ForgotPasswordPage } from '../../features/auth/ForgotPasswordPage'
 import { LoginPage } from '../../features/auth/LoginPage'
 import { RegisterPage } from '../../features/auth/RegisterPage'
@@ -20,10 +22,11 @@ import { Onboarding } from '../../features/onboarding/Onboarding'
 import { AcceptInvitePage } from '../../features/team/AcceptInvitePage'
 import { TeamPage } from '../../features/team/TeamPage'
 import { businesses } from '../../mocks/businesses'
-import { getBusinessIdFromPath, isBusinessUuid, paths, publicBusinessPattern } from './paths'
-import { useActiveBusinessId } from '../../lib/businesses/useActiveBusiness'
+import { adminBusinessPattern, getBusinessIdFromPath, isBusinessUuid, paths, publicBusinessPattern } from './paths'
+import { useActiveBusinessId, useMemberships } from '../../lib/businesses/useActiveBusiness'
 import { RequireAuth } from './RequireAuth'
 import { RequireBusiness } from './RequireBusiness'
+import { RequireStaff } from './RequireStaff'
 import { useAppNavigate } from './useAppNavigate'
 
 function LandingRoute() {
@@ -48,6 +51,19 @@ export function ShellLayout() {
   return (
     <AppShell>
       <Outlet key={activeBusinessId} />
+    </AppShell>
+  )
+}
+
+/**
+ * App shell for the admin area. Staff need not have a business, so this does not wait for
+ * one; it still loads the memberships so the sidebar's business switcher works for those who do.
+ */
+export function AdminLayout() {
+  useMemberships()
+  return (
+    <AppShell>
+      <Outlet />
     </AppShell>
   )
 }
@@ -91,6 +107,19 @@ export const routes: RouteObject[] = [
     element: <RequireAuth />,
     children: [
       { path: paths.createBusiness, element: <CreateBusinessPage /> },
+      {
+        // Support and administrator users only; no business needed.
+        element: <RequireStaff />,
+        children: [
+          {
+            element: <AdminLayout />,
+            children: [
+              { path: paths.admin, element: <ReviewQueuePage /> },
+              { path: adminBusinessPattern, element: <AdminBusinessPage /> },
+            ],
+          },
+        ],
+      },
       {
         // ...and a business to act for.
         element: <RequireBusiness />,

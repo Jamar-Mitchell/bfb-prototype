@@ -19,7 +19,12 @@ export const paths = {
   business: (id: number) => `/business/${id}`,
   /** Public profile of a real, approved business. Works logged out, so it sits outside the app shell. */
   publicBusiness: (id: string) => `/b/${id}`,
+  /** Admin review queue (support and administrator users only). */
+  admin: '/admin',
+  adminBusiness: (id: string) => `/admin/businesses/${id}`,
 } as const
+
+export const adminBusinessPattern = '/admin/businesses/:businessId'
 
 export const publicBusinessPattern = '/b/:businessId'
 

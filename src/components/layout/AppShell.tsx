@@ -11,6 +11,7 @@ import {
   MessageCircle,
   Plus,
   Search,
+  ShieldCheck,
   TrendingUp,
   Users,
   X,
@@ -21,6 +22,7 @@ import { useAppNavigate } from '../../app/router/useAppNavigate'
 import { EmailVerificationBanner } from '../../features/auth/EmailVerificationBanner'
 import { LogoutButton } from '../../features/auth/LogoutButton'
 import { BusinessSwitcher } from '../../features/businesses/BusinessSwitcher'
+import { isPlatformStaff, useSessionStore } from '../../stores/session'
 import { Toaster } from '../feedback'
 import { Logo } from '../ui/Logo'
 
@@ -28,6 +30,9 @@ export function AppShell({ children }: { children: ReactNode }) {
   const { pathname } = useLocation()
   const go = useAppNavigate()
   const [mobileOpen, setMobileOpen] = useState(false)
+  // Platform staff see the admin area; they may have no business of their own.
+  const staff = useSessionStore((state) => isPlatformStaff(state.user))
+  const hasBusiness = useSessionStore((state) => state.activeBusiness !== null)
   const navItems = [
     { id: paths.dashboard, label: 'Dashboard', icon: LayoutDashboard },
     { id: paths.marketplace, label: 'Marketplace', icon: Compass },
@@ -57,6 +62,14 @@ export function AppShell({ children }: { children: ReactNode }) {
               <Icon size={19} /> {label}
             </button>
           ))}
+          {staff && (
+            <>
+              <span className="side-label side-label-second">Admin</span>
+              <button className={pathname === paths.admin || pathname.startsWith(`${paths.admin}/`) ? 'active' : ''} onClick={() => { go(paths.admin); setMobileOpen(false) }}>
+                <ShieldCheck size={19} /> Review queue
+              </button>
+            </>
+          )}
         </nav>
         <div className="sidebar-growth">
           <div className="growth-icon"><TrendingUp size={19} /></div>
@@ -66,7 +79,13 @@ export function AppShell({ children }: { children: ReactNode }) {
           <small>75% complete</small>
         </div>
         <div className="account-row">
-          <BusinessSwitcher onNavigate={() => setMobileOpen(false)} />
+          {hasBusiness ? (
+            <BusinessSwitcher onNavigate={() => setMobileOpen(false)} />
+          ) : (
+            <button type="button" className="button button-secondary button-small shell-create-business" onClick={() => { go(paths.createBusiness); setMobileOpen(false) }}>
+              <Plus size={16} /> Create a business
+            </button>
+          )}
           <LogoutButton />
         </div>
       </aside>

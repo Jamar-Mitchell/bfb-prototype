@@ -1,0 +1,107 @@
+/* Admin review area. Built from the prototype's cards, pills and modal (team, profile, listings). */
+.admin-card { background: white; border: 1px solid var(--border); border-radius: var(--radius-xl); }
+.admin-card-head { padding: 19px 21px 15px; border-bottom: 1px solid var(--border); }
+.admin-card-head h2, .admin-decision h2 { font-size: 16px; margin: 0 0 4px; }
+.admin-card-head p { color: var(--muted); font-size: var(--text-base); line-height: 1.5; margin: 0; }
+.admin-card-body { padding: 18px 21px 21px; }
+.admin-muted { color: var(--muted); font-size: var(--text-base); margin: 0; }
+.admin-sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Queue */
+.admin-queue { list-style: none; margin: 0; padding: 0; }
+.admin-queue-row { display: grid; grid-template-columns: 42px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 16px 21px; }
+.admin-queue-row + .admin-queue-row { border-top: 1px solid var(--border); }
+.admin-initials { width: 42px; height: 42px; display: grid; place-items: center; border-radius: var(--radius-md); background: var(--pale-blue); color: var(--blue); font: 800 var(--text-base) var(--font-heading); }
+.admin-queue-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.admin-queue-main strong { color: var(--navy); font-size: var(--text-xl); overflow-wrap: anywhere; }
+.admin-queue-main > span { color: var(--slate); font-size: var(--text-base); }
+.admin-queue-main small { color: var(--text-subtle); font-size: var(--text-md); }
+.admin-queue-side { display: flex; align-items: center; gap: 12px; }
+.admin-completeness { color: var(--muted); font-size: var(--text-base); font-weight: 600; white-space: nowrap; }
+
+.admin-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; }
+.admin-tag { background: var(--surface-muted); border: 1px solid var(--border); color: var(--slate); border-radius: 999px; padding: 3px 9px; font-size: var(--text-md); font-weight: 700; }
+.admin-tag-flagged { background: var(--amber-pale); border-color: #f1dca8; color: var(--amber); }
+.admin-flag { display: inline-flex; align-items: center; gap: 4px; background: var(--amber); color: white; border-radius: 999px; padding: 3px 9px; font-size: var(--text-md); font-weight: 800; }
+
+.admin-pagination { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 14px 21px; border-top: 1px solid var(--border); color: var(--muted); font-size: var(--text-base); }
+.admin-pagination > div { display: flex; align-items: center; gap: 10px; }
+.admin-pagination .button:disabled { opacity: .5; cursor: not-allowed; }
+
+/* Business detail */
+.admin-back { border: 0; background: transparent; color: var(--muted); display: flex; align-items: center; gap: 7px; padding: 0; font-size: var(--text-md); font-weight: 600; margin-bottom: 24px; }
+.admin-heading h1 { overflow-wrap: anywhere; }
+.admin-status-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.admin-status { display: inline-block; border-radius: 999px; padding: 4px 10px; font-size: var(--text-md); font-weight: 800; background: var(--surface-muted); border: 1px solid var(--border); color: var(--slate); }
+.admin-status-in_review { background: var(--pale-blue); border-color: #c9e5ff; color: var(--blue); }
+.admin-status-approved { background: var(--green-pale); border-color: #ccecdf; color: var(--green); }
+.admin-status-changes_requested { background: var(--amber-pale); border-color: #f1dca8; color: var(--amber); }
+.admin-status-suspended { background: #fff7f8; border-color: #efcbd0; color: #a8323f; }
+
+.admin-warning { display: flex; gap: 10px; align-items: flex-start; background: var(--amber-pale); border: 1px solid #f1dca8; color: var(--amber); border-radius: var(--radius-md); padding: 12px 14px; margin: -12px 0 18px; }
+.admin-warning > div { display: flex; flex-direction: column; gap: 2px; }
+.admin-warning strong { font-size: var(--text-lg); }
+.admin-warning span { color: #6f4a10; font-size: var(--text-base); line-height: 1.5; }
+.admin-notice { border-radius: var(--radius-md); padding: 10px 13px; font-size: var(--text-base); line-height: 1.5; margin: -12px 0 18px; }
+.admin-notice-error { background: #fff7f8; border: 1px solid #efcbd0; color: #a8323f; }
+
+.admin-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 18px; align-items: start; }
+.admin-main, .admin-side { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+
+.admin-images { display: flex; gap: 14px; margin: 0 0 18px; }
+.admin-images figure { margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.admin-images figcaption { color: var(--text-subtle); font-size: var(--text-md); }
+.admin-cover-figure { flex: 1; min-width: 0; }
+.admin-logo { width: 72px; height: 72px; border-radius: 14px; object-fit: cover; border: 1px solid var(--border); }
+.admin-logo.admin-initials { font-size: 17px; }
+.admin-cover { width: 100%; height: 72px; border-radius: var(--radius-md); object-fit: cover; border: 1px solid var(--border); }
+.admin-cover-empty { background: repeating-linear-gradient(135deg, var(--surface-muted), var(--surface-muted) 8px, white 8px, white 16px); }
+.admin-subheading { font-size: var(--text-lg); margin: 0 0 6px; }
+.admin-description { color: var(--slate); font-size: var(--text-lg); line-height: 1.6; white-space: pre-line; margin: 0 0 16px; }
+.admin-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 18px; margin: 0 0 18px; }
+.admin-facts > div { display: flex; flex-direction: column; gap: 2px; padding: 9px 0; border-top: 1px solid var(--border); }
+.admin-facts dt { color: var(--muted); font-size: var(--text-md); }
+.admin-facts dd { margin: 0; color: var(--navy); font-size: var(--text-base); font-weight: 600; display: flex; flex-wrap: wrap; gap: 4px 12px; overflow-wrap: anywhere; }
+.admin-facts em, .admin-description em { color: var(--text-subtle); font-weight: 400; }
+.admin-facts a { color: var(--blue); display: inline-flex; align-items: center; gap: 3px; }
+
+.admin-members { list-style: none; margin: 0; padding: 0; }
+.admin-members li { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 21px; }
+.admin-members li + li { border-top: 1px solid var(--border); }
+.admin-members li > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.admin-members strong { color: var(--navy); font-size: var(--text-lg); }
+.admin-members li > div > span { color: var(--slate); font-size: var(--text-base); overflow-wrap: anywhere; }
+
+.admin-counts { width: 100%; border-collapse: collapse; font-size: var(--text-base); }
+.admin-counts th, .admin-counts td { padding: 11px 21px; text-align: right; border-bottom: 1px solid var(--border); }
+.admin-counts tbody tr:last-child th, .admin-counts tbody tr:last-child td { border-bottom: 0; }
+.admin-counts th:first-child { text-align: left; }
+.admin-counts thead th { color: var(--muted); font-weight: 600; }
+.admin-counts tbody th { color: var(--navy); }
+.admin-counts td { color: var(--slate); font-variant-numeric: tabular-nums; }
+
+.admin-decision { padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+.admin-decision p { color: var(--muted); font-size: var(--text-base); line-height: 1.5; margin: 0 0 4px; }
+.admin-decision .button { width: 100%; }
+
+.admin-history { list-style: none; margin: 0; padding: 0; }
+.admin-history li { padding: 14px 21px; display: flex; flex-direction: column; align-items: flex-start; gap: 5px; }
+.admin-history li + li { border-top: 1px solid var(--border); }
+.admin-history small { color: var(--text-subtle); font-size: var(--text-md); }
+.admin-history p { color: var(--slate); font-size: var(--text-base); line-height: 1.5; margin: 0; white-space: pre-line; }
+
+/* Decision dialog */
+.admin-dialog { width: min(480px, 100%); background: white; border-radius: 14px; overflow: hidden; }
+.admin-dialog-intro { color: var(--slate); font-size: var(--text-lg); line-height: 1.6; margin: 0 0 16px; }
+.admin-dialog .admin-notice { margin: 12px 0 0; }
+
+@media (max-width: 960px) {
+  .admin-layout { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 620px) {
+  .admin-queue-row { grid-template-columns: 42px minmax(0, 1fr); padding: 14px 16px; }
+  .admin-queue-side { grid-column: 2; justify-content: space-between; }
+  .admin-facts { grid-template-columns: 1fr; }
+  .admin-images { flex-direction: column; }
+}

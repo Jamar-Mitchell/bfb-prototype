@@ -130,6 +130,16 @@ The page uses the prototype profile layout with real fields only: logo (initials
 
 `#/business/<n>` stays the demo profile the marketplace and dashboard open (numeric IDs from `src/mocks/businesses.ts`) until Phase 3. A UUID on that route redirects to `#/b/<id>`. The business profile page (`#/profile`) shows "View public profile" once the active business is approved (`PublicProfileLink`).
 
+## Admin review
+
+`#/admin` (`src/features/admin/`) is the review queue for BFB staff, following the API's `docs/ADMIN.md`. Only users whose `platform_role` (from `GET /account` or the login response, kept as `user.platformRole` in the session) is `support` or `administrator` can use it:
+
+- `RequireStaff` (`src/app/router/RequireStaff.tsx`) sits under `RequireAuth` and sends everyone else to the dashboard, as if the page did not exist. The API refuses them anyway (`403`).
+- The admin routes are **not** under `RequireBusiness`: staff need no business of their own. A staff user without a business who opens a business page is sent to `#/admin` instead of the create-business step, and the sidebar offers "Create a business" in place of the switcher.
+- The sidebar shows an "Admin · Review queue" item to staff only.
+
+The queue lists businesses `in_review`, oldest submission first, 20 per page (`#/admin?page=2`), with completeness, categories and a "Needs extra review" badge when `requires_additional_review` (flagged categories are highlighted; ones used only by offers or needs are marked "(listing)"). `#/admin/businesses/<id>` shows the full profile with signed images, members with emails and roles, offer and need counts by status, and every past decision. Approve (optional notes) and Request changes (required notes, 1 to 2,000 characters) each confirm in a dialog; afterwards the page returns to the same queue page with a toast. If the business is no longer in review (`409 invalid_profile_status`, e.g. another reviewer decided first) the page reloads and says so.
+
 ## Product planning
 
 - [Development plan](./docs/DEVELOPMENT_PLAN.md)
