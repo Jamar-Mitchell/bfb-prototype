@@ -1,0 +1,31 @@
+.exchange-tabs { display: flex; gap: 7px; border-bottom: 1px solid var(--border); margin-bottom: 18px; }
+.exchange-tabs button { border: 0; border-bottom: 2px solid transparent; background: transparent; color: var(--muted); padding: 11px 15px; font-size: var(--text-md); font-weight: 700; }
+.exchange-tabs button.active { color: var(--blue); border-bottom-color: var(--blue); }
+.exchange-tabs span { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; background: #edf2f7; border-radius: var(--radius-control); margin-left: 5px; font-size: var(--text-2xs); }
+.exchange-tabs button.active span { background: var(--pale-blue); }
+.exchange-page-list { display: flex; flex-direction: column; gap: 13px; }
+.exchange-page-card { background: white; border: 1px solid var(--border); border-radius: var(--radius-xl); overflow: hidden; }
+.exchange-card-business { min-height: 92px; padding: 16px 19px; display: flex; align-items: center; gap: 12px; position: relative; overflow: hidden; }
+.exchange-card-business > img { position: absolute; inset: 0; width: 170px; height: 100%; object-fit: cover; opacity: .09; mask-image: linear-gradient(90deg, black, transparent); }
+.exchange-card-business > *:not(img) { position: relative; z-index: 1; }
+.exchange-card-business > div { display: flex; flex-direction: column; flex: 1; }
+.exchange-card-business > div > span { color: var(--blue); font-size: var(--text-2xs); font-weight: 700; text-transform: uppercase; }
+.exchange-card-business strong { color: var(--navy); font-size: var(--text-lg); margin: 3px 0; }
+.exchange-card-business small { color: var(--muted); font-size: var(--text-2xs); }
+.exchange-card-business > .status { flex: 0 0 auto; font-size: var(--text-2xs); }
+.exchange-trade-summary { display: grid; grid-template-columns: 1.4fr 40px 1.4fr 1fr 1fr; align-items: center; gap: 12px; background: var(--surface-muted); border-block: 1px solid var(--border); padding: 14px 19px; }
+.exchange-trade-summary > div:not(.mini-swap) { display: flex; flex-direction: column; }
+.exchange-trade-summary small { color: var(--text-subtle); font-size: var(--text-3xs); font-weight: 800; letter-spacing: .06em; }
+.exchange-trade-summary strong { color: var(--navy); font-size: var(--text-xs); margin-top: 4px; }
+.exchange-card-actions { display: flex; justify-content: flex-end; gap: 7px; padding: 11px 19px; }
+.exchange-card-actions .button { min-height: 35px; font-size: var(--text-xs); }
+.exchange-card-business > div > span, .exchange-card-business small, .exchange-card-business > .status { font-size: var(--text-xs); }
+.exchange-trade-summary strong, .exchange-card-actions .button { font-size: var(--text-sm); }
+
+@media (max-width: 620px) {
+  .exchange-tabs { overflow-x: auto; }
+  .exchange-tabs button { white-space: nowrap; }
+  .exchange-trade-summary { grid-template-columns: 1fr; }
+  .exchange-trade-summary .mini-swap { transform: rotate(90deg); }
+  .exchange-card-actions { flex-wrap: wrap; }
+}

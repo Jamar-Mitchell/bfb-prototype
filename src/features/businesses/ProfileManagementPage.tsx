@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Check, CircleCheck, Pencil, Plus } from 'lucide-react'
 
 import { demoBusinessProfile } from '../../mocks/businessProfile'
+import './ProfileManagementPage.css'
 
 export function ProfileManagementPage() {
   const [editing, setEditing] = useState(false)

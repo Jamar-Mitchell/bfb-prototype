@@ -2,6 +2,7 @@ import { Bookmark, MapPin, Star } from 'lucide-react'
 
 import { Avatar } from '../../components/ui/Avatar'
 import type { Business } from '../../mocks/businesses'
+import './BusinessCard.css'
 
 export function BusinessCard({ business, saved, onSave, onOpen }: { business: Business; saved: boolean; onSave: () => void; onOpen: () => void }) {
   return (

@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 
 import { demoListings, type Listing } from '../../mocks/listings'
+import './ListingsPage.css'
 
 export function ListingsPage() {
   const [listings, setListings] = useState<Listing[]>(demoListings)
