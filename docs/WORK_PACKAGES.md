@@ -56,7 +56,7 @@ Recommended order is S0 through S8. The frontend S0 packages need no API work an
 | FE-2.3 | Offers management | FE-1.4, API-2.4 | done |
 | FE-2.4 | Needs management | FE-2.3, API-2.5 | done |
 | FE-2.5 | Portfolio upload and reorder | FE-2.2, API-2.6 | todo |
-| FE-2.6 | Submit for review and status banner | FE-2.2, API-2.7 | in progress |
+| FE-2.6 | Submit for review and status banner | FE-2.2, API-2.7 | done |
 | FE-2.7 | Admin review queue | FE-1.2, API-2.8 | done |
 | FE-2.8 | Public business profile from the API | FE-1.2, API-2.2 | done |
 
