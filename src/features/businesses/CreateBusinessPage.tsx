@@ -16,6 +16,7 @@ import { useMemberships } from '../../lib/businesses/useActiveBusiness'
 import { applyApiFieldErrors } from '../../lib/forms/applyApiFieldErrors'
 import { useSessionStore } from '../../stores/session'
 import { AuthLayout, AuthMessage } from '../auth/AuthLayout'
+import { ResendVerificationButton } from '../auth/ResendVerificationButton'
 import { createBusiness } from './businessesApi'
 import '../../app/router/RequireAuth.css'
 
@@ -145,8 +146,8 @@ function CreateBusinessForm({ firstBusiness }: { firstBusiness: boolean }) {
 function VerifyEmailFirst({ email }: { email?: string }) {
   return (
     <AuthMessage tone="error">
-      Verify your email address{email ? ` (${email})` : ''} before creating a business, then try again.
-      {/* TODO(FE-1.3): add the "Resend verification email" button here. */}
+      Verify your email address{email ? ` (${email})` : ''} before creating a business, then try again.{' '}
+      <ResendVerificationButton email={email} />
     </AuthMessage>
   )
 }

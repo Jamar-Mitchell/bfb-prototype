@@ -1,0 +1,24 @@
+/* Resend-verification action: inline in banners and messages, or a full-width auth-page button. */
+.resend-verification { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+.resend-verification-block { display: flex; flex-direction: column; align-items: stretch; gap: 10px; }
+
+.resend-verification-button {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: var(--blue);
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.resend-verification-button:hover:not(:disabled) { color: var(--blue-dark); }
+.resend-verification-button:disabled { color: inherit; opacity: .65; text-decoration: none; cursor: default; }
+
+.resend-verification-feedback:empty { display: none; }
+.resend-verification-feedback,
+.resend-verification-error { font-weight: 600; }
+.resend-verification-block .resend-verification-feedback { color: var(--green); font-size: var(--text-lg); text-align: center; }
+.resend-verification-error { color: #c63b3b; }

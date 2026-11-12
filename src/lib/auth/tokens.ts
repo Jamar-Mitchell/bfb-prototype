@@ -38,7 +38,7 @@ export function readStoredTokens(): StoredTokens {
 }
 
 export function toSessionUser(user: ApiUser): SessionUser {
-  return { id: user.id, email: user.email, displayName: user.display_name }
+  return { id: user.id, email: user.email, displayName: user.display_name, emailVerified: user.email_verified }
 }
 
 /**

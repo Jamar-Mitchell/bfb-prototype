@@ -12,13 +12,7 @@ import { applyApiFieldErrors } from '../../lib/forms/applyApiFieldErrors'
 import { AuthLayout, AuthMessage } from './AuthLayout'
 import { register as registerAccount } from './authApi'
 import type { LoginLocationState } from './LoginPage'
-
-const PASSWORD_RULES: Record<string, string> = {
-  too_short: 'Use at least 10 characters.',
-  too_long: 'That password is too long. Use 72 characters or fewer.',
-  needs_letter_and_non_letter: 'Mix letters with numbers, spaces or symbols.',
-  contains_email: 'Don’t include your email address in your password.',
-}
+import { newPasswordSchema, PASSWORD_HINT, passwordMessage } from './passwordRules'
 
 const TERMS_MESSAGE = 'Accept the Terms of Service and Privacy Policy to continue.'
 
@@ -26,20 +20,11 @@ const TERMS_MESSAGE = 'Accept the Terms of Service and Privacy Policy to continu
 const registerSchema = z.object({
   displayName: z.string().trim().min(1, 'Enter your name.').max(100, 'Use 100 characters or fewer.'),
   email: z.email('Enter a valid email address.'),
-  password: z
-    .string()
-    .min(10, PASSWORD_RULES.too_short)
-    .refine((value) => /\p{L}/u.test(value) && /[^\p{L}]/u.test(value), PASSWORD_RULES.needs_letter_and_non_letter),
+  password: newPasswordSchema,
   acceptTerms: z.boolean().refine((value) => value, TERMS_MESSAGE),
 })
 
 type RegisterValues = z.infer<typeof registerSchema>
-
-function passwordMessage(details: unknown): string {
-  const rules = (details as { rules?: unknown } | null)?.rules
-  const first = Array.isArray(rules) ? rules.find((rule): rule is string => typeof rule === 'string' && rule in PASSWORD_RULES) : undefined
-  return first ? PASSWORD_RULES[first] : 'Choose a stronger password.'
-}
 
 export function RegisterPage() {
   const navigate = useNavigate()
@@ -113,7 +98,7 @@ export function RegisterPage() {
           label="Password"
           type="password"
           autoComplete="new-password"
-          hint="At least 10 characters, mixing letters with numbers, spaces or symbols."
+          hint={PASSWORD_HINT}
           error={errors.password?.message}
           {...register('password')}
         />

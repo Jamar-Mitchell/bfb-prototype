@@ -4,6 +4,8 @@ export type SessionUser = {
   id: string
   email: string
   displayName: string
+  /** `false` until the user opens the link in their verification email. Unknown (`undefined`) if not loaded. */
+  emailVerified?: boolean
 }
 
 export type SessionBusiness = {
@@ -47,6 +49,8 @@ type SessionState = {
   }) => void
   /** Replace the access token and keep the rest of the session. */
   setAccessToken: (accessToken: string) => void
+  /** Replace the user's details (e.g. after `GET /account`) and keep the rest of the session. */
+  setUser: (user: SessionUser) => void
   setActiveBusiness: (business: SessionBusiness | null) => void
   setMemberships: (memberships: SessionBusiness[], activeBusiness: SessionBusiness | null) => void
   setMembershipsError: (error: unknown) => void
@@ -83,6 +87,7 @@ export const useSessionStore = create<SessionState>((set) => ({
       }
     }),
   setAccessToken: (accessToken) => set({ accessToken }),
+  setUser: (user) => set({ user }),
   setActiveBusiness: (activeBusiness) => set({ activeBusiness }),
   setMemberships: (memberships, activeBusiness) => set({ memberships, activeBusiness, membershipsError: null }),
   setMembershipsError: (membershipsError) => set({ membershipsError }),

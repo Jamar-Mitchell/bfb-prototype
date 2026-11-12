@@ -62,3 +62,19 @@ export async function logout(): Promise<void> {
     await apiPost('/auth/logout', { refresh_token: refreshToken }).catch(() => undefined)
   }
 }
+
+/**
+ * Reload the logged-in user from `GET /account`, e.g. to pick up `email_verified` after
+ * the user opened their verification link. Waits for a session restore in progress first.
+ * Does nothing when nobody is logged in; failures are left to the caller.
+ */
+export async function refreshAccount(): Promise<void> {
+  await restoreSession()
+  if (useSessionStore.getState().status !== 'authenticated') return
+
+  const account = await apiGet('/account')
+  const session = useSessionStore.getState()
+  if (session.status !== 'authenticated' || session.user?.id !== account.user.id) return
+
+  session.setUser(toSessionUser(account.user))
+}

@@ -17,6 +17,7 @@ import {
 
 import { businessPathPrefix, paths } from '../../app/router/paths'
 import { useAppNavigate } from '../../app/router/useAppNavigate'
+import { EmailVerificationBanner } from '../../features/auth/EmailVerificationBanner'
 import { LogoutButton } from '../../features/auth/LogoutButton'
 import { BusinessSwitcher } from '../../features/businesses/BusinessSwitcher'
 import { Logo } from '../ui/Logo'
@@ -72,7 +73,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="topbar-search"><Search size={18} /><input aria-label="Search BFB" placeholder="Search BFB..." /><kbd>⌘ K</kbd></div>
           <div className="topbar-actions"><button className="icon-button"><Bell size={19} /><span className="notification-dot" /></button><button className="button button-primary button-small" onClick={() => go(paths.listings)}><Plus size={16} /> New listing</button></div>
         </header>
-        <main className="app-content">{children}</main>
+        <main className="app-content"><EmailVerificationBanner />{children}</main>
       </div>
       {mobileOpen && <button className="sidebar-scrim" onClick={() => setMobileOpen(false)} aria-label="Close menu" />}
     </div>

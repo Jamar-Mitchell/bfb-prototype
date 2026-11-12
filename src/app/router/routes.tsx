@@ -1,8 +1,11 @@
 import { Outlet, useLocation, useRoutes, type RouteObject } from 'react-router-dom'
 
 import { AppShell } from '../../components/layout/AppShell'
+import { ForgotPasswordPage } from '../../features/auth/ForgotPasswordPage'
 import { LoginPage } from '../../features/auth/LoginPage'
 import { RegisterPage } from '../../features/auth/RegisterPage'
+import { ResetPasswordPage } from '../../features/auth/ResetPasswordPage'
+import { VerifyEmailPage } from '../../features/auth/VerifyEmailPage'
 import { BusinessProfile } from '../../features/businesses/BusinessProfile'
 import { CreateBusinessPage } from '../../features/businesses/CreateBusinessPage'
 import { ProfileManagementPage } from '../../features/businesses/ProfileManagementPage'
@@ -69,6 +72,10 @@ export const routes: RouteObject[] = [
   { path: paths.onboarding, element: <OnboardingRoute /> },
   { path: paths.login, element: <LoginPage /> },
   { path: paths.register, element: <RegisterPage /> },
+  // Emailed links and password recovery work logged in or not.
+  { path: paths.verifyEmail, element: <VerifyEmailPage /> },
+  { path: paths.forgotPassword, element: <ForgotPasswordPage /> },
+  { path: paths.resetPassword, element: <ResetPasswordPage /> },
   {
     // App-shell routes need a logged-in user.
     element: <RequireAuth />,
