@@ -52,7 +52,7 @@ Recommended order is S0 through S8. The frontend S0 packages need no API work an
 | FE-1.5 | Team members page | FE-1.4, API-1.7 | done |
 | FE-1.6 | Invite code at registration | FE-1.1, API-1.8 | done |
 | FE-2.1 | Onboarding saved to the API | FE-1.4, API-2.2 | done |
-| FE-2.2 | Profile editor with logo and cover upload | FE-2.1, API-2.3 | todo |
+| FE-2.2 | Profile editor with logo and cover upload | FE-2.1, API-2.3 | done |
 | FE-2.3 | Offers management | FE-1.4, API-2.4 | done |
 | FE-2.4 | Needs management | FE-2.3, API-2.5 | done |
 | FE-2.5 | Portfolio upload and reorder | FE-2.2, API-2.6 | todo |
@@ -194,6 +194,10 @@ Scope:
 
 Done when:
 - Tests cover saving the profile, a rejected file, and the completeness list updating after a save.
+
+Notes (built):
+- Logo and cover save as soon as they upload (no "Save changes" needed). Removing a logo or cover is not offered yet.
+- The sidebar's "Complete your profile" card shows the real score and hides once the profile is complete. On narrow screens the completeness meter now shows above the form instead of being hidden.
 
 ### FE-2.3 Offers management
 

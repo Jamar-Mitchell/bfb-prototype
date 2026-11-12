@@ -47,9 +47,15 @@ export type ApiErrorCode =
   | 'business_not_approved'
   | 'listing_incomplete'
   | 'invalid_range'
-  // Business profile (API-2.2)
+  // Business profile and uploads (API-2.2, API-2.3)
   | 'profile_not_editable'
   | 'invalid_category'
+  | 'invalid_upload'
+  | 'file_too_large'
+  | 'empty_file'
+  | 'unsupported_file_type'
+  | 'file_content_mismatch'
+  | 'invalid_signed_url'
   // Feature codes are added by later packages; keep the type open for them.
   | (string & {})
 
@@ -99,6 +105,12 @@ export const API_ERROR_MESSAGES: Record<string, string> = {
   invalid_range: 'The end of a range can’t come before its start.',
   invalid_category: 'That category is no longer available. Choose another.',
   profile_not_editable: 'Your profile can’t be edited while it is in review or suspended.',
+  invalid_upload: 'That image is no longer available. Upload it again.',
+  file_too_large: 'That file is too large.',
+  empty_file: 'That file is empty. Choose another image.',
+  unsupported_file_type: 'That file type isn’t supported. Use a JPEG, PNG or WebP image.',
+  file_content_mismatch: 'That file isn’t really the image type its name says. Save it again as JPEG, PNG or WebP.',
+  invalid_signed_url: 'That image link has expired. Reload the page.',
 }
 
 /** User-facing copy for an error code. Unknown codes fall back to the generic message. */

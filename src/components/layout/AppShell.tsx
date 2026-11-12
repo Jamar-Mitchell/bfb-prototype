@@ -12,7 +12,6 @@ import {
   Plus,
   Search,
   ShieldCheck,
-  TrendingUp,
   Users,
   X,
 } from 'lucide-react'
@@ -22,6 +21,7 @@ import { useAppNavigate } from '../../app/router/useAppNavigate'
 import { EmailVerificationBanner } from '../../features/auth/EmailVerificationBanner'
 import { LogoutButton } from '../../features/auth/LogoutButton'
 import { BusinessSwitcher } from '../../features/businesses/BusinessSwitcher'
+import { ProfileProgressCard } from '../../features/businesses/ProfileProgressCard'
 import { isPlatformStaff, useSessionStore } from '../../stores/session'
 import { Toaster } from '../feedback'
 import { Logo } from '../ui/Logo'
@@ -71,13 +71,11 @@ export function AppShell({ children }: { children: ReactNode }) {
             </>
           )}
         </nav>
-        <div className="sidebar-growth">
-          <div className="growth-icon"><TrendingUp size={19} /></div>
-          <strong>Complete your profile</strong>
-          <span>Stand out to more potential partners.</span>
-          <div className="progress"><span /></div>
-          <small>75% complete</small>
-        </div>
+        {hasBusiness ? (
+          <ProfileProgressCard onOpen={() => { go(paths.profile); setMobileOpen(false) }} />
+        ) : (
+          <div className="sidebar-growth-spacer" />
+        )}
         <div className="account-row">
           {hasBusiness ? (
             <BusinessSwitcher onNavigate={() => setMobileOpen(false)} />
