@@ -66,6 +66,7 @@ describe('login', () => {
       email: 'founder@example.com',
       displayName: 'Alex Morgan',
       emailVerified: false,
+      platformRole: 'user',
     })
   })
 

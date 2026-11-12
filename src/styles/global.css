@@ -51,6 +51,7 @@
 .account-avatar { width: 34px; height: 34px; background: var(--navy); color: white; display: grid; place-items: center; border-radius: var(--radius-md); font-weight: 800; font-size: var(--text-md); }
 .account-row strong { font-size: var(--text-sm); color: var(--navy); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .account-row span { color: var(--muted); font-size: var(--text-xs); margin-top: 2px; }
+.shell-create-business { flex: 1; min-width: 0; white-space: nowrap; font-size: var(--text-base); padding: 0 12px; gap: 6px; }
 .app-main { margin-left: var(--sidebar-width); flex: 1; min-width: 0; }
 .app-topbar { height: var(--topbar-height); position: sticky; top: 0; z-index: 30; border-bottom: 1px solid var(--border); background: rgba(255,255,255,.94); backdrop-filter: blur(12px); display: flex; align-items: center; padding: 0 34px; }
 .topbar-search { width: 330px; height: 38px; display: flex; align-items: center; gap: 9px; color: var(--text-subtle); }
