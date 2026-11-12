@@ -56,6 +56,9 @@ export type ApiErrorCode =
   | 'unsupported_file_type'
   | 'file_content_mismatch'
   | 'invalid_signed_url'
+  // Review (API-2.7)
+  | 'invalid_profile_status'
+  | 'profile_incomplete'
   // Feature codes are added by later packages; keep the type open for them.
   | (string & {})
 
@@ -111,6 +114,8 @@ export const API_ERROR_MESSAGES: Record<string, string> = {
   unsupported_file_type: 'That file type isn’t supported. Use a JPEG, PNG or WebP image.',
   file_content_mismatch: 'That file isn’t really the image type its name says. Save it again as JPEG, PNG or WebP.',
   invalid_signed_url: 'That image link has expired. Reload the page.',
+  invalid_profile_status: 'Your profile’s review status changed. The page has been refreshed.',
+  profile_incomplete: 'Fill in the missing details before submitting for review.',
 }
 
 /** User-facing copy for an error code. Unknown codes fall back to the generic message. */

@@ -56,7 +56,7 @@ Recommended order is S0 through S8. The frontend S0 packages need no API work an
 | FE-2.3 | Offers management | FE-1.4, API-2.4 | done |
 | FE-2.4 | Needs management | FE-2.3, API-2.5 | done |
 | FE-2.5 | Portfolio upload and reorder | FE-2.2, API-2.6 | todo |
-| FE-2.6 | Submit for review and status banner | FE-2.2, API-2.7 | todo |
+| FE-2.6 | Submit for review and status banner | FE-2.2, API-2.7 | done |
 | FE-2.7 | Admin review queue | FE-1.2, API-2.8 | done |
 | FE-2.8 | Public business profile from the API | FE-1.2, API-2.2 | done |
 
@@ -235,6 +235,11 @@ Scope:
 
 Done when:
 - Tests cover each status.
+
+Notes (built):
+- Publish, pause and resume on offers and needs were built by FE-2.3 and FE-2.4 (as noted in the scope); this package built only the submit action and the status banner.
+- "Submit for review" sits under the completeness meter on the profile page, for owners and administrators, once the profile is complete and in draft or changes requested. It submits without a confirmation step; the copy beside it says editing pauses during review.
+- The status banner is at the top of every shell page: in review (with the submission date), changes requested (with the reviewer's notes and an "Edit profile" button), approved (with any notes, until dismissed, remembered per business and decision in this browser) and suspended. Drafts get none.
 
 ### FE-2.7 Admin review queue
 

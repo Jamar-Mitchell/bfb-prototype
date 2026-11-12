@@ -234,7 +234,7 @@ describe('profile editor', () => {
   it('is read-only with an explanation while the profile is in review', async () => {
     await openProfile({ business: profileBusiness({ ...answeredProfile, logo_upload_id: 'saved-logo', profile_status: 'in_review' }) })
 
-    expect(screen.getByText(/Your profile is in review, so it can’t be changed/)).toBeInTheDocument()
+    expect(screen.getByText('Editing is paused while your profile is in review.')).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /Edit profile/ })).toBeNull()
     expect(screen.queryByRole('button', { name: /logo/i })).toBeNull()
     expect(screen.getByLabelText('Business name')).toBeDisabled()
@@ -267,7 +267,7 @@ describe('profile editor', () => {
     fireEvent.click(screen.getByRole('button', { name: /Save changes/ }))
 
     expect(await screen.findByText(/can’t be edited while it is in review/)).toBeInTheDocument()
-    await waitFor(() => expect(screen.getByText(/Your profile is in review, so it can’t be changed/)).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByText('Editing is paused while your profile is in review.')).toBeInTheDocument())
     expect(screen.queryByRole('button', { name: /Save changes/ })).toBeNull()
   })
 

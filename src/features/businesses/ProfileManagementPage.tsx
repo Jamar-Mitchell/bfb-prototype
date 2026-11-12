@@ -1,15 +1,16 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Check, CircleCheck, ImagePlus, Lock, Pencil, Plus, X } from 'lucide-react'
+import { Check, CircleCheck, ImagePlus, Lock, Pencil, Plus, Send, X } from 'lucide-react'
 import { useEffect, useId, useRef, useState, type ComponentPropsWithRef, type ReactNode } from 'react'
 import { useForm } from 'react-hook-form'
 
-import { ErrorState, LoadingState } from '../../components/feedback'
+import { ErrorState, LoadingState, showToast } from '../../components/feedback'
 import { toApiError } from '../../lib/api/errors'
 import { applyApiFieldErrors } from '../../lib/forms/applyApiFieldErrors'
 import { businessInitials } from './businessDisplay'
-import { listCategories, resetCategoriesCache, updateProfile, type Business, type Category } from './profileApi'
+import { listCategories, resetCategoriesCache, submitForReview, updateProfile, type Business, type Category } from './profileApi'
 import {
   canEditProfile,
+  canSubmitForReview,
   completenessLabel,
   getCountryOptions,
   MAX_CATEGORIES,
@@ -62,11 +63,14 @@ function ProfileHeading({ children }: { children?: ReactNode }) {
   )
 }
 
-/** Why the profile is read-only for this user right now, or `null` if they can edit it. */
+/**
+ * Why the profile is read-only for this user right now, or `null` if they can edit it. In review
+ * and suspended are explained by the shell's status banner; the notice only adds that editing is off.
+ */
 function lockReason(business: Business): string | null {
   if (!canEditProfile(business.role)) return 'Only owners and administrators can edit the business profile.'
-  if (business.profile_status === 'in_review') return 'Your profile is in review, so it can’t be changed until BFB has reviewed it.'
-  if (business.profile_status === 'suspended') return 'This business is suspended, so its profile can’t be changed. Contact BFB support for help.'
+  if (business.profile_status === 'in_review') return 'Editing is paused while your profile is in review.'
+  if (business.profile_status === 'suspended') return 'Editing is off while this business is suspended.'
   return null
 }
 
@@ -196,7 +200,9 @@ function ProfileEditor({ business }: { business: Business }) {
             </div>
           </form>
         </section>
-        <CompletenessMeter business={business} />
+        <CompletenessMeter business={business}>
+          <SubmitForReview business={business} unsavedChanges={editing} />
+        </CompletenessMeter>
       </div>
     </>
   )
@@ -373,14 +379,14 @@ function CategoryPicker({ selected, current, disabled, error, onChange }: Catego
 }
 
 function scoreLabel(score: number): string {
-  if (score >= 100) return 'Ready for review'
+  if (score >= 100) return 'Complete'
   if (score >= 75) return 'Good foundation'
   if (score >= 40) return 'Getting there'
   return 'Just started'
 }
 
 /** The API's completeness: the score, and each required item done or still missing. */
-function CompletenessMeter({ business }: { business: Business }) {
+function CompletenessMeter({ business, children }: { business: Business; children?: ReactNode }) {
   const { score, missing } = business.completeness
   const keys = [...COMPLETENESS_KEYS, ...missing.filter((key) => !COMPLETENESS_KEYS.includes(key))]
   return (
@@ -402,7 +408,52 @@ function CompletenessMeter({ business }: { business: Business }) {
           )
         })}
       </ul>
+      {children}
     </aside>
+  )
+}
+
+/**
+ * "Submit for review", for owners and administrators once every required item is filled in and
+ * the profile is a draft or has changes requested. The profile is locked until BFB decides.
+ */
+function SubmitForReview({ business, unsavedChanges }: { business: Business; unsavedChanges: boolean }) {
+  const [busy, setBusy] = useState(false)
+  const [problem, setProblem] = useState<string | null>(null)
+
+  if (!canEditProfile(business.role) || !canSubmitForReview(business.profile_status) || !business.completeness.complete) return null
+
+  const submit = async () => {
+    setBusy(true)
+    setProblem(null)
+    try {
+      setBusinessProfile(await submitForReview(business.id))
+      showToast('Your profile was submitted for review.')
+    } catch (error) {
+      const apiError = toApiError(error)
+      if (apiError.code === 'profile_incomplete') {
+        const missing = (apiError.details as { missing?: string[] } | undefined)?.missing ?? []
+        setProblem(missing.length ? `Still needed: ${missing.map(completenessLabel).join(', ')}.` : apiError.userMessage)
+      } else {
+        setProblem(apiError.userMessage)
+      }
+      // The saved profile differs from what this page showed: show the current one.
+      if (apiError.code === 'profile_incomplete' || apiError.code === 'invalid_profile_status') void loadBusinessProfile(business.id)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const again = business.profile_status === 'changes_requested'
+  return (
+    <div className="submit-review">
+      <p>{again ? 'Made the requested changes? Send your profile back to BFB.' : 'BFB reviews every business before it goes live. You can’t edit the profile while it’s in review.'}</p>
+      <button type="button" className="button button-primary submit-review-button" onClick={() => void submit()} disabled={busy || unsavedChanges}>
+        <Send size={15} aria-hidden="true" /> {busy ? 'Submitting…' : again ? 'Submit again' : 'Submit for review'}
+      </button>
+      {unsavedChanges ? <small>Save or cancel your changes first.</small> : null}
+      {problem ? <p className="profile-notice profile-notice-error submit-review-error" role="alert">{problem}</p> : null}
+    </div>
   )
 }
 
