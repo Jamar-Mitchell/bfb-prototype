@@ -12,6 +12,7 @@ import {
   Plus,
   Search,
   TrendingUp,
+  Users,
   X,
 } from 'lucide-react'
 
@@ -20,6 +21,7 @@ import { useAppNavigate } from '../../app/router/useAppNavigate'
 import { EmailVerificationBanner } from '../../features/auth/EmailVerificationBanner'
 import { LogoutButton } from '../../features/auth/LogoutButton'
 import { BusinessSwitcher } from '../../features/businesses/BusinessSwitcher'
+import { Toaster } from '../feedback'
 import { Logo } from '../ui/Logo'
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -35,6 +37,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const manageItems = [
     { id: paths.profile, label: 'Business profile', icon: Building2 },
     { id: paths.listings, label: 'Offers & needs', icon: BriefcaseBusiness },
+    { id: paths.team, label: 'Team', icon: Users },
   ]
 
   return (
@@ -75,6 +78,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </header>
         <main className="app-content"><EmailVerificationBanner />{children}</main>
       </div>
+      <Toaster />
       {mobileOpen && <button className="sidebar-scrim" onClick={() => setMobileOpen(false)} aria-label="Close menu" />}
     </div>
   )

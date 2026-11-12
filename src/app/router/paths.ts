@@ -7,12 +7,14 @@ export const paths = {
   forgotPassword: '/forgot-password',
   resetPassword: '/reset-password',
   createBusiness: '/create-business',
+  acceptInvite: '/accept-invite',
   dashboard: '/dashboard',
   marketplace: '/marketplace',
   exchanges: '/exchanges',
   messages: '/messages',
   profile: '/profile',
   listings: '/listings',
+  team: '/team',
   business: (id: number) => `/business/${id}`,
 } as const
 

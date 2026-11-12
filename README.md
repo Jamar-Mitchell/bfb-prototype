@@ -116,6 +116,12 @@ A user acts for one business at a time. The API keeps no current business (`bfb-
 - Switch from the business switcher in the sidebar account row. The shell remounts the page on a switch, so pages reload their data for the new business.
 - For business-scoped requests, use `useActiveBusinessId()` (or `useBusinessPath()`) from `src/lib/businesses/useActiveBusiness.ts`, for example `apiGet('/businesses/{business_id}/...', { path: { business_id } })`, or `businessPath(id, '/offers')` for a plain path.
 
+### Team
+
+`#/team` (sidebar, "Team") lists the active business's members and roles, with invitations, role changes, removal and "Leave business" (`src/features/team/`). Controls follow the caller's role (`teamPermissions.ts`): members see the list only, administrators manage everyone but owners and owner invitations, owners manage everyone. The API enforces the same rules. Remove, leave, revoke and changing your own role ask for confirmation in a dialog. Leaving drops the business from the switcher and opens the next one, or the create-business step if none is left.
+
+The emailed invitation link opens `#/accept-invite?token=…`. Logged in, it accepts once (even under StrictMode), switches to the business and opens the dashboard. Logged out, it offers login or registration and comes back to the link afterwards. Unverified users get a resend button and a retry; wrong address, expired and used links each have their own message.
+
 ## Product planning
 
 - [Development plan](./docs/DEVELOPMENT_PLAN.md)
