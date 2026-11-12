@@ -2,6 +2,7 @@ import { refreshAccessToken, SessionEndedError } from '../api/client'
 import { toApiError } from '../api/errors'
 import { apiGet, apiPost } from '../api/requests'
 import { useSessionStore } from '../../stores/session'
+import { applyMemberships, membershipToSessionBusiness } from '../businesses/activeBusiness'
 import { clearStoredSession, readStoredTokens, toSessionUser } from './tokens'
 
 let restoring: Promise<void> | null = null
@@ -33,6 +34,8 @@ export function restoreSession(): Promise<void> {
       if (!current.user) {
         const account = await apiGet('/account')
         current.setSession({ accessToken: useSessionStore.getState().accessToken ?? accessToken, user: toSessionUser(account.user) })
+        // The same response lists the memberships, so business pages need not ask again.
+        applyMemberships(account.memberships.map(membershipToSessionBusiness))
       }
     } catch (error) {
       if (error instanceof SessionEndedError) return // tokens cleared; status is anonymous

@@ -129,7 +129,7 @@ export interface paths {
         };
         /**
          * Get Account
-         * @description The logged-in user and their business memberships (empty until API-1.5).
+         * @description The logged-in user and the businesses they belong to, with their role in each.
          */
         get: operations["get_account_api_v1_account_get"];
         put?: never;
@@ -152,6 +152,50 @@ export interface paths {
          * @description Active service categories in display order. Public; no login required.
          */
         get: operations["list_categories_api_v1_categories_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Mine
+         * @description The businesses the caller belongs to, oldest first, with the caller's role.
+         */
+        get: operations["list_mine_api_v1_businesses_get"];
+        put?: never;
+        /**
+         * Create
+         * @description Create a business. The caller becomes its owner. Requires a verified email.
+         */
+        post: operations["create_api_v1_businesses_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{business_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get One
+         * @description One business the caller belongs to, with the caller's role.
+         */
+        get: operations["get_one_api_v1_businesses__business_id__get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -185,15 +229,54 @@ export interface components {
         AccountResponse: {
             user: components["schemas"]["UserResponse"];
             /** Memberships */
-            memberships?: {
-                [key: string]: unknown;
-            }[];
+            memberships: components["schemas"]["MembershipResponse"][];
         };
         /**
          * AccountStatus
          * @enum {string}
          */
         AccountStatus: "active" | "suspended" | "deactivated";
+        /** BusinessCreateRequest */
+        BusinessCreateRequest: {
+            /** Display Name */
+            display_name: string;
+            /** Legal Name */
+            legal_name?: string | null;
+        };
+        /**
+         * BusinessResponse
+         * @description A business as seen by one of its members, with that member's role.
+         */
+        BusinessResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Display Name */
+            display_name: string;
+            /** Legal Name */
+            legal_name: string | null;
+            profile_status: components["schemas"]["ProfileStatus"];
+            verification_status: components["schemas"]["VerificationStatus"];
+            role: components["schemas"]["BusinessRole"];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /**
+         * BusinessRole
+         * @description A member's role in one business, from most to least powerful.
+         * @enum {string}
+         */
+        BusinessRole: "owner" | "administrator" | "member";
         /**
          * CategoryResponse
          * @description A public service category.
@@ -247,10 +330,31 @@ export interface components {
             password: string;
         };
         /**
+         * MembershipResponse
+         * @description One business the user belongs to, for the business switcher.
+         */
+        MembershipResponse: {
+            /**
+             * Business Id
+             * Format: uuid
+             */
+            business_id: string;
+            /** Business Name */
+            business_name: string;
+            role: components["schemas"]["BusinessRole"];
+        };
+        /**
          * PlatformRole
          * @enum {string}
          */
         PlatformRole: "user" | "support" | "administrator";
+        /**
+         * ProfileStatus
+         * @description Where the business profile is in review. Changed only by server-side commands
+         *     (API-2.2, API-2.7, API-2.8).
+         * @enum {string}
+         */
+        ProfileStatus: "draft" | "in_review" | "changes_requested" | "approved" | "suspended";
         /**
          * RefreshRequest
          * @description The refresh token from the last login or refresh. Used by refresh and logout.
@@ -341,6 +445,12 @@ export interface components {
             /** Error Type */
             type: string;
         };
+        /**
+         * VerificationStatus
+         * @description Whether the business's identity has been verified (API-2.7, API-2.8).
+         * @enum {string}
+         */
+        VerificationStatus: "unverified" | "pending" | "verified" | "rejected";
     };
     responses: never;
     parameters: never;
@@ -596,6 +706,135 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CategoryResponse"][];
+                };
+            };
+        };
+    };
+    list_mine_api_v1_businesses_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BusinessResponse"][];
+                };
+            };
+            /** @description `unauthorized` or `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    create_api_v1_businesses_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BusinessCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BusinessResponse"];
+                };
+            };
+            /** @description `unauthorized` or `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `email_not_verified` */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `validation_error` */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    get_one_api_v1_businesses__business_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BusinessResponse"];
+                };
+            };
+            /** @description `unauthorized` or `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business, or the caller is not a member */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

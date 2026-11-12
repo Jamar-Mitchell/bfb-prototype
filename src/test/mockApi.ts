@@ -3,6 +3,7 @@ import { vi } from 'vitest'
 
 import { apiClient } from '../lib/api/client'
 import type { ApiUser, TokenResponse } from '../lib/auth/tokens'
+import type { ApiBusiness, ApiMembership } from '../lib/businesses/activeBusiness'
 
 export interface MockRequest {
   method: string
@@ -45,6 +46,26 @@ export function tokenBody(accessToken: string, refreshToken: string): TokenRespo
     expires_in: 900,
     user: apiUser(),
   }
+}
+
+/** A business as `GET /businesses/{id}` and `POST /businesses` return it. */
+export function apiBusiness(overrides: Partial<ApiBusiness> = {}): ApiBusiness {
+  return {
+    id: 'business-1',
+    display_name: 'Northstar Digital',
+    legal_name: null,
+    profile_status: 'draft',
+    verification_status: 'unverified',
+    role: 'owner',
+    created_at: '2026-11-01T00:00:00Z',
+    updated_at: '2026-11-01T00:00:00Z',
+    ...overrides,
+  }
+}
+
+/** A membership as `GET /account` lists it. */
+export function apiMembership(overrides: Partial<ApiMembership> = {}): ApiMembership {
+  return { business_id: 'business-1', business_name: 'Northstar Digital', role: 'owner', ...overrides }
 }
 
 /**

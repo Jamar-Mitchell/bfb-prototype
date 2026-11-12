@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from '../../App'
 import { ACCESS_TOKEN_KEY, clearStoredSession, REFRESH_TOKEN_KEY } from '../../lib/auth/tokens'
 import { useSessionStore } from '../../stores/session'
-import { apiErrorBody, apiUser, mockApi, tokenBody, type MockHandler } from '../../test/mockApi'
+import { apiErrorBody, apiMembership, apiUser, mockApi, tokenBody, type MockHandler } from '../../test/mockApi'
 
 function renderAt(path: string) {
   return render(
@@ -44,7 +44,9 @@ describe('login', () => {
     const { calls } = serve(({ url }) =>
       url === '/auth/login'
         ? { status: 200, data: tokenBody('access-1', 'refresh-1') }
-        : { status: 404, data: apiErrorBody('not_found') },
+        : url === '/account'
+          ? { status: 200, data: { user: apiUser(), memberships: [apiMembership()] } }
+          : { status: 404, data: apiErrorBody('not_found') },
     )
     renderAt('/login')
 

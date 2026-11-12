@@ -1,0 +1,98 @@
+/*
+ * Business switcher in the sidebar account row. The button keeps the prototype's account row
+ * look (avatar, name, small grey line); the menu opens upwards over the sidebar.
+ * Selectors start with `.account-row` to win over its `strong` and `span` rules in global.css.
+ */
+.account-row .business-switcher { position: relative; flex: 1; min-width: 0; }
+
+.account-row .business-switcher-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 4px;
+  margin: -4px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  text-align: left;
+  transition: background .2s ease;
+}
+
+.account-row .business-switcher-button:hover,
+.account-row .business-switcher-button[aria-expanded='true'] { background: #f5f8fb; }
+
+.account-row .account-avatar { flex-shrink: 0; color: white; font-size: var(--text-md); margin-top: 0; }
+
+.account-row .business-switcher-text,
+.account-row .business-menu-text { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+
+.account-row .business-switcher-chevron { flex-shrink: 0; color: var(--muted); }
+
+.account-row .business-menu {
+  position: absolute;
+  left: -4px;
+  right: -44px;
+  bottom: calc(100% + 10px);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  box-shadow: 0 18px 45px rgba(var(--navy-rgb), .12);
+  max-height: min(360px, 70vh);
+  overflow-y: auto;
+}
+
+.account-row .business-menu-label {
+  color: #98a5b4;
+  font-size: var(--text-sm);
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: 6px 8px 4px;
+  margin: 0;
+}
+
+.account-row .business-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 42px;
+  padding: 5px 8px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--slate);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  text-align: left;
+}
+
+.account-row .business-menu-item:hover,
+.account-row .business-menu-item:focus-visible { background: #f5f8fb; color: var(--navy); outline: none; }
+.account-row .business-menu-item[aria-checked='true'] { background: var(--pale-blue); }
+
+.account-row .business-menu-avatar { width: 28px; height: 28px; font-size: var(--text-sm); }
+.account-row .business-menu-check { flex-shrink: 0; color: var(--blue); }
+
+.account-row .business-menu-divider { height: 1px; background: var(--border); margin: 4px 2px; }
+
+.account-row .business-menu-create { color: var(--blue); font-size: var(--text-md); font-weight: 700; }
+.account-row .business-menu-create:hover,
+.account-row .business-menu-create:focus-visible { color: var(--blue-dark); }
+
+.account-row .business-menu-create-icon {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  margin: 0;
+  border-radius: var(--radius-md);
+  background: var(--pale-blue);
+  color: var(--blue);
+}
