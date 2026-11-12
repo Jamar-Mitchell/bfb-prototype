@@ -43,7 +43,7 @@ Recommended order is S0 through S8. The frontend S0 packages need no API work an
 |---|---|---|---|
 | FE-0.1 | Split App.tsx into routes and features | none | done |
 | FE-0.2 | Split styles into tokens and feature styles | FE-0.1 | todo |
-| FE-0.3 | API errors, forms and feedback components | FE-0.1 | in progress |
+| FE-0.3 | API errors, forms and feedback components | FE-0.1 | done |
 | FE-0.4 | Typed API contract from OpenAPI | none | todo |
 | FE-1.1 | Register and log in | FE-0.3, FE-0.4, API-1.2 | todo |
 | FE-1.2 | Session restore, protected routes, log out | FE-1.1 | todo |
