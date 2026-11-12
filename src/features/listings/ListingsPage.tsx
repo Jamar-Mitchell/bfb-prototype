@@ -1,10 +1,9 @@
-import { Plus, Search } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { useId, useState } from 'react'
 
 import { EmptyState, ErrorState, LoadingState, showToast } from '../../components/feedback'
 import { toApiError, type ApiError } from '../../lib/api/errors'
 import { useActiveBusiness } from '../../lib/businesses/useActiveBusiness'
-import { demoListings } from '../../mocks/listings'
 import { ConfirmDialog } from '../team/ConfirmDialog'
 import { ListingCard } from './ListingCard'
 import { ListingFormDialog } from './ListingFormDialog'
@@ -15,7 +14,7 @@ import { useCategories, useProfileStatus } from './useBusinessContext'
 import { useListings, type KindListings } from './useListings'
 import './ListingsPage.css'
 
-type FormState = { kind: ListingKind; listing: Listing | null }
+type FormState = { kind: ListingKind; listing: Listing | null; chooseKind?: boolean }
 type ArchiveState = { kind: ListingKind; listing: Listing }
 
 const SUCCESS: Record<ListingCommand, (title: string) => string> = {
@@ -96,14 +95,13 @@ export function ListingsPage() {
     listings.get(kind.id).listings?.some((listing) => listing.status === 'draft' || listing.status === 'paused'),
   )
   const approvalNote = canManage && waiting ? approvalBlocker(profileStatus) : null
-  const demoNeeds = demoListings.filter((item) => item.type === 'Need')
 
   return (
     <>
       <div className="page-heading">
         <div><span>OFFERS & NEEDS</span><h1>Manage what you trade.</h1><p>Keep your services and business needs current to improve match quality.</p></div>
         {canManage ? (
-          <button type="button" className="button button-primary" onClick={() => setForm({ kind: listingKinds[0], listing: null })}>
+          <button type="button" className="button button-primary" onClick={() => setForm({ kind: listingKinds[0], listing: null, chooseKind: true })}>
             <Plus size={16} aria-hidden="true" /> Add listing
           </button>
         ) : null}
@@ -119,7 +117,6 @@ export function ListingsPage() {
             </div>
           )
         })}
-        <div><Search size={19} aria-hidden="true" /><span><strong>{demoNeeds.length} active needs</strong><small>Support your business is seeking</small></span></div>
       </div>
       {approvalNote ? <p className="listing-notice listing-notice-info" id={approvalNoteId}>{approvalNote}</p> : null}
 
@@ -141,28 +138,16 @@ export function ListingsPage() {
         />
       ))}
 
-      {/* Needs stay on demo data until FE-2.4 wires them to the API. */}
-      <section className="manage-listing-section" aria-labelledby="demo-needs-title">
-        <div className="content-heading"><div><h2 id="demo-needs-title">What we need</h2><p>Opportunities for potential partners.</p></div></div>
-        <div className="manage-listing-grid">
-          {demoNeeds.map((listing) => (
-            <article key={listing.id}>
-              <div className="listing-type-icon need" aria-hidden="true"><Search size={19} /></div>
-              <div><span>NEED</span><h3>{listing.title}</h3><p>{listing.description}</p><strong>Estimated exchange value · {listing.value}</strong></div>
-            </article>
-          ))}
-        </div>
-      </section>
-
       {form ? (
         <ListingFormDialog
           kind={form.kind}
+          kindChoices={form.chooseKind ? listingKinds : undefined}
           businessId={businessId}
           categories={categories.categories}
           categoriesFailed={Boolean(categories.error)}
           onRetryCategories={categories.retry}
           listing={form.listing}
-          onSaved={(listing) => saved(form.kind, listing, form.listing === null)}
+          onSaved={(listing, kind) => saved(kind, listing, form.listing === null)}
           onStale={() => void listings.reload(form.kind)}
           onClose={() => setForm(null)}
         />

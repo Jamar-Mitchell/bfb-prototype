@@ -8,7 +8,7 @@ import { useToastStore } from '../../components/feedback'
 import { ACCESS_TOKEN_KEY, clearStoredSession, REFRESH_TOKEN_KEY } from '../../lib/auth/tokens'
 import { useSessionStore } from '../../stores/session'
 import { apiBusiness, apiErrorBody, apiMembership, apiUser, mockApi, tokenBody, type MockHandler, type MockReply } from '../../test/mockApi'
-import type { Category, Offer, ProfileStatus } from './listingsApi'
+import type { Category, Need, Offer, ProfileStatus } from './listingsApi'
 import { formatValueRange, majorToMinor, minorToMajor } from './money'
 
 type Role = 'owner' | 'administrator' | 'member'
@@ -25,6 +25,41 @@ function missingFor(offer: Omit<Offer, 'missing_for_publish'>): string[] {
     if (key === 'estimated_value') return offer.value_min_minor === null
     return !offer.delivery_format
   })
+}
+
+const NEED_REQUIRED = ['desired_outcome', 'deliverables', 'budget', 'location_preference'] as const
+
+function needMissing(item: Omit<Need, 'missing_for_publish'>): string[] {
+  return NEED_REQUIRED.filter((key) => {
+    if (key === 'desired_outcome') return !item.desired_outcome
+    if (key === 'deliverables') return item.deliverables.length === 0
+    if (key === 'budget') return item.value_min_minor === null
+    return !item.location_preference
+  })
+}
+
+function need(overrides: Partial<Need> & Pick<Need, 'id' | 'title'>): Need {
+  const base: Omit<Need, 'missing_for_publish'> = {
+    business_id: 'business-1',
+    category: { id: branding.id, slug: branding.slug, name: branding.name, requires_review: false },
+    desired_outcome: 'A brand that reads as trustworthy to lenders.',
+    deliverables: ['Logo'],
+    value_min_minor: 100000,
+    value_max_minor: 200000,
+    currency: 'USD',
+    desired_start_date: null,
+    desired_end_date: null,
+    location_preference: 'remote',
+    location_notes: null,
+    urgency: 'high',
+    status: 'draft',
+    published_at: null,
+    archived_at: null,
+    created_at: '2026-11-12T12:00:00Z',
+    updated_at: '2026-11-12T12:00:00Z',
+    ...overrides,
+  }
+  return { ...base, missing_for_publish: overrides.missing_for_publish ?? needMissing(base) }
 }
 
 function offer(overrides: Partial<Offer> & Pick<Offer, 'id' | 'title'>): Offer {
@@ -54,6 +89,7 @@ interface ServerOptions {
   role?: Role
   profileStatus?: ProfileStatus
   offers?: Offer[]
+  needs?: Need[]
   reply?: (request: { method: string; url: string; body: unknown }) => MockReply | undefined
 }
 
@@ -64,9 +100,13 @@ const TRANSITIONS: Record<string, { from: Offer['status'][]; to: Offer['status']
   archive: { from: ['draft', 'active', 'paused'], to: 'archived' },
 }
 
-/** A small in-memory BFB API for one business and its offers. */
-function apiServer({ role = 'owner', profileStatus = 'approved', offers = [], reply }: ServerOptions = {}): MockHandler {
-  let stored = [...offers]
+type AnyListing = Offer | Need
+
+/** A small in-memory BFB API for one business and its offers and needs. */
+function apiServer({ role = 'owner', profileStatus = 'approved', offers = [], needs = [], reply }: ServerOptions = {}): MockHandler {
+  const stores: Record<'offers' | 'needs', AnyListing[]> = { offers: [...offers], needs: [...needs] }
+  const make = (path: 'offers' | 'needs', fields: Partial<AnyListing> & Pick<AnyListing, 'id' | 'title'>): AnyListing =>
+    path === 'offers' ? offer(fields as Partial<Offer> & Pick<Offer, 'id' | 'title'>) : need(fields as Partial<Need> & Pick<Need, 'id' | 'title'>)
   const user = apiUser({ email_verified: true })
 
   return ({ method, url, body }) => {
@@ -77,36 +117,40 @@ function apiServer({ role = 'owner', profileStatus = 'approved', offers = [], re
     if (method === 'get' && url === '/account') return { status: 200, data: { user, memberships: [apiMembership({ role })] } }
     if (method === 'get' && url === '/businesses/business-1') return { status: 200, data: apiBusiness({ role, profile_status: profileStatus }) }
     if (method === 'get' && url === '/categories') return { status: 200, data: [branding, web] }
-    if (method === 'get' && url === '/businesses/business-1/offers') return { status: 200, data: stored }
-    if (method === 'post' && url === '/businesses/business-1/offers') {
+    const list = url.match(/^\/businesses\/business-1\/(offers|needs)$/)
+    if (list) {
+      const path = list[1] as 'offers' | 'needs'
+      if (method === 'get') return { status: 200, data: stores[path] }
       const request = body as Record<string, unknown>
-      const created = offer({
-        ...(request as Partial<Offer>),
-        id: `offer-${stored.length + 1}`,
+      const created = make(path, {
+        ...(request as Partial<AnyListing>),
+        id: `${path}-${stores[path].length + 1}`,
         title: String(request.title),
         category: { ...branding, id: String(request.category_id) },
         status: 'draft',
       })
-      stored = [created, ...stored]
+      stores[path] = [created, ...stores[path]]
       return { status: 201, data: created }
     }
-    const one = url.match(/^\/businesses\/business-1\/offers\/([^/]+)$/)
+    const one = url.match(/^\/businesses\/business-1\/(offers|needs)\/([^/]+)$/)
     if (method === 'patch' && one) {
-      const current = stored.find((item) => item.id === one[1])
+      const path = one[1] as 'offers' | 'needs'
+      const current = stores[path].find((item) => item.id === one[2])
       if (!current) return { status: 404, data: apiErrorBody('not_found') }
-      const { missing_for_publish: _ignored, ...rest } = { ...current, ...(body as Partial<Offer>) }
-      const updated = offer(rest)
-      stored = stored.map((item) => (item.id === updated.id ? updated : item))
+      const { missing_for_publish: _ignored, ...rest } = { ...current, ...(body as Partial<AnyListing>) }
+      const updated = make(path, rest)
+      stores[path] = stores[path].map((item) => (item.id === updated.id ? updated : item))
       return { status: 200, data: updated }
     }
-    const command = url.match(/^\/businesses\/business-1\/offers\/([^/]+)\/(publish|pause|resume|archive)$/)
+    const command = url.match(/^\/businesses\/business-1\/(offers|needs)\/([^/]+)\/(publish|pause|resume|archive)$/)
     if (method === 'post' && command) {
-      const current = stored.find((item) => item.id === command[1])
+      const path = command[1] as 'offers' | 'needs'
+      const current = stores[path].find((item) => item.id === command[2])
       if (!current) return { status: 404, data: apiErrorBody('not_found') }
-      const transition = TRANSITIONS[command[2]]
+      const transition = TRANSITIONS[command[3]]
       if (!transition.from.includes(current.status)) return { status: 409, data: apiErrorBody('invalid_listing_status', { status: current.status }) }
       const updated = { ...current, status: transition.to }
-      stored = stored.map((item) => (item.id === updated.id ? updated : item))
+      stores[path] = stores[path].map((item) => (item.id === updated.id ? updated : item))
       return { status: 200, data: updated }
     }
     return { status: 404, data: apiErrorBody('not_found') }
@@ -127,9 +171,16 @@ async function openListings(options: ServerOptions = {}) {
     </StrictMode>,
   )
   await screen.findByRole('heading', { level: 1, name: 'Manage what you trade.' })
-  const section = screen.getByRole('region', { name: 'What we offer' })
-  await waitFor(() => expect(within(section).queryByText('Loading your offers…')).not.toBeInTheDocument())
-  return section
+  const offers = screen.getByRole('region', { name: 'What we offer' })
+  const needs = screen.getByRole('region', { name: 'What we need' })
+  await waitFor(() => expect(within(offers).queryByText('Loading your offers…')).not.toBeInTheDocument())
+  await waitFor(() => expect(within(needs).queryByText('Loading your needs…')).not.toBeInTheDocument())
+  return offers
+}
+
+async function openNeeds(options: ServerOptions = {}) {
+  await openListings(options)
+  return screen.getByRole('region', { name: 'What we need' })
 }
 
 function card(section: HTMLElement, title: string) {
@@ -140,10 +191,11 @@ function posted(method: string, url: string) {
   return api!.calls(method, url).map(([config]) => (config.data ? JSON.parse(config.data as string) : undefined))
 }
 
-async function openCreateForm() {
+async function openCreateForm(type: 'offer' | 'need' = 'offer') {
   fireEvent.click(screen.getByRole('button', { name: 'Add listing' }))
-  const dialog = await screen.findByRole('dialog', { name: 'Add an offer' })
+  const dialog = await screen.findByRole('dialog', { name: 'Add an offer or need' })
   await within(dialog).findByRole('option', { name: 'Branding & design' })
+  fireEvent.change(within(dialog).getByLabelText('Listing type'), { target: { value: type } })
   return dialog
 }
 
@@ -205,6 +257,7 @@ describe('offers', () => {
   it('creates a draft offer, sending money in minor units', async () => {
     const section = await openListings()
     expect(within(section).getByText('No offers yet')).toBeInTheDocument()
+    expect(within(screen.getByRole('region', { name: 'What we need' })).getByText('No needs yet')).toBeInTheDocument()
     const dialog = await openCreateForm()
 
     fireEvent.change(within(dialog).getByLabelText(/^Title/), { target: { value: 'Brand identity sprint' } })
@@ -272,7 +325,7 @@ describe('offers', () => {
 
     expect(await within(dialog).findByText('The maximum needs a minimum and can’t be below it.')).toBeInTheDocument()
     expect(within(dialog).getByLabelText('Estimated value to (USD)')).toHaveAttribute('aria-invalid', 'true')
-    expect(screen.getByRole('dialog', { name: 'Add an offer' })).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: 'Add an offer or need' })).toBeInTheDocument()
   })
 
   it('edits an offer, showing money in dollars', async () => {
@@ -374,5 +427,139 @@ describe('offers', () => {
     expect(within(section).queryByRole('button', { name: /^(Edit|Archive) / })).not.toBeInTheDocument()
     expect(within(section).queryByRole('button', { name: /^(Publish|Pause)$/ })).not.toBeInTheDocument()
     expect(within(card(section, 'Web build')).getByText('Active')).toBeInTheDocument()
+  })
+})
+
+describe('needs', () => {
+  it('creates a draft need with a budget, timeline and location preference', async () => {
+    const section = await openNeeds()
+    const dialog = await openCreateForm('need')
+
+    fireEvent.change(within(dialog).getByLabelText(/^Title/), { target: { value: 'Rebrand before our round' } })
+    fireEvent.change(within(dialog).getByLabelText(/^Category/), { target: { value: 'cat-2' } })
+    fireEvent.change(within(dialog).getByLabelText('Desired outcome'), { target: { value: 'Look trustworthy to lenders.' } })
+    const deliverable = within(dialog).getByLabelText('Deliverables')
+    fireEvent.change(deliverable, { target: { value: 'Pitch deck template' } })
+    fireEvent.keyDown(deliverable, { key: 'Enter' })
+    fireEvent.change(within(dialog).getByLabelText('Budget from (USD)'), { target: { value: '1000' } })
+    fireEvent.change(within(dialog).getByLabelText('Budget to (USD)'), { target: { value: '2,000' } })
+    fireEvent.change(within(dialog).getByLabelText('Desired start date'), { target: { value: '2027-01-04' } })
+    fireEvent.change(within(dialog).getByLabelText('Desired end date'), { target: { value: '2027-02-26' } })
+    fireEvent.change(within(dialog).getByLabelText('Location preference'), { target: { value: 'either' } })
+    fireEvent.change(within(dialog).getByLabelText('Urgency'), { target: { value: 'high' } })
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Create need' }))
+
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+    expect(posted('post', '/businesses/business-1/needs')).toEqual([
+      {
+        category_id: 'cat-2',
+        title: 'Rebrand before our round',
+        deliverables: ['Pitch deck template'],
+        value_min_minor: 100000,
+        value_max_minor: 200000,
+        currency: 'USD',
+        desired_outcome: 'Look trustworthy to lenders.',
+        desired_start_date: '2027-01-04',
+        desired_end_date: '2027-02-26',
+        location_preference: 'either',
+        location_notes: null,
+        urgency: 'high',
+      },
+    ])
+    expect(api!.calls('post', '/businesses/business-1/offers')).toHaveLength(0)
+    const created = card(section, 'Rebrand before our round')
+    expect(within(created).getByText('Draft')).toBeInTheDocument()
+    expect(within(created).getByText('Budget · $1,000–$2,000')).toBeInTheDocument()
+    expect(screen.getByText('Draft need “Rebrand before our round” created.')).toBeInTheDocument()
+  })
+
+  it('checks the timeline before sending, and shows the API’s invalid_range on the end date', async () => {
+    await openNeeds({
+      reply: ({ method, url }) =>
+        method === 'post' && url === '/businesses/business-1/needs'
+          ? { status: 422, data: apiErrorBody('invalid_range', { fields: ['desired_start_date', 'desired_end_date'] }) }
+          : undefined,
+    })
+    const dialog = await openCreateForm('need')
+    fireEvent.change(within(dialog).getByLabelText(/^Title/), { target: { value: 'Rebrand' } })
+    fireEvent.change(within(dialog).getByLabelText(/^Category/), { target: { value: 'cat-1' } })
+    fireEvent.change(within(dialog).getByLabelText('Desired start date'), { target: { value: '2027-03-01' } })
+    fireEvent.change(within(dialog).getByLabelText('Desired end date'), { target: { value: '2027-02-01' } })
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Create need' }))
+
+    expect(await within(dialog).findByText('The end date can’t be before the start date.')).toBeInTheDocument()
+    expect(api!.calls('post', '/businesses/business-1/needs')).toHaveLength(0)
+
+    fireEvent.change(within(dialog).getByLabelText('Desired end date'), { target: { value: '2027-04-01' } })
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Create need' }))
+
+    await waitFor(() => expect(api!.calls('post', '/businesses/business-1/needs')).toHaveLength(1))
+    expect(await within(dialog).findByText('The end date can’t be before the start date.')).toBeInTheDocument()
+    expect(within(dialog).getByLabelText('Desired end date')).toHaveAttribute('aria-invalid', 'true')
+  })
+
+  it('edits a need', async () => {
+    const section = await openNeeds({ needs: [need({ id: 'n1', title: 'Rebrand', desired_start_date: '2027-01-04' })] })
+
+    fireEvent.click(within(section).getByRole('button', { name: 'Edit Rebrand' }))
+    const dialog = await screen.findByRole('dialog', { name: 'Edit need' })
+    expect(within(dialog).queryByLabelText('Listing type')).not.toBeInTheDocument()
+    expect(within(dialog).getByLabelText('Desired start date')).toHaveValue('2027-01-04')
+    expect(within(dialog).getByLabelText('Budget from (USD)')).toHaveValue('1000')
+    fireEvent.change(within(dialog).getByLabelText('Urgency'), { target: { value: 'low' } })
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Save changes' }))
+
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+    expect(posted('patch', '/businesses/business-1/needs/n1')[0]).toMatchObject({ urgency: 'low', desired_start_date: '2027-01-04', value_min_minor: 100000 })
+  })
+
+  it('pauses an active need', async () => {
+    const section = await openNeeds({ needs: [need({ id: 'n1', title: 'Rebrand', status: 'active' })] })
+
+    fireEvent.click(within(card(section, 'Rebrand')).getByRole('button', { name: 'Pause' }))
+
+    expect(await within(card(section, 'Rebrand')).findByText('Paused')).toBeInTheDocument()
+    expect(api!.calls('post', '/businesses/business-1/needs/n1/pause')).toHaveLength(1)
+  })
+
+  it('disables publish while the business is not approved, and says why', async () => {
+    const section = await openNeeds({ profileStatus: 'changes_requested', needs: [need({ id: 'n1', title: 'Rebrand' })] })
+
+    const note = await screen.findByText('A reviewer asked for changes to your business profile. You can publish once it’s approved.')
+    const publish = within(card(section, 'Rebrand')).getByRole('button', { name: 'Publish' })
+    expect(publish).toBeDisabled()
+    expect(publish.getAttribute('aria-describedby')).toContain(note.id)
+  })
+
+  it('lists what an incomplete need is missing', async () => {
+    const section = await openNeeds({ needs: [need({ id: 'n1', title: 'Rebrand', value_min_minor: null, value_max_minor: null, location_preference: null })] })
+
+    expect(within(card(section, 'Rebrand')).getByText('To publish, add a budget and a location preference.')).toBeInTheDocument()
+    expect(within(card(section, 'Rebrand')).getByText('Budget not set')).toBeInTheDocument()
+    expect(within(card(section, 'Rebrand')).getByRole('button', { name: 'Publish' })).toBeDisabled()
+  })
+
+  it('publishes a complete need once the business is approved', async () => {
+    const section = await openNeeds({ needs: [need({ id: 'n1', title: 'Rebrand' })] })
+
+    const publish = within(card(section, 'Rebrand')).getByRole('button', { name: 'Publish' })
+    await waitFor(() => expect(publish).toBeEnabled())
+    fireEvent.click(publish)
+
+    expect(await within(card(section, 'Rebrand')).findByText('Active')).toBeInTheDocument()
+    expect(api!.calls('post', '/businesses/business-1/needs/n1/publish')).toHaveLength(1)
+    expect(screen.getByText('1 active need')).toBeInTheDocument()
+  })
+
+  it('asks before archiving a need', async () => {
+    const section = await openNeeds({ needs: [need({ id: 'n1', title: 'Rebrand' })] })
+
+    fireEvent.click(within(section).getByRole('button', { name: 'Archive Rebrand' }))
+    const dialog = await screen.findByRole('alertdialog', { name: 'Archive “Rebrand”?' })
+    expect(dialog).toHaveTextContent('Archiving is final. The need comes off BFB')
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Archive need' }))
+
+    expect(await within(card(section, 'Rebrand')).findByText('Archived')).toBeInTheDocument()
+    expect(api!.calls('post', '/businesses/business-1/needs/n1/archive')).toHaveLength(1)
   })
 })

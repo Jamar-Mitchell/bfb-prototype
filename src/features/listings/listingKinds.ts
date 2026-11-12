@@ -1,17 +1,22 @@
-import { BriefcaseBusiness, type LucideIcon } from 'lucide-react'
+import { BriefcaseBusiness, Search, type LucideIcon } from 'lucide-react'
 
-import { offerCreateBody, offerToForm, offerUpdateBody, type ListingFormValues } from './listingForm'
+import { needCreateBody, needToForm, needUpdateBody, offerCreateBody, offerToForm, offerUpdateBody, type ListingFormValues } from './listingForm'
 import {
+  createNeed,
   createOffer,
+  listNeeds,
   listOffers,
+  runNeedCommand,
   runOfferCommand,
+  updateNeed,
   updateOffer,
   type Listing,
   type ListingCommand,
+  type Need,
   type Offer,
 } from './listingsApi'
 
-export type ListingKindId = 'offer'
+export type ListingKindId = 'offer' | 'need'
 
 /**
  * Everything that differs between offers and needs: copy, the API routes and how the shared
@@ -72,5 +77,31 @@ export const offerKind: ListingKind = {
   toForm: (listing) => offerToForm(listing as Offer),
 }
 
-/** The kinds wired to the API, in page order. */
-export const listingKinds: ListingKind[] = [offerKind]
+export const needKind: ListingKind = {
+  id: 'need',
+  noun: 'need',
+  title: 'Need',
+  plural: 'needs',
+  addLabel: 'Add a need',
+  sectionTitle: 'What we need',
+  sectionDescription: 'Opportunities for potential partners.',
+  summaryLine: 'Support your business is seeking',
+  valueLabel: 'Budget',
+  valueFieldLabel: 'Budget',
+  icon: Search,
+  summaryOf: (listing) => (listing as Need).desired_outcome,
+  missingPhrases: {
+    desired_outcome: 'a desired outcome',
+    deliverables: 'at least one deliverable',
+    budget: 'a budget',
+    location_preference: 'a location preference',
+  },
+  list: listNeeds,
+  create: (businessId, values) => createNeed(businessId, needCreateBody(values)),
+  update: (businessId, listingId, values) => updateNeed(businessId, listingId, needUpdateBody(values)),
+  command: runNeedCommand,
+  toForm: (listing) => needToForm(listing as Need),
+}
+
+/** The listing kinds, in page order. */
+export const listingKinds: ListingKind[] = [offerKind, needKind]
