@@ -47,6 +47,8 @@ export type ApiErrorCode =
   | 'business_not_approved'
   | 'listing_incomplete'
   | 'invalid_range'
+  // Business profile (API-2.2)
+  | 'profile_not_editable'
   | 'invalid_category'
   // Feature codes are added by later packages; keep the type open for them.
   | (string & {})
@@ -96,6 +98,7 @@ export const API_ERROR_MESSAGES: Record<string, string> = {
   listing_incomplete: 'Add the missing details before this listing can go live.',
   invalid_range: 'The end of a range can’t come before its start.',
   invalid_category: 'That category is no longer available. Choose another.',
+  profile_not_editable: 'Your profile can’t be edited while it is in review or suspended.',
 }
 
 /** User-facing copy for an error code. Unknown codes fall back to the generic message. */

@@ -122,6 +122,12 @@ A user acts for one business at a time. The API keeps no current business (`bfb-
 
 The emailed invitation link opens `#/accept-invite?token=…`. Logged in, it accepts once (even under StrictMode), switches to the business and opens the dashboard. Logged out, it offers login or registration and comes back to the link afterwards. Unverified users get a resend button and a retry; wrong address, expired and used links each have their own message.
 
+### Business profile
+
+`useBusinessProfile()` (`src/features/businesses/useBusinessProfile.ts`) loads the active business's full record from `GET /businesses/{id}` (profile fields, `completeness`, `profile_status`, `latest_review`) into a store shared by the pages and the shell, so a save shows everywhere at once. Pass `{ fresh: true }` on pages that should refetch when opened. After a profile request, put the returned business in the store with `setBusinessProfile()`. Labels for the profile's enums and completeness keys are in `profileFields.ts`.
+
+Onboarding (`#/onboarding`, `src/features/onboarding/`) is the profile setup for the active business. A new business opens it right after it is created. Each of its four steps saves its answers with `PATCH /businesses/{id}/profile` when the user continues, so leaving midway and coming back resumes at the first step with a missing item (`completeness.missing`). Categories come from `GET /categories`. The logo is uploaded on the profile page. The dashboard shows the business's name, categories and profile status from the API; its matches, exchanges and activity are still demo data.
+
 ### Public business profile
 
 `#/b/<business id>` (`src/features/businesses/PublicBusinessProfile.tsx`) is the public profile of a real business, from `GET /public/businesses/{id}`. It needs no login, so it sits outside the app shell with the onboarding header (log in / join, or "Go to dashboard" when logged in). The API answers `404` for anything that is not approved (draft, in review, changes requested, suspended, unknown), and the page shows one not-found state for all of them; an ID that is not a UUID shows it without asking the API.

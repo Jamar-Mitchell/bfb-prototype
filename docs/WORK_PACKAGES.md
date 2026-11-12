@@ -51,7 +51,7 @@ Recommended order is S0 through S8. The frontend S0 packages need no API work an
 | FE-1.4 | Create and switch businesses | FE-1.2, API-1.5 | done |
 | FE-1.5 | Team members page | FE-1.4, API-1.7 | done |
 | FE-1.6 | Invite code at registration | FE-1.1, API-1.8 | done |
-| FE-2.1 | Onboarding saved to the API | FE-1.4, API-2.2 | todo |
+| FE-2.1 | Onboarding saved to the API | FE-1.4, API-2.2 | done |
 | FE-2.2 | Profile editor with logo and cover upload | FE-2.1, API-2.3 | todo |
 | FE-2.3 | Offers management | FE-1.4, API-2.4 | done |
 | FE-2.4 | Needs management | FE-2.3, API-2.5 | done |
@@ -178,6 +178,12 @@ Scope:
 
 Done when:
 - Leaving onboarding midway and coming back resumes at the right step with saved answers.
+
+Notes (built):
+- Onboarding moved behind login and an active business; a new business opens it after creation.
+- Four steps, each saved to the profile: basics (business name, legal name, business stage), what you provide (categories, industry), about you (description, team size), where you work (city, region, country, service area). The summary lists what is still missing (usually the logo, uploaded on the profile page in FE-2.2).
+- Prototype questions mapped: business name to `display_name`; "Which best describes your business?" to `business_stage` (Startup and Growing business kept; "Independent studio" and "Local business" have no field, and service area now covers "local"); "What does your business provide?" to `category_ids` from `GET /categories` (the prototype's free list, including "Home services", is gone).
+- Prototype questions dropped, no profile field: "What services are you looking for?" (needs are listings, FE-2.4) and "What would make BFB valuable to you?" (the goal).
 
 ### FE-2.2 Profile editor with logo and cover upload
 

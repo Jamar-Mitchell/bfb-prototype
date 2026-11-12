@@ -42,7 +42,7 @@ function LandingRoute() {
 
 function OnboardingRoute() {
   const go = useAppNavigate()
-  return <Onboarding complete={() => go(paths.dashboard)} exit={() => go(paths.landing)} />
+  return <Onboarding complete={() => go(paths.dashboard)} exit={() => go(paths.dashboard)} openProfile={() => go(paths.profile)} />
 }
 
 /** App shell for business pages. Keyed by the active business, so a switch remounts the page and it reloads its data. */
@@ -70,7 +70,14 @@ export function AdminLayout() {
 
 function DashboardRoute() {
   const go = useAppNavigate()
-  return <Dashboard goMarketplace={() => go(paths.marketplace)} openBusiness={(id) => go(paths.business(id))} />
+  return (
+    <Dashboard
+      goMarketplace={() => go(paths.marketplace)}
+      openBusiness={(id) => go(paths.business(id))}
+      openOnboarding={() => go(paths.onboarding)}
+      openProfile={() => go(paths.profile)}
+    />
+  )
 }
 
 function MarketplaceRoute() {
@@ -91,7 +98,6 @@ function BusinessRoute() {
 
 export const routes: RouteObject[] = [
   { path: paths.landing, element: <LandingRoute /> },
-  { path: paths.onboarding, element: <OnboardingRoute /> },
   { path: paths.login, element: <LoginPage /> },
   { path: paths.register, element: <RegisterPage /> },
   // Emailed links and password recovery work logged in or not.
@@ -124,6 +130,8 @@ export const routes: RouteObject[] = [
         // ...and a business to act for.
         element: <RequireBusiness />,
         children: [
+          // Profile setup saves to the active business; full screen, outside the shell.
+          { path: paths.onboarding, element: <OnboardingRoute /> },
           {
             element: <ShellLayout />,
             children: [

@@ -70,7 +70,11 @@ export function apiBusiness(overrides: Partial<ApiBusiness> = {}): ApiBusiness {
     categories: [],
     logo_upload_id: null,
     cover_upload_id: null,
-    completeness: { score: 0, complete: false, missing: [] },
+    completeness: {
+      score: 0,
+      complete: false,
+      missing: ['legal_name', 'description', 'industry', 'business_stage', 'team_size', 'location', 'service_area', 'categories', 'logo'],
+    },
     submitted_for_review_at: null,
     latest_review: null,
     created_at: '2026-11-01T00:00:00Z',

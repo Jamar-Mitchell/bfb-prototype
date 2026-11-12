@@ -81,7 +81,8 @@ function CreateBusinessForm({ firstBusiness }: { firstBusiness: boolean }) {
         legal_name: values.legal_name || null,
       })
       addBusiness(businessToSessionBusiness(business))
-      navigate(paths.dashboard, { replace: true })
+      // A new business starts with an empty profile: set it up next.
+      navigate(paths.onboarding, { replace: true })
       window.scrollTo(0, 0)
     } catch (submitError) {
       const apiError = toApiError(submitError)
@@ -110,7 +111,7 @@ function CreateBusinessForm({ firstBusiness }: { firstBusiness: boolean }) {
       title={firstBusiness ? 'Create your business' : 'Create another business'}
       intro={
         firstBusiness
-          ? 'Add the business you trade for on BFB. You can fill in its full profile next.'
+          ? 'Add the business you trade for on BFB. You’ll set up its profile next.'
           : 'Add another business you trade for. You can switch between your businesses at any time.'
       }
       headerAction={headerAction}
