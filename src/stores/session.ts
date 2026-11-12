@@ -21,6 +21,8 @@ type SessionState = {
     activeBusiness?: SessionBusiness | null
     user: SessionUser
   }) => void
+  /** Replace the access token and keep the rest of the session. */
+  setAccessToken: (accessToken: string) => void
   setActiveBusiness: (business: SessionBusiness | null) => void
   clearSession: () => void
 }
@@ -39,6 +41,7 @@ export const useSessionStore = create<SessionState>((set) => ({
       activeBusiness,
       user,
     }),
+  setAccessToken: (accessToken) => set({ accessToken }),
   setActiveBusiness: (activeBusiness) => set({ activeBusiness }),
   clearSession: () => set(emptySession),
 }))

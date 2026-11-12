@@ -1,6 +1,8 @@
 export const paths = {
   landing: '/',
   onboarding: '/onboarding',
+  login: '/login',
+  register: '/register',
   dashboard: '/dashboard',
   marketplace: '/marketplace',
   exchanges: '/exchanges',

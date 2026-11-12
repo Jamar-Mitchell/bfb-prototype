@@ -1,0 +1,120 @@
+/* Login and registration. Built from the onboarding page: same header, background, kicker, type and buttons. */
+.auth-page {
+  min-height: 100vh;
+  background: var(--bg);
+  display: grid;
+  grid-template-rows: 76px 1fr;
+}
+
+/* Same as the onboarding header. */
+.auth-header {
+  background: white;
+  border-bottom: 1px solid var(--border);
+  padding: 0 clamp(20px, 5vw, 70px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.auth-header .text-button { color: var(--muted); font-size: var(--text-base); }
+
+.auth-main {
+  width: min(460px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 55px 0 45px;
+  display: grid;
+  align-items: center;
+}
+
+.auth-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: clamp(26px, 5vw, 38px);
+  box-shadow: 0 18px 45px rgba(var(--navy-rgb), .06);
+  animation: auth-in .32s ease;
+}
+
+/* Same as the onboarding kicker. */
+.auth-kicker { color: var(--blue); font-size: var(--text-sm); font-weight: 800; letter-spacing: .13em; }
+
+.auth-card h1 {
+  font-size: clamp(28px, 3.4vw, 34px);
+  line-height: 1.15;
+  letter-spacing: -.04em;
+  margin: 12px 0 10px;
+}
+
+.auth-intro {
+  color: var(--muted);
+  font-size: var(--text-xl);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.auth-form { display: flex; flex-direction: column; }
+
+.auth-submit { width: 100%; margin-top: 6px; }
+.auth-submit:disabled { opacity: .6; cursor: progress; transform: none; }
+
+.auth-switch {
+  margin: 22px 0 0;
+  text-align: center;
+  color: var(--muted);
+  font-size: var(--text-lg);
+}
+
+.auth-switch a { color: var(--blue); font-weight: 700; }
+.auth-switch a:hover { color: var(--blue-dark); }
+
+.auth-message {
+  margin: 0 0 20px;
+  padding: 12px 14px;
+  border-radius: var(--radius-lg);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+/* Error colours match the FE-0.3 form fields and error state. */
+.auth-message-error { background: #fdeeee; color: #c63b3b; border: 1px solid #f1d4d4; }
+.auth-message-success { background: var(--green-pale); color: var(--green); border: 1px solid #c9eedd; }
+.auth-message-info { background: var(--pale-blue); color: var(--navy); border: 1px solid #cfe4fa; }
+
+.auth-terms {
+  /* Same error colour as the FE-0.3 fields, whose variable is scoped to `.form-field`. */
+  --field-error: #c63b3b;
+  margin: 2px 0 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.auth-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: var(--navy);
+  font-size: var(--text-lg);
+  line-height: 1.45;
+  cursor: pointer;
+}
+
+.auth-checkbox input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  flex-shrink: 0;
+  accent-color: var(--blue);
+}
+
+@keyframes auth-in { from { opacity: 0; transform: translateY(8px); } }
+
+@media (max-width: 620px) {
+  .auth-page { grid-template-rows: 68px 1fr; }
+  .auth-header .brand-copy { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-card { animation: none; }
+}

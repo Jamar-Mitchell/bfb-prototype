@@ -1,6 +1,8 @@
 import { Outlet, useLocation, useRoutes, type RouteObject } from 'react-router-dom'
 
 import { AppShell } from '../../components/layout/AppShell'
+import { LoginPage } from '../../features/auth/LoginPage'
+import { RegisterPage } from '../../features/auth/RegisterPage'
 import { BusinessProfile } from '../../features/businesses/BusinessProfile'
 import { ProfileManagementPage } from '../../features/businesses/ProfileManagementPage'
 import { Dashboard } from '../../features/dashboard/Dashboard'
@@ -16,7 +18,13 @@ import { useAppNavigate } from './useAppNavigate'
 
 function LandingRoute() {
   const go = useAppNavigate()
-  return <LandingPage enterApp={() => go(paths.onboarding)} signIn={() => go(paths.dashboard)} />
+  return (
+    <LandingPage
+      enterApp={() => go(paths.onboarding)}
+      getStarted={() => go(paths.register)}
+      signIn={() => go(paths.login)}
+    />
+  )
 }
 
 function OnboardingRoute() {
@@ -53,6 +61,8 @@ function BusinessRoute() {
 export const routes: RouteObject[] = [
   { path: paths.landing, element: <LandingRoute /> },
   { path: paths.onboarding, element: <OnboardingRoute /> },
+  { path: paths.login, element: <LoginPage /> },
+  { path: paths.register, element: <RegisterPage /> },
   {
     element: <ShellLayout />,
     children: [

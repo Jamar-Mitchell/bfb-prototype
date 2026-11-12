@@ -16,7 +16,15 @@ import { Logo } from '../../components/ui/Logo'
 import { businesses } from '../../mocks/businesses'
 import './LandingPage.css'
 
-export function LandingPage({ enterApp, signIn }: { enterApp: () => void; signIn: () => void }) {
+interface LandingPageProps {
+  /** Opens the prototype experience (onboarding). */
+  enterApp: () => void
+  /** Header "Get started": create an account. */
+  getStarted: () => void
+  signIn: () => void
+}
+
+export function LandingPage({ enterApp, getStarted, signIn }: LandingPageProps) {
   return (
     <div className="landing-page">
       <div className="announcement-bar">
@@ -32,7 +40,7 @@ export function LandingPage({ enterApp, signIn }: { enterApp: () => void; signIn
         </nav>
         <div className="header-actions">
           <button className="text-button" onClick={signIn}>Sign in</button>
-          <button className="button button-primary button-small" onClick={enterApp}>
+          <button className="button button-primary button-small" onClick={getStarted}>
             Get started <ArrowUpRight size={16} />
           </button>
         </div>
