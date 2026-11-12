@@ -1,10 +1,10 @@
-import { useMemo } from 'react'
 import {
   ArrowRight,
   ArrowUpRight,
   Bookmark,
   CalendarDays,
   CircleCheck,
+  CircleDashed,
   Clock3,
   Handshake,
   Plus,
@@ -13,36 +13,47 @@ import {
 } from 'lucide-react'
 
 import { Avatar } from '../../components/ui/Avatar'
+import { useActiveBusiness } from '../../lib/businesses/useActiveBusiness'
 import { businesses } from '../../mocks/businesses'
+import { useSessionStore } from '../../stores/session'
+import type { Business } from '../businesses/profileApi'
+import { canEditProfile } from '../businesses/profileFields'
+import { useBusinessProfile } from '../businesses/useBusinessProfile'
+import { resumeStep, SUMMARY_STEP } from '../onboarding/onboardingSteps'
 import './Dashboard.css'
 
-export function Dashboard({ goMarketplace, openBusiness }: { goMarketplace: () => void; openBusiness: (id: number) => void }) {
-  const onboarding = useMemo(() => {
-    try {
-      return JSON.parse(localStorage.getItem('bfb-onboarding') ?? '{}') as {
-        businessName?: string
-        needs?: string[]
-        offers?: string[]
-      }
-    } catch {
-      return {}
-    }
-  }, [])
-  const primaryNeed = onboarding.needs?.[0] ?? 'marketing support'
-  const primaryOffer = onboarding.offers?.[0] ?? 'website design'
+const dateFormat = new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
+
+interface DashboardProps {
+  goMarketplace: () => void
+  openBusiness: (id: number) => void
+  openOnboarding: () => void
+  openProfile: () => void
+}
+
+/**
+ * The user's own business (name, categories, profile status) comes from the API. Matches,
+ * exchanges, stats and activity stay demo content until the marketplace phases.
+ */
+export function Dashboard({ goMarketplace, openBusiness, openOnboarding, openProfile }: DashboardProps) {
+  const { business } = useBusinessProfile({ fresh: true })
+  const firstName = useSessionStore((state) => state.user?.displayName.trim().split(/\s+/)[0]) || 'there'
+  // Needs are listings now (FE-2.4), not profile answers: the need stays demo copy.
+  const primaryNeed = 'marketing support'
+  const primaryOffer = business?.categories[0]?.name ?? 'website design'
 
   return (
     <>
       <section className="dashboard-hero">
         <div className="dashboard-hero-copy">
-          <span className="dashboard-date">MONDAY, NOVEMBER 2</span>
-          <h1>Good evening, Alex.<br /><span>Your next growth move is here.</span></h1>
+          <span className="dashboard-date">{dateFormat.format(new Date()).toUpperCase()}</span>
+          <h1>Good evening, {firstName}.<br /><span>Your next growth move is here.</span></h1>
           <p>We found businesses looking for <strong>{primaryOffer.toLowerCase()}</strong> and offering the <strong>{primaryNeed.toLowerCase()}</strong> your team needs.</p>
           <div className="dashboard-hero-actions">
             <button className="button button-primary" onClick={goMarketplace}>Explore your matches <ArrowRight size={17} /></button>
             <button className="button dashboard-ghost-button"><Plus size={16} /> Add what you need</button>
           </div>
-          <div className="dashboard-profile-note"><CircleCheck size={15} /><span><strong>{onboarding.businessName ?? 'Northstar Digital Studio'}</strong> profile is active and visible to potential partners.</span></div>
+          <ProfileNote business={business} openOnboarding={openOnboarding} openProfile={openProfile} />
         </div>
         <div className="dashboard-hero-visual">
           <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1000&q=88" alt="Business team reviewing growth plans" />
@@ -116,5 +127,57 @@ export function Dashboard({ goMarketplace, openBusiness }: { goMarketplace: () =
         </section>
       </div>
     </>
+  )
+}
+
+/** One line on the user's own profile: where it stands and the next thing to do. */
+function ProfileNote({ business, openOnboarding, openProfile }: { business: Business | null } & Pick<DashboardProps, 'openOnboarding' | 'openProfile'>) {
+  const active = useActiveBusiness()
+  const name = business?.display_name ?? active.name
+
+  if (!business) {
+    return <div className="dashboard-profile-note"><CircleDashed size={15} aria-hidden="true" /><span><strong>{name}</strong></span></div>
+  }
+
+  const editor = canEditProfile(business.role)
+  let text: string
+  let action: { label: string; onClick: () => void } | null = null
+
+  switch (business.profile_status) {
+    case 'approved':
+      text = 'profile is approved and visible to potential partners.'
+      break
+    case 'in_review':
+      text = 'profile is in review. We’ll show the result here.'
+      break
+    case 'changes_requested':
+      text = 'profile needs a few changes before it can be approved.'
+      action = { label: 'See what to change', onClick: openProfile }
+      break
+    case 'suspended':
+      text = 'is suspended and hidden from other businesses.'
+      break
+    default:
+      if (business.completeness.complete) {
+        text = 'profile is complete and ready to submit for review.'
+        action = { label: 'Review profile', onClick: openProfile }
+      } else {
+        text = `profile is ${business.completeness.score}% complete.`
+        // Setup questions answered: what is left (the logo) is on the profile page.
+        const answered = resumeStep(business) === SUMMARY_STEP
+        const logoOnly = business.completeness.missing.length === 1 && business.completeness.missing[0] === 'logo'
+        action = answered
+          ? { label: logoOnly ? 'Add your logo' : 'Finish your profile', onClick: openProfile }
+          : { label: 'Finish setup', onClick: openOnboarding }
+      }
+  }
+
+  const Icon = business.profile_status === 'approved' ? CircleCheck : CircleDashed
+  return (
+    <div className="dashboard-profile-note">
+      <Icon size={15} aria-hidden="true" />
+      <span><strong>{name}</strong> {text}</span>
+      {action && editor ? <button type="button" className="dashboard-profile-action" onClick={action.onClick}>{action.label} <ArrowRight size={13} aria-hidden="true" /></button> : null}
+    </div>
   )
 }

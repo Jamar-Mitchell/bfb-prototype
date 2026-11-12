@@ -16,7 +16,6 @@ function renderAt(path: string) {
 
 const cases: Array<{ path: string; heading: RegExp; shell: boolean }> = [
   { path: '/', heading: /Exchange what your business does best/, shell: false },
-  { path: '/onboarding', heading: /Turn what your business does best into what it needs next/, shell: false },
   { path: '/create-business', heading: /^Create another business$/, shell: false },
   { path: '/dashboard', heading: /Good evening, Alex/, shell: true },
   { path: '/marketplace', heading: /Find your next growth partner/, shell: true },

@@ -179,6 +179,12 @@ Scope:
 Done when:
 - Leaving onboarding midway and coming back resumes at the right step with saved answers.
 
+Notes (built):
+- Onboarding moved behind login and an active business; a new business opens it after creation.
+- Four steps, each saved to the profile: basics (business name, legal name, business stage), what you provide (categories, industry), about you (description, team size), where you work (city, region, country, service area). The summary lists what is still missing (usually the logo, uploaded on the profile page in FE-2.2).
+- Prototype questions mapped: business name to `display_name`; "Which best describes your business?" to `business_stage` (Startup and Growing business kept; "Independent studio" and "Local business" have no field, and service area now covers "local"); "What does your business provide?" to `category_ids` from `GET /categories` (the prototype's free list, including "Home services", is gone).
+- Prototype questions dropped, no profile field: "What services are you looking for?" (needs are listings, FE-2.4) and "What would make BFB valuable to you?" (the goal).
+
 ### FE-2.2 Profile editor with logo and cover upload
 
 Scope:

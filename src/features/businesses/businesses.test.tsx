@@ -29,6 +29,7 @@ const frameAndField = apiMembership({ business_id: 'business-2', business_name: 
 
 const dashboardHeading = { level: 1, name: /Good evening/ } as const
 const createHeading = { level: 1, name: 'Create your business' } as const
+const onboardingHeading = { level: 1, name: /Turn what your business does best/ } as const
 
 /** A browser that was logged in before the reload. */
 function storeTokensFromLastVisit() {
@@ -44,6 +45,7 @@ interface ServerOptions {
 
 /** Restore and login succeed; `/account` lists `memberships`; creating a business follows `createReply`. */
 function apiServer({ memberships = [], accountReply, createReply }: ServerOptions = {}): MockHandler {
+  let created = apiBusiness({ id: 'business-new' })
   return ({ method, url, body }) => {
     if (method === 'post' && url === '/auth/refresh') return { status: 200, data: tokenBody('access-2', 'refresh-2') }
     if (method === 'post' && url === '/auth/login') return { status: 200, data: tokenBody('access-1', 'refresh-1') }
@@ -51,8 +53,12 @@ function apiServer({ memberships = [], accountReply, createReply }: ServerOption
     if (method === 'get' && url === '/account') return accountReply?.() ?? { status: 200, data: { user: apiUser(), memberships } }
     if (method === 'post' && url === '/businesses') {
       const { display_name, legal_name } = body as { display_name: string; legal_name: string | null }
-      return createReply?.() ?? { status: 201, data: apiBusiness({ id: 'business-new', display_name, legal_name }) }
+      created = apiBusiness({ id: 'business-new', display_name, legal_name })
+      return createReply?.() ?? { status: 201, data: created }
     }
+    if (method === 'get' && url === '/businesses/business-new') return { status: 200, data: created }
+    const business = url.match(/^\/businesses\/(business-\d+)$/)
+    if (method === 'get' && business) return { status: 200, data: apiBusiness({ id: business[1] }) }
     return { status: 404, data: apiErrorBody('not_found') }
   }
 }
@@ -258,7 +264,7 @@ describe('create a business', () => {
     },
   )
 
-  it('creates the business and opens the dashboard with it active', async () => {
+  it('creates the business and opens profile setup with it active', async () => {
     storeTokensFromLastVisit()
     api = mockApi(apiServer({ memberships: [] }))
     renderAt('/dashboard')
@@ -267,9 +273,8 @@ describe('create a business', () => {
     type(/Business name/, '  Good Ground Creative  ')
     fireEvent.click(screen.getByRole('button', { name: /Create business/ }))
 
-    expect(await screen.findByRole('heading', dashboardHeading)).toBeInTheDocument()
+    expect(await screen.findByRole('heading', onboardingHeading)).toBeInTheDocument()
     expect(JSON.parse(api.calls('post', '/businesses')[0][0].data)).toEqual({ display_name: 'Good Ground Creative', legal_name: null })
-    expect(switcherButton()).toHaveAccessibleName('Good Ground Creative, Owner. Switch business')
     expect(useSessionStore.getState()).toMatchObject({
       activeBusiness: { id: 'business-new', name: 'Good Ground Creative', role: 'owner' },
       memberships: [{ id: 'business-new' }],
@@ -277,7 +282,7 @@ describe('create a business', () => {
     expect(localStorage.getItem(ACTIVE_BUSINESS_KEY)).toBe('business-new')
   })
 
-  it('creates another business from the switcher and switches to it', async () => {
+  it('creates another business from the switcher, switches to it and sets it up', async () => {
     storeTokensFromLastVisit()
     api = mockApi(apiServer({ memberships: [northstar] }))
     renderAt('/dashboard')
@@ -291,7 +296,7 @@ describe('create a business', () => {
     type(/Legal name/, 'Second Shop LLC')
     fireEvent.click(screen.getByRole('button', { name: /Create business/ }))
 
-    expect(await screen.findByRole('heading', dashboardHeading)).toBeInTheDocument()
+    expect(await screen.findByRole('heading', onboardingHeading)).toBeInTheDocument()
     expect(JSON.parse(api.calls('post', '/businesses')[0][0].data)).toEqual({ display_name: 'Second Shop', legal_name: 'Second Shop LLC' })
     expect(useSessionStore.getState().memberships?.map((business) => business.id)).toEqual(['business-1', 'business-new'])
     expect(useSessionStore.getState().activeBusiness?.id).toBe('business-new')

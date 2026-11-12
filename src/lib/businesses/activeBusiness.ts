@@ -136,3 +136,15 @@ function stillSameSession(userId: string | undefined) {
 export function businessPath(businessId: string, subpath = ''): string {
   return `/businesses/${encodeURIComponent(businessId)}${subpath}`
 }
+
+/** The business's name or the user's role in it changed (e.g. a profile edit): keep the switcher in step. */
+export function syncSessionBusiness(business: SessionBusiness) {
+  const session = useSessionStore.getState()
+  const current = session.memberships?.find((item) => item.id === business.id) ?? session.activeBusiness
+  if (current?.id === business.id && current.name === business.name && current.role === business.role) return
+
+  const update = (item: SessionBusiness) => (item.id === business.id ? business : item)
+  const active = session.activeBusiness ? update(session.activeBusiness) : null
+  if (session.memberships) session.setMemberships(session.memberships.map(update), active)
+  else session.setActiveBusiness(active)
+}
