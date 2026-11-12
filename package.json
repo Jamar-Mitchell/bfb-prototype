@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc -b --pretty false"
+    "typecheck": "tsc -b --pretty false",
+    "api:types": "node scripts/generate-api-types.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^7.0.6",
@@ -31,6 +32,7 @@
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^4.3.4",
     "jsdom": "^25.0.1",
+    "openapi-typescript": "7.13.0",
     "oxlint": "^0.15.15",
     "typescript": "^5.7.3",
     "vite": "^6.4.6",
