@@ -12,6 +12,7 @@ import { applyApiFieldErrors } from '../../lib/forms/applyApiFieldErrors'
 import { useSessionStore } from '../../stores/session'
 import { AuthLayout, AuthMessage } from './AuthLayout'
 import { login } from './authApi'
+import type { ForgotPasswordLocationState } from './ForgotPasswordPage'
 
 const loginSchema = z.object({
   email: z.email('Enter a valid email address.'),
@@ -27,11 +28,14 @@ export interface LoginLocationState {
   /** Just registered: show a confirmation and prefill the email. */
   registered?: boolean
   email?: string
+  /** Just set a new password through a reset link. */
+  passwordReset?: boolean
   /** Why the user is here, when they did not choose to come. */
   reason?: 'expired' | 'logged-out'
 }
 
 function noticeFor(state: LoginLocationState) {
+  if (state.passwordReset) return { tone: 'success' as const, text: 'Your password was changed. Log in with your new password.' }
   if (state.registered) return { tone: 'success' as const, text: 'Your account was created. Log in to continue.' }
   if (state.reason === 'expired') return { tone: 'info' as const, text: 'Your session has ended. Log in again to continue.' }
   if (state.reason === 'logged-out') return { tone: 'info' as const, text: 'You have logged out.' }
@@ -49,6 +53,7 @@ export function LoginPage() {
     register,
     handleSubmit,
     setError,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
@@ -72,6 +77,9 @@ export function LoginPage() {
     }
   })
 
+  const typedEmail = watch('email').trim()
+  const forgotState: ForgotPasswordLocationState | undefined = typedEmail ? { email: typedEmail } : undefined
+
   if (isAuthenticated) return <Navigate to={state.from ?? paths.dashboard} replace />
 
   return (
@@ -80,6 +88,7 @@ export function LoginPage() {
       <form className="auth-form" onSubmit={submit} noValidate>
         <TextField label="Email" type="email" autoComplete="email" error={errors.email?.message} {...register('email')} />
         <TextField label="Password" type="password" autoComplete="current-password" error={errors.password?.message} {...register('password')} />
+        <Link to={paths.forgotPassword} state={forgotState} className="auth-forgot">Forgot password?</Link>
         <button type="submit" className="button button-primary button-large auth-submit" disabled={isSubmitting}>
           {isSubmitting ? 'Logging in…' : <>Log in <ArrowRight size={18} aria-hidden="true" /></>}
         </button>

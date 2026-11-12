@@ -1,0 +1,32 @@
+/* Unverified-email banner at the top of the app content. Same colours as the auth info message. */
+.verify-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-bottom: 26px;
+  padding: 12px 16px;
+  border: 1px solid #cfe4fa;
+  border-radius: var(--radius-lg);
+  background: var(--pale-blue);
+  color: var(--navy);
+  font-size: var(--text-lg);
+  line-height: 1.5;
+}
+
+.verify-banner-icon {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: var(--radius-round);
+  background: white;
+  color: var(--blue);
+}
+
+.verify-banner-text { flex: 1 1 260px; margin: 0; }
+
+@media (max-width: 620px) {
+  .verify-banner { margin-bottom: 20px; }
+}

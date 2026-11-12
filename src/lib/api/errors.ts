@@ -26,6 +26,11 @@ export type ApiErrorCode =
   // Business codes (API-1.5)
   | 'email_not_verified'
   | 'business_role_required'
+  // Email verification and password reset (API-1.3, API-1.4)
+  | 'invalid_verification_token'
+  | 'verification_token_expired'
+  | 'invalid_password_reset_token'
+  | 'password_reset_token_expired'
   // Feature codes are added by later packages; keep the type open for them.
   | (string & {})
 
@@ -56,6 +61,10 @@ export const API_ERROR_MESSAGES: Record<string, string> = {
   access_token_expired: 'Your session has ended. Log in again to continue.',
   email_not_verified: 'Verify your email address before creating a business.',
   business_role_required: 'Your role in this business does not allow that.',
+  invalid_verification_token: 'This verification link no longer works.',
+  verification_token_expired: 'This verification link has expired.',
+  invalid_password_reset_token: 'This reset link no longer works.',
+  password_reset_token_expired: 'This reset link has expired.',
 }
 
 /** User-facing copy for an error code. Unknown codes fall back to the generic message. */

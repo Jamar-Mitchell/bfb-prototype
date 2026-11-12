@@ -103,6 +103,8 @@ When a request fails with `401`, the client (`src/lib/api/client.ts`) refreshes 
 
 On load, `restoreSession()` (`src/lib/auth/session.ts`) turns a stored refresh token into a live session while protected routes show a loading state. `RequireAuth` (`src/app/router/RequireAuth.tsx`) guards the app-shell routes and sends logged-out users to login, then back to the page they asked for. Logging out (sidebar account row) clears the tokens and ends the session on the API. Tabs follow each other's logouts and refreshes through `storage` events.
 
+Email verification and password reset follow the same document. The emailed links open `#/verify-email?token=…` and `#/reset-password?token=…` (`src/features/auth/`), which work logged in or not. A verification link is sent to the API once per page load, even under StrictMode, because it works only once. While the logged-in user's `emailVerified` is `false`, the app shell shows a banner with a "Resend email" button; the same button appears on the create-business step when the API answers `email_not_verified`. Resend buttons share a 30-second wait after each send. A completed reset clears the stored tokens (the API has ended every session) and opens login with a notice. "Forgot password?" on the login page opens `#/forgot-password`.
+
 ## Businesses
 
 A user acts for one business at a time. The API keeps no current business (`bfb-api` `docs/BUSINESSES.md`): business-scoped routes take the business ID in the path, and the frontend remembers which business is active.

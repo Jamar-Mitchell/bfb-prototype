@@ -49,7 +49,9 @@ export interface paths {
         put?: never;
         /**
          * Register
-         * @description Create an unverified account. Does not log the user in.
+         * @description Create an unverified account and email a verification link.
+         *
+         *     Does not log the user in.
          */
         post: operations["register_api_v1_auth_register_post"];
         delete?: never;
@@ -114,6 +116,96 @@ export interface paths {
          * @description End the session the refresh token belongs to. Always succeeds.
          */
         post: operations["logout_api_v1_auth_logout_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/verify-email": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Verify Email
+         * @description Verify an email address with the token from the emailed link.
+         *
+         *     No access token is needed: the link may be opened on another device.
+         */
+        post: operations["verify_email_api_v1_auth_verify_email_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/resend-verification": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Resend Verification
+         * @description Email a new verification link and invalidate earlier ones.
+         *
+         *     Always `202`, whether or not the email is registered, already verified or active, so
+         *     the response never reveals which.
+         */
+        post: operations["resend_verification_api_v1_auth_resend_verification_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/password-reset/request": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Request Password Reset
+         * @description Email a password reset link.
+         *
+         *     Always `202`, whether or not the email is registered or the account is active, so
+         *     the response never reveals which. Earlier reset links stop working.
+         */
+        post: operations["request_password_reset_api_v1_auth_password_reset_request_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/password-reset/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Confirm Password Reset
+         * @description Set a new password with the token from the emailed link.
+         *
+         *     Ends every session the user has; they log in again with the new password.
+         */
+        post: operations["confirm_password_reset_api_v1_auth_password_reset_confirm_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -198,6 +290,30 @@ export interface paths {
         get: operations["get_one_api_v1_businesses__business_id__get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/invite-codes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Invite Codes
+         * @description Every pilot invite code, newest first.
+         */
+        get: operations["list_invite_codes_api_v1_admin_invite_codes_get"];
+        put?: never;
+        /**
+         * Create Invite Code
+         * @description Create a pilot invite code. Leave out `code` to have one generated.
+         */
+        post: operations["create_invite_code_api_v1_admin_invite_codes_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -316,6 +432,52 @@ export interface components {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
         };
+        /** InviteCodeCreateRequest */
+        InviteCodeCreateRequest: {
+            /** Code */
+            code?: string | null;
+            /**
+             * Max Uses
+             * @default 1
+             */
+            max_uses: number | null;
+            /** Expires At */
+            expires_at?: string | null;
+            /** Note */
+            note?: string | null;
+        };
+        /** InviteCodeListResponse */
+        InviteCodeListResponse: {
+            /** Invite Codes */
+            invite_codes: components["schemas"]["InviteCodeResponse"][];
+        };
+        /** InviteCodeResponse */
+        InviteCodeResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Code */
+            code: string;
+            /** Note */
+            note: string | null;
+            /** Max Uses */
+            max_uses: number | null;
+            /** Use Count */
+            use_count: number;
+            /** Expires At */
+            expires_at: string | null;
+            /** Created By User Id */
+            created_by_user_id: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Usable */
+            usable: boolean;
+        };
         /** LoginRequest */
         LoginRequest: {
             /**
@@ -342,6 +504,30 @@ export interface components {
             /** Business Name */
             business_name: string;
             role: components["schemas"]["BusinessRole"];
+        };
+        /**
+         * PasswordResetConfirmRequest
+         * @description The ``token`` from the emailed ``#/reset-password?token=...`` link and a new password.
+         */
+        PasswordResetConfirmRequest: {
+            /**
+             * Token
+             * Format: password
+             */
+            token: string;
+            /**
+             * New Password
+             * Format: password
+             */
+            new_password: string;
+        };
+        /** PasswordResetRequest */
+        PasswordResetRequest: {
+            /**
+             * Email
+             * Format: email
+             */
+            email: string;
         };
         /**
          * PlatformRole
@@ -382,6 +568,16 @@ export interface components {
             password: string;
             /** Accept Terms */
             accept_terms: boolean;
+            /** Invite Code */
+            invite_code?: string | null;
+        };
+        /** ResendVerificationRequest */
+        ResendVerificationRequest: {
+            /**
+             * Email
+             * Format: email
+             */
+            email: string;
         };
         /**
          * TokenResponse
@@ -451,6 +647,17 @@ export interface components {
          * @enum {string}
          */
         VerificationStatus: "unverified" | "pending" | "verified" | "rejected";
+        /**
+         * VerifyEmailRequest
+         * @description The ``token`` query parameter from the emailed ``#/verify-email?token=...`` link.
+         */
+        VerifyEmailRequest: {
+            /**
+             * Token
+             * Format: password
+             */
+            token: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -535,7 +742,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
-            /** @description `weak_password`, `terms_not_accepted` or `validation_error` */
+            /** @description `weak_password`, `terms_not_accepted`, `invite_code_required`, `invalid_invite_code`, `invite_code_expired`, `invite_code_exhausted` or `validation_error` */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -657,6 +864,152 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    verify_email_api_v1_auth_verify_email_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VerifyEmailRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description `invalid_verification_token` (unknown, used or superseded) or `verification_token_expired` */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    resend_verification_api_v1_auth_resend_verification_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResendVerificationRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    request_password_reset_api_v1_auth_password_reset_request_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PasswordResetRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    confirm_password_reset_api_v1_auth_password_reset_confirm_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PasswordResetConfirmRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description `invalid_password_reset_token` (unknown, used or superseded) or `password_reset_token_expired` */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `weak_password` or `validation_error` */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
         };
@@ -821,6 +1174,104 @@ export interface operations {
             };
             /** @description `not_found`: no such business, or the caller is not a member */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_invite_codes_api_v1_admin_invite_codes_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InviteCodeListResponse"];
+                };
+            };
+            /** @description `unauthorized` or `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `forbidden`: not an administrator */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    create_invite_code_api_v1_admin_invite_codes_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InviteCodeCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InviteCodeResponse"];
+                };
+            };
+            /** @description `unauthorized` or `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `forbidden`: not an administrator */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `invite_code_taken` */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };

@@ -67,6 +67,32 @@
 .auth-switch a { color: var(--blue); font-weight: 700; }
 .auth-switch a:hover { color: var(--blue-dark); }
 
+/* "Forgot password?" under the password field. */
+.auth-forgot {
+  align-self: flex-end;
+  margin: -8px 0 16px;
+  color: var(--blue);
+  font-size: var(--text-base);
+  font-weight: 700;
+}
+
+.auth-forgot:hover { color: var(--blue-dark); }
+
+/* A link-styled button inside `.auth-switch` text. */
+.auth-inline-button {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: var(--blue);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.auth-inline-button:hover { color: var(--blue-dark); }
+
+.auth-loading { padding: 18px 0 8px; }
+
 .auth-message {
   margin: 0 0 20px;
   padding: 12px 14px;
