@@ -18,14 +18,13 @@ import {
 import { businessPathPrefix, paths } from '../../app/router/paths'
 import { useAppNavigate } from '../../app/router/useAppNavigate'
 import { LogoutButton } from '../../features/auth/LogoutButton'
-import { useSessionStore } from '../../stores/session'
+import { BusinessSwitcher } from '../../features/businesses/BusinessSwitcher'
 import { Logo } from '../ui/Logo'
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { pathname } = useLocation()
   const go = useAppNavigate()
   const [mobileOpen, setMobileOpen] = useState(false)
-  const userName = useSessionStore((state) => state.user?.displayName)
   const navItems = [
     { id: paths.dashboard, label: 'Dashboard', icon: LayoutDashboard },
     { id: paths.marketplace, label: 'Marketplace', icon: Compass },
@@ -63,9 +62,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <small>75% complete</small>
         </div>
         <div className="account-row">
-          <div className="account-avatar">ND</div>
-          {/* The business stays demo data until businesses arrive (FE-1.4). */}
-          <div><strong>Northstar Digital</strong><span>{userName ?? 'Alex Morgan'}</span></div>
+          <BusinessSwitcher onNavigate={() => setMobileOpen(false)} />
           <LogoutButton />
         </div>
       </aside>

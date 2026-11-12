@@ -6,7 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from '../../App'
 import { ACCESS_TOKEN_KEY, clearStoredSession, REFRESH_TOKEN_KEY } from '../../lib/auth/tokens'
 import { useSessionStore } from '../../stores/session'
-import { apiErrorBody, apiUser, mockApi, tokenBody, type MockHandler, type MockReply } from '../../test/mockApi'
+import { apiErrorBody, apiMembership, apiUser, mockApi, tokenBody, type MockHandler, type MockReply } from '../../test/mockApi'
 
 const dashboardHeading = { level: 1, name: /Good evening/ } as const
 
@@ -34,7 +34,7 @@ function apiServer(refreshReply?: () => MockReply): MockHandler {
     }
     if (method === 'post' && url === '/auth/login') return { status: 200, data: tokenBody('access-1', 'refresh-1') }
     if (method === 'post' && url === '/auth/logout') return { status: 204 }
-    if (method === 'get' && url === '/account') return { status: 200, data: { user: apiUser(), memberships: [] } }
+    if (method === 'get' && url === '/account') return { status: 200, data: { user: apiUser(), memberships: [apiMembership()] } }
     return { status: 404, data: apiErrorBody('not_found') }
   }
 }

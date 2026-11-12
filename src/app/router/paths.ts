@@ -3,6 +3,7 @@ export const paths = {
   onboarding: '/onboarding',
   login: '/login',
   register: '/register',
+  createBusiness: '/create-business',
   dashboard: '/dashboard',
   marketplace: '/marketplace',
   exchanges: '/exchanges',

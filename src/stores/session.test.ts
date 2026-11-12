@@ -36,6 +36,7 @@ describe('session store', () => {
       endReason: 'logged-out',
       accessToken: null,
       activeBusiness: null,
+      memberships: null,
       user: null,
     })
   })

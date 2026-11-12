@@ -17,6 +17,7 @@ function renderAt(path: string) {
 const cases: Array<{ path: string; heading: RegExp; shell: boolean }> = [
   { path: '/', heading: /Exchange what your business does best/, shell: false },
   { path: '/onboarding', heading: /Turn what your business does best into what it needs next/, shell: false },
+  { path: '/create-business', heading: /^Create another business$/, shell: false },
   { path: '/dashboard', heading: /Good evening, Alex/, shell: true },
   { path: '/marketplace', heading: /Find your next growth partner/, shell: true },
   { path: '/business/3', heading: /^Good Ground Creative$/, shell: true },
@@ -36,6 +37,9 @@ describe('route table', () => {
       accessToken: 'access-token',
       user: { id: 'user-1', email: 'founder@example.com', displayName: 'Alex Morgan' },
     })
+    // Business pages need a business; RequireBusiness is covered in businesses.test.tsx.
+    const business = { id: 'business-1', name: 'Northstar Digital', role: 'owner' as const }
+    useSessionStore.getState().setMemberships([business], business)
     vi.spyOn(window, 'scrollTo').mockImplementation(() => {})
   })
 

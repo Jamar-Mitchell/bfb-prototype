@@ -10,17 +10,19 @@ interface AuthLayoutProps {
   title: string
   intro: ReactNode
   children: ReactNode
+  /** Replaces the header's "Back to home" button, e.g. with a log-out button for logged-in steps. */
+  headerAction?: ReactNode
 }
 
-/** Shared frame for the login and registration pages, matching the onboarding screens. */
-export function AuthLayout({ kicker, title, intro, children }: AuthLayoutProps) {
+/** Shared frame for the login, registration and create-business pages, matching the onboarding screens. */
+export function AuthLayout({ kicker, title, intro, children, headerAction }: AuthLayoutProps) {
   const go = useAppNavigate()
 
   return (
     <div className="auth-page">
       <header className="auth-header">
         <Logo />
-        <button type="button" className="text-button" onClick={() => go(paths.landing)}>Back to home</button>
+        {headerAction ?? <button type="button" className="text-button" onClick={() => go(paths.landing)}>Back to home</button>}
       </header>
       <main className="auth-main">
         <section className="auth-card" aria-labelledby="auth-title">

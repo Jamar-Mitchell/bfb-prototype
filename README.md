@@ -103,6 +103,15 @@ When a request fails with `401`, the client (`src/lib/api/client.ts`) refreshes 
 
 On load, `restoreSession()` (`src/lib/auth/session.ts`) turns a stored refresh token into a live session while protected routes show a loading state. `RequireAuth` (`src/app/router/RequireAuth.tsx`) guards the app-shell routes and sends logged-out users to login, then back to the page they asked for. Logging out (sidebar account row) clears the tokens and ends the session on the API. Tabs follow each other's logouts and refreshes through `storage` events.
 
+## Businesses
+
+A user acts for one business at a time. The API keeps no current business (`bfb-api` `docs/BUSINESSES.md`): business-scoped routes take the business ID in the path, and the frontend remembers which business is active.
+
+- `RequireBusiness` (`src/app/router/RequireBusiness.tsx`) sits under `RequireAuth` and guards the app-shell pages. It loads the user's memberships from `GET /account` and sends a user without a business to the create-business step (`/create-business`).
+- The active business is in `useSessionStore` (`activeBusiness`, `memberships`). Its ID is kept in `localStorage` (`bfb.activeBusinessId`) so a reload opens the same business; if the user no longer belongs to it, their first business is used. Other tabs do not follow a switch.
+- Switch from the business switcher in the sidebar account row. The shell remounts the page on a switch, so pages reload their data for the new business.
+- For business-scoped requests, use `useActiveBusinessId()` (or `useBusinessPath()`) from `src/lib/businesses/useActiveBusiness.ts`, for example `apiGet('/businesses/{business_id}/...', { path: { business_id } })`, or `businessPath(id, '/offers')` for a plain path.
+
 ## Product planning
 
 - [Development plan](./docs/DEVELOPMENT_PLAN.md)

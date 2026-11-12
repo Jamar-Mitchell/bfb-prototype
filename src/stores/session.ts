@@ -26,11 +26,20 @@ export type SessionEndReason = 'expired' | 'logged-out'
 type SessionState = {
   status: SessionStatus
   accessToken: string | null
+  /** The business the user works as. Business-scoped requests put its ID in the path. */
   activeBusiness: SessionBusiness | null
+  /** Every business the user belongs to, oldest first. `null` until loaded. */
+  memberships: SessionBusiness[] | null
+  /** Why loading the memberships failed, if it did. */
+  membershipsError: unknown
   user: SessionUser | null
   endReason: SessionEndReason | null
   /** The error that stopped a restore, when `status` is `error`. */
   restoreError: unknown
+  /**
+   * Start or update the session. For the same user (a token refresh) the memberships and
+   * active business are kept unless `activeBusiness` is passed.
+   */
   setSession: (session: {
     accessToken: string
     activeBusiness?: SessionBusiness | null
@@ -39,6 +48,8 @@ type SessionState = {
   /** Replace the access token and keep the rest of the session. */
   setAccessToken: (accessToken: string) => void
   setActiveBusiness: (business: SessionBusiness | null) => void
+  setMemberships: (memberships: SessionBusiness[], activeBusiness: SessionBusiness | null) => void
+  setMembershipsError: (error: unknown) => void
   setRestoring: () => void
   setRestoreError: (error: unknown) => void
   clearSession: (reason?: SessionEndReason) => void
@@ -47,6 +58,8 @@ type SessionState = {
 const emptySession = {
   accessToken: null,
   activeBusiness: null,
+  memberships: null,
+  membershipsError: null,
   user: null,
   restoreError: null,
 }
@@ -55,17 +68,24 @@ export const useSessionStore = create<SessionState>((set) => ({
   ...emptySession,
   status: 'idle',
   endReason: null,
-  setSession: ({ accessToken, activeBusiness = null, user }) =>
-    set({
-      status: 'authenticated',
-      accessToken,
-      activeBusiness,
-      user,
-      endReason: null,
-      restoreError: null,
+  setSession: ({ accessToken, activeBusiness, user }) =>
+    set((state) => {
+      const sameUser = state.user?.id === user.id
+      return {
+        status: 'authenticated',
+        accessToken,
+        activeBusiness: activeBusiness !== undefined ? activeBusiness : sameUser ? state.activeBusiness : null,
+        memberships: sameUser ? state.memberships : null,
+        membershipsError: sameUser ? state.membershipsError : null,
+        user,
+        endReason: null,
+        restoreError: null,
+      }
     }),
   setAccessToken: (accessToken) => set({ accessToken }),
   setActiveBusiness: (activeBusiness) => set({ activeBusiness }),
+  setMemberships: (memberships, activeBusiness) => set({ memberships, activeBusiness, membershipsError: null }),
+  setMembershipsError: (membershipsError) => set({ membershipsError }),
   setRestoring: () => set({ status: 'restoring', restoreError: null }),
   setRestoreError: (restoreError) => set({ status: 'error', restoreError }),
   clearSession: (reason) => set({ ...emptySession, status: 'anonymous', endReason: reason ?? null }),

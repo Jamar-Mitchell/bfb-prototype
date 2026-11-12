@@ -48,7 +48,7 @@ Recommended order is S0 through S8. The frontend S0 packages need no API work an
 | FE-1.1 | Register and log in | FE-0.3, FE-0.4, API-1.2 | done |
 | FE-1.2 | Session restore, protected routes, log out | FE-1.1 | done |
 | FE-1.3 | Verify email and reset password | FE-1.2, API-1.4 | todo |
-| FE-1.4 | Create and switch businesses | FE-1.2, API-1.5 | todo |
+| FE-1.4 | Create and switch businesses | FE-1.2, API-1.5 | done |
 | FE-1.5 | Team members page | FE-1.4, API-1.7 | todo |
 | FE-1.6 | Invite code at registration | FE-1.1, API-1.8 | todo |
 | FE-2.1 | Onboarding saved to the API | FE-1.4, API-2.2 | todo |

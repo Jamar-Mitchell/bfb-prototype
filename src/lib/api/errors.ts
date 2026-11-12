@@ -23,6 +23,9 @@ export type ApiErrorCode =
   | 'invalid_credentials'
   | 'invalid_refresh_token'
   | 'access_token_expired'
+  // Business codes (API-1.5)
+  | 'email_not_verified'
+  | 'business_role_required'
   // Feature codes are added by later packages; keep the type open for them.
   | (string & {})
 
@@ -51,6 +54,8 @@ export const API_ERROR_MESSAGES: Record<string, string> = {
   invalid_credentials: 'That email and password don’t match.',
   invalid_refresh_token: 'Your session has ended. Log in again to continue.',
   access_token_expired: 'Your session has ended. Log in again to continue.',
+  email_not_verified: 'Verify your email address before creating a business.',
+  business_role_required: 'Your role in this business does not allow that.',
 }
 
 /** User-facing copy for an error code. Unknown codes fall back to the generic message. */
