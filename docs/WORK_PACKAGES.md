@@ -195,6 +195,10 @@ Scope:
 Done when:
 - Tests cover saving the profile, a rejected file, and the completeness list updating after a save.
 
+Notes (built):
+- Logo and cover save as soon as they upload (no "Save changes" needed). Removing a logo or cover is not offered yet.
+- The sidebar's "Complete your profile" card shows the real score and hides once the profile is complete. On narrow screens the completeness meter now shows above the form instead of being hidden.
+
 ### FE-2.3 Offers management
 
 Scope:

@@ -229,8 +229,9 @@ describe('business pages reload for the chosen business', () => {
     fireEvent.click(screen.getByRole('menuitemradio', { name: /Frame & Field Studio/ }))
 
     expect(await screen.findByRole('heading', { level: 1, name: 'Frame & Field Studio' })).toBeInTheDocument()
-    expect(api.calls('get', '/businesses/business-1')).toHaveLength(1)
-    expect(api.calls('get', '/businesses/business-2')).toHaveLength(1)
+    // The page and the sidebar's profile card each load the business they show.
+    expect(api.calls('get', '/businesses/business-1')).toHaveLength(2)
+    expect(api.calls('get', '/businesses/business-2')).toHaveLength(2)
   })
 })
 
