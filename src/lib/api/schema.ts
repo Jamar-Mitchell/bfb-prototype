@@ -891,6 +891,59 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/businesses/{business_id}/portfolio": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Portfolio
+         * @description The portfolio, first item first, with fresh signed file URLs. Any member.
+         */
+        get: operations["get_portfolio_api_v1_businesses__business_id__portfolio_get"];
+        /**
+         * Apply Portfolio Batch
+         * @description Apply adds, edits, removals and the new order in one transaction. Any error
+         *     refuses the whole batch. Returns the new portfolio and version.
+         */
+        put: operations["apply_portfolio_batch_api_v1_businesses__business_id__portfolio_put"];
+        /**
+         * Create Portfolio Item
+         * @description Add one item at the end.
+         */
+        post: operations["create_portfolio_item_api_v1_businesses__business_id__portfolio_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{business_id}/portfolio/{item_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete Portfolio Item
+         * @description Remove one item; later items move up. The uploaded file is kept.
+         */
+        delete: operations["delete_portfolio_item_api_v1_businesses__business_id__portfolio__item_id__delete"];
+        options?: never;
+        head?: never;
+        /**
+         * Update Portfolio Item
+         * @description Partial edit of one item. Reorder with the batch endpoint.
+         */
+        patch: operations["update_portfolio_item_api_v1_businesses__business_id__portfolio__item_id__patch"];
+        trace?: never;
+    };
     "/api/v1/public/businesses/{business_id}": {
         parameters: {
             query?: never;
@@ -1007,6 +1060,8 @@ export interface components {
             need_counts: {
                 [key: string]: number;
             };
+            /** Portfolio */
+            portfolio: components["schemas"]["PortfolioItemResponse"][];
             /** Reviews */
             reviews: components["schemas"]["ReviewResponse"][];
             /**
@@ -1615,6 +1670,157 @@ export interface components {
          * @enum {string}
          */
         PlatformRole: "user" | "support" | "administrator";
+        /** PortfolioBatchAdd */
+        PortfolioBatchAdd: {
+            /** Title */
+            title: string;
+            /** Description */
+            description?: string | null;
+            /** Upload Id */
+            upload_id?: string | null;
+            /** Link Url */
+            link_url?: string | null;
+            /** Ref */
+            ref?: string | null;
+        };
+        /**
+         * PortfolioBatchRequest
+         * @description Every change of one editing session, applied together or not at all.
+         */
+        PortfolioBatchRequest: {
+            /** Version */
+            version: number;
+            /** Add */
+            add?: components["schemas"]["PortfolioBatchAdd"][];
+            /** Update */
+            update?: components["schemas"]["PortfolioBatchUpdate"][];
+            /** Remove */
+            remove?: string[];
+            /** Order */
+            order?: string[] | null;
+        };
+        /** PortfolioBatchResponse */
+        PortfolioBatchResponse: {
+            /** Version */
+            version: number;
+            /**
+             * Max Items
+             * @default 24
+             */
+            max_items: number;
+            /** Items */
+            items: components["schemas"]["PortfolioItemResponse"][];
+            /** Added */
+            added: {
+                [key: string]: string;
+            };
+        };
+        /** PortfolioBatchUpdate */
+        PortfolioBatchUpdate: {
+            /** Title */
+            title?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Upload Id */
+            upload_id?: string | null;
+            /** Link Url */
+            link_url?: string | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+        };
+        /**
+         * PortfolioFile
+         * @description An item's file, readable without login until ``url_expires_at``.
+         */
+        PortfolioFile: {
+            /** Content Type */
+            content_type: string;
+            /** Url */
+            url: string;
+            /**
+             * Url Expires At
+             * Format: date-time
+             */
+            url_expires_at: string;
+        };
+        /** PortfolioItemCreateRequest */
+        PortfolioItemCreateRequest: {
+            /** Title */
+            title: string;
+            /** Description */
+            description?: string | null;
+            /** Upload Id */
+            upload_id?: string | null;
+            /** Link Url */
+            link_url?: string | null;
+        };
+        /**
+         * PortfolioItemResponse
+         * @description A portfolio item as members and reviewers see it.
+         */
+        PortfolioItemResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Title */
+            title: string;
+            /** Description */
+            description: string | null;
+            /** Link Url */
+            link_url: string | null;
+            file: components["schemas"]["PortfolioFile"] | null;
+            /** Position */
+            position: number;
+            /** Upload Id */
+            upload_id: string | null;
+            /** Original Filename */
+            original_filename: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /**
+         * PortfolioItemUpdateRequest
+         * @description Partial edit: leave a field out to keep it, ``null`` clears ``description``,
+         *     ``upload_id`` or ``link_url`` (one of the last two must remain).
+         */
+        PortfolioItemUpdateRequest: {
+            /** Title */
+            title?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Upload Id */
+            upload_id?: string | null;
+            /** Link Url */
+            link_url?: string | null;
+        };
+        /**
+         * PortfolioResponse
+         * @description The whole portfolio, first item first.
+         */
+        PortfolioResponse: {
+            /** Version */
+            version: number;
+            /**
+             * Max Items
+             * @default 24
+             */
+            max_items: number;
+            /** Items */
+            items: components["schemas"]["PortfolioItemResponse"][];
+        };
         /**
          * ProfileStatus
          * @description Where the business profile is in review. Changed only by server-side commands
@@ -1662,11 +1868,31 @@ export interface components {
             logo_url: string | null;
             /** Cover Url */
             cover_url: string | null;
+            /** Portfolio */
+            portfolio: components["schemas"]["PublicPortfolioItemResponse"][];
             /**
              * Created At
              * Format: date-time
              */
             created_at: string;
+        };
+        /**
+         * PublicPortfolioItemResponse
+         * @description A portfolio item as anyone may see it on an approved business's profile.
+         */
+        PublicPortfolioItemResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Title */
+            title: string;
+            /** Description */
+            description: string | null;
+            /** Link Url */
+            link_url: string | null;
+            file: components["schemas"]["PortfolioFile"] | null;
         };
         /**
          * RefreshRequest
@@ -4645,6 +4871,335 @@ export interface operations {
                 };
             };
             /** @description `listing_incomplete` */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    get_portfolio_api_v1_businesses__business_id__portfolio_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PortfolioResponse"];
+                };
+            };
+            /** @description `unauthorized`, `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business or item, or the caller is not a member */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    apply_portfolio_batch_api_v1_businesses__business_id__portfolio_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PortfolioBatchRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PortfolioBatchResponse"];
+                };
+            };
+            /** @description `unauthorized`, `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `business_role_required` */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business or item, or the caller is not a member */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `portfolio_version_conflict` (reload and retry), `profile_not_editable` (in review or suspended), `portfolio_limit_reached` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `validation_error`, `invalid_portfolio_batch`, `invalid_upload`, `portfolio_item_incomplete` */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    create_portfolio_item_api_v1_businesses__business_id__portfolio_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PortfolioItemCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PortfolioItemResponse"];
+                };
+            };
+            /** @description `unauthorized`, `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `business_role_required` */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business or item, or the caller is not a member */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `profile_not_editable` (in review or suspended), `portfolio_limit_reached` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `validation_error`, `invalid_upload`, `portfolio_item_incomplete` */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    delete_portfolio_item_api_v1_businesses__business_id__portfolio__item_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                item_id: string;
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description `unauthorized`, `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `business_role_required` */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business or item, or the caller is not a member */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `profile_not_editable` (in review or suspended), `portfolio_limit_reached` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_portfolio_item_api_v1_businesses__business_id__portfolio__item_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                item_id: string;
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PortfolioItemUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PortfolioItemResponse"];
+                };
+            };
+            /** @description `unauthorized`, `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `business_role_required` */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business or item, or the caller is not a member */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `profile_not_editable` (in review or suspended), `portfolio_limit_reached` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `validation_error`, `invalid_upload`, `portfolio_item_incomplete` */
             422: {
                 headers: {
                     [name: string]: unknown;

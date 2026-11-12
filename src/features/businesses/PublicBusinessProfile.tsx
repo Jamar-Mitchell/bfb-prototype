@@ -9,6 +9,7 @@ import { Logo } from '../../components/ui/Logo'
 import { toApiError } from '../../lib/api/errors'
 import { useSessionStore } from '../../stores/session'
 import { businessInitials } from './businessDisplay'
+import { PortfolioGallery } from './PortfolioGallery'
 import {
   BUSINESS_STAGE_LABELS,
   displayUrl,
@@ -183,6 +184,12 @@ export function PublicProfileView({ business }: { business: PublicBusiness }) {
               <ul className="public-profile-categories">
                 {business.categories.map((category) => <li key={category.id}>{category.name}</li>)}
               </ul>
+            </section>
+          )}
+          {business.portfolio.length > 0 && (
+            <section className="profile-section public-portfolio" aria-labelledby="public-profile-portfolio">
+              <h2 id="public-profile-portfolio">Portfolio</h2>
+              <PortfolioGallery items={business.portfolio} label={`${business.display_name} work samples`} />
             </section>
           )}
         </div>

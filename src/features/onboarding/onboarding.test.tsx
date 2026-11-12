@@ -7,7 +7,7 @@ import App from '../../App'
 import { ACCESS_TOKEN_KEY, clearStoredSession, REFRESH_TOKEN_KEY } from '../../lib/auth/tokens'
 import { useSessionStore } from '../../stores/session'
 import { apiErrorBody, apiMembership, apiUser, mockApi, tokenBody, type MockHandler, type MockReply } from '../../test/mockApi'
-import { answeredProfile, apiCategories, applyProfileUpdate, profileBusiness } from '../../test/profileServer'
+import { answeredProfile, apiCategories, applyProfileUpdate, emptyPortfolio, profileBusiness } from '../../test/profileServer'
 import type { Business, ProfileUpdate } from '../businesses/profileApi'
 import { resumeStep, stepUpdate, SUMMARY_STEP, WELCOME_STEP } from './onboardingSteps'
 
@@ -29,6 +29,7 @@ function apiServer({ business: initial = profileBusiness(), reply }: ServerOptio
     if (method === 'get' && url === '/account') return { status: 200, data: { user, memberships: [apiMembership({ role: server.business.role })] } }
     if (method === 'get' && url === '/categories') return { status: 200, data: apiCategories }
     if (method === 'get' && url === '/businesses/business-1') return { status: 200, data: server.business }
+    if (method === 'get' && url === '/businesses/business-1/portfolio') return { status: 200, data: emptyPortfolio }
     if (method === 'patch' && url === '/businesses/business-1/profile') {
       server.business = applyProfileUpdate(server.business, body as ProfileUpdate)
       return { status: 200, data: server.business }

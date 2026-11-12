@@ -59,6 +59,11 @@ export type ApiErrorCode =
   // Review (API-2.7)
   | 'invalid_profile_status'
   | 'profile_incomplete'
+  // Portfolio (API-2.6)
+  | 'portfolio_limit_reached'
+  | 'portfolio_version_conflict'
+  | 'invalid_portfolio_batch'
+  | 'portfolio_item_incomplete'
   // Feature codes are added by later packages; keep the type open for them.
   | (string & {})
 
@@ -116,6 +121,10 @@ export const API_ERROR_MESSAGES: Record<string, string> = {
   invalid_signed_url: 'That image link has expired. Reload the page.',
   invalid_profile_status: 'Your profile’s review status changed. The page has been refreshed.',
   profile_incomplete: 'Fill in the missing details before submitting for review.',
+  portfolio_limit_reached: 'Your portfolio is full. Remove a work sample before adding another.',
+  portfolio_version_conflict: 'Someone else changed this portfolio. Reload it and try again.',
+  invalid_portfolio_batch: 'The portfolio changed since you loaded it. Reload it and try again.',
+  portfolio_item_incomplete: 'Each work sample needs a file, a link, or both.',
 }
 
 /** User-facing copy for an error code. Unknown codes fall back to the generic message. */

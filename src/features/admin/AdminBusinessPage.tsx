@@ -6,6 +6,7 @@ import { paths } from '../../app/router/paths'
 import { ErrorState, LoadingState, showToast } from '../../components/feedback'
 import { toApiError } from '../../lib/api/errors'
 import { businessInitials, ROLE_LABELS } from '../businesses/businessDisplay'
+import { PortfolioGallery } from '../businesses/PortfolioGallery'
 import {
   BUSINESS_STAGE_LABELS,
   displayUrl,
@@ -131,6 +132,7 @@ export function AdminBusinessPage() {
       <div className="admin-layout">
         <div className="admin-main">
           <ProfileCard business={business} />
+          <PortfolioCard business={business} />
           <MembersCard business={business} />
           <ListingsCard business={business} />
         </div>
@@ -238,6 +240,21 @@ function ProfileCard({ business }: { business: AdminBusiness }) {
         ) : (
           <p className="admin-muted">No categories.</p>
         )}
+      </div>
+    </section>
+  )
+}
+
+function PortfolioCard({ business }: { business: AdminBusiness }) {
+  const count = business.portfolio.length
+  return (
+    <section className="admin-card" aria-labelledby="admin-portfolio-title">
+      <div className="admin-card-head">
+        <h2 id="admin-portfolio-title">Portfolio</h2>
+        <p>{count === 1 ? '1 work sample' : `${count} work samples`}</p>
+      </div>
+      <div className="admin-card-body">
+        {count > 0 ? <PortfolioGallery items={business.portfolio} label="Work samples" /> : <p className="admin-muted">No work samples.</p>}
       </div>
     </section>
   )
