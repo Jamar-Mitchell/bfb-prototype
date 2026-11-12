@@ -65,6 +65,36 @@ npm run build
 
 Copy `.env.example` to `.env` when connecting a local API.
 
+## API types
+
+`src/lib/api/schema.ts` holds TypeScript types generated from the API's OpenAPI document with [openapi-typescript](https://openapi-ts.dev/). It is committed, so builds and tests never need a running API. Do not edit it by hand.
+
+Regenerate it whenever the API's routes or schemas change:
+
+1. Start the API (in the `bfb-api` repo): `poetry run uvicorn src.main:app --port 8000`. The OpenAPI document does not need a database.
+2. In this repo, run:
+
+   ```bash
+   npm run api:types
+   ```
+
+3. Fix any type errors the new schema surfaces (`npm run build`), then commit `schema.ts` with the code that uses it.
+
+The default source is `http://127.0.0.1:8000/openapi.json`. FastAPI serves it at the app root, not under `/api/v1`. To use another API, pass the URL or set `BFB_OPENAPI_URL`:
+
+```bash
+npm run api:types -- https://api.example.com/openapi.json
+BFB_OPENAPI_URL=https://api.example.com/openapi.json npm run api:types
+```
+
+Call the API through the typed helpers in `src/lib/api/requests.ts` (`apiGet`, `apiPost`, `apiPut`, `apiPatch`, `apiDelete`). Routes are written without the `/api/v1` prefix, because the client's base URL already includes it. Paths, path and query parameters, request bodies and responses are all checked against the schema:
+
+```ts
+const health = await apiGet('/health')
+// Once the API has the route:
+const business = await apiGet('/businesses/{business_id}', { path: { business_id: id } })
+```
+
 ## Product planning
 
 - [Development plan](./docs/DEVELOPMENT_PLAN.md)
