@@ -1,4 +1,4 @@
-import { Outlet, useLocation, useRoutes, type RouteObject } from 'react-router-dom'
+import { Navigate, Outlet, useLocation, useParams, useRoutes, type RouteObject } from 'react-router-dom'
 
 import { AppShell } from '../../components/layout/AppShell'
 import { ForgotPasswordPage } from '../../features/auth/ForgotPasswordPage'
@@ -9,6 +9,7 @@ import { VerifyEmailPage } from '../../features/auth/VerifyEmailPage'
 import { BusinessProfile } from '../../features/businesses/BusinessProfile'
 import { CreateBusinessPage } from '../../features/businesses/CreateBusinessPage'
 import { ProfileManagementPage } from '../../features/businesses/ProfileManagementPage'
+import { PublicBusinessProfilePage } from '../../features/businesses/PublicBusinessProfile'
 import { Dashboard } from '../../features/dashboard/Dashboard'
 import { ExchangesPage } from '../../features/exchanges/ExchangesPage'
 import { LandingPage } from '../../features/landing/LandingPage'
@@ -19,7 +20,7 @@ import { Onboarding } from '../../features/onboarding/Onboarding'
 import { AcceptInvitePage } from '../../features/team/AcceptInvitePage'
 import { TeamPage } from '../../features/team/TeamPage'
 import { businesses } from '../../mocks/businesses'
-import { getBusinessIdFromPath, paths } from './paths'
+import { getBusinessIdFromPath, isBusinessUuid, paths, publicBusinessPattern } from './paths'
 import { useActiveBusinessId } from '../../lib/businesses/useActiveBusiness'
 import { RequireAuth } from './RequireAuth'
 import { RequireBusiness } from './RequireBusiness'
@@ -61,9 +62,12 @@ function MarketplaceRoute() {
   return <Marketplace openBusiness={(id) => go(paths.business(id))} />
 }
 
+/** Demo profile for the marketplace's numeric IDs. A real business ID goes to its public profile. */
 function BusinessRoute() {
   const go = useAppNavigate()
   const { pathname } = useLocation()
+  const { id } = useParams()
+  if (isBusinessUuid(id)) return <Navigate to={paths.publicBusiness(id)} replace />
   const selectedId = getBusinessIdFromPath(pathname)
   const selectedBusiness = businesses.find((business) => business.id === selectedId) ?? businesses[0]
   return <BusinessProfile business={selectedBusiness} goBack={() => go(paths.marketplace)} />
@@ -80,6 +84,8 @@ export const routes: RouteObject[] = [
   { path: paths.resetPassword, element: <ResetPasswordPage /> },
   // Logged out, it asks the user to log in or register and brings them back.
   { path: paths.acceptInvite, element: <AcceptInvitePage /> },
+  // A real business's public profile: no login needed, so it sits outside the app shell.
+  { path: publicBusinessPattern, element: <PublicBusinessProfilePage /> },
   {
     // App-shell routes need a logged-in user.
     element: <RequireAuth />,

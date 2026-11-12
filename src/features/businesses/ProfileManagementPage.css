@@ -33,3 +33,4 @@
   .form-grid { grid-template-columns: 1fr; }
   .form-full { grid-column: auto; }
 }
+.manage-profile-actions { display: flex; flex-wrap: wrap; gap: 8px; }

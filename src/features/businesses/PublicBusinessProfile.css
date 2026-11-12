@@ -1,0 +1,33 @@
+/* Public business profile (/b/:id). Reuses the prototype profile (BusinessProfile.css) inside
+   the onboarding/auth header; only the pieces the demo profile does not have are new. */
+.public-profile-page { min-height: 100vh; background: var(--bg); display: grid; grid-template-rows: 76px 1fr; }
+.public-profile-header-actions { display: flex; align-items: center; gap: 14px; }
+.public-profile-header .text-button { color: var(--muted); font-size: var(--text-base); }
+.public-profile-main { width: min(var(--content-max), calc(100% - var(--app-gutter))); margin: 0 auto; padding: 43px 0 70px; }
+
+/* No cover image: the hero keeps its navy shade on its own. */
+.public-profile-hero-plain { background: var(--navy-deep); }
+
+.public-profile-logo { object-fit: cover; background: white; }
+.public-profile-initials { background: var(--pale-blue); color: var(--blue); }
+
+.public-profile-description { white-space: pre-line; }
+.public-profile-links { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 18px; }
+.public-profile-links a { text-decoration: none; }
+.public-profile-links a:hover { text-decoration: underline; }
+
+.public-profile-categories { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.public-profile-categories li { background: var(--pale-blue); color: var(--blue); border-radius: 999px; padding: 6px 12px; font-size: var(--text-base); font-weight: 700; }
+
+.public-profile-details dl { margin: 0; }
+.trust-card.public-profile-details dl > div { display: flex; justify-content: space-between; gap: 12px; color: inherit; margin: 0; padding: 9px 0; border-top: 1px solid var(--border); }
+.public-profile-details dt { color: var(--muted); font-size: var(--text-base); }
+.public-profile-details dd { margin: 0; color: var(--navy); font-size: var(--text-base); font-weight: 700; text-align: right; }
+
+.public-profile-card { background: white; border: 1px solid var(--border); border-radius: var(--radius-xl); }
+
+@media (max-width: 620px) {
+  .public-profile-page { grid-template-rows: 68px 1fr; }
+  .public-profile-header .brand-copy { display: none; }
+  .public-profile-main { width: calc(100% - 28px); padding-top: 28px; }
+}
