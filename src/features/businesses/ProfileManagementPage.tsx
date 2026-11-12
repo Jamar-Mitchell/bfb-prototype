@@ -1,10 +1,13 @@
 import { useState } from 'react'
 import { Check, CircleCheck, Pencil, Plus } from 'lucide-react'
 
+import { useActiveBusinessId } from '../../lib/businesses/useActiveBusiness'
 import { demoBusinessProfile } from '../../mocks/businessProfile'
+import { PublicProfileLink } from './PublicProfileLink'
 import './ProfileManagementPage.css'
 
 export function ProfileManagementPage() {
+  const businessId = useActiveBusinessId()
   const [editing, setEditing] = useState(false)
   const [saved, setSaved] = useState(false)
   const [profile, setProfile] = useState(demoBusinessProfile)
@@ -14,7 +17,10 @@ export function ProfileManagementPage() {
     <>
       <div className="page-heading">
         <div><span>BUSINESS PROFILE</span><h1>Show partners what makes you valuable.</h1><p>A complete profile helps the right businesses find and trust you.</p></div>
-        <button className="button button-primary" onClick={() => { if (editing) setSaved(true); setEditing(!editing) }}>{editing ? <><Check size={16} /> Save changes</> : <><Pencil size={16} /> Edit profile</>}</button>
+        <div className="manage-profile-actions">
+          <PublicProfileLink businessId={businessId} />
+          <button className="button button-primary" onClick={() => { if (editing) setSaved(true); setEditing(!editing) }}>{editing ? <><Check size={16} /> Save changes</> : <><Pencil size={16} /> Edit profile</>}</button>
+        </div>
       </div>
       {saved && <div className="inline-success"><CircleCheck size={17} /> Your business profile has been updated.</div>}
       <div className="manage-profile-layout">

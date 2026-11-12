@@ -285,11 +285,55 @@ export interface paths {
         };
         /**
          * Get One
-         * @description One business the caller belongs to, with the caller's role.
+         * @description One business the caller belongs to, with the caller's role, profile and
+         *     completeness.
          */
         get: operations["get_one_api_v1_businesses__business_id__get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{business_id}/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update Business Profile
+         * @description Edit the profile (owners and administrators). Partial: fields left out are kept,
+         *     ``null`` clears an optional field, ``category_ids`` replaces the categories.
+         */
+        patch: operations["update_business_profile_api_v1_businesses__business_id__profile_patch"];
+        trace?: never;
+    };
+    "/api/v1/businesses/{business_id}/submit-for-review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Submit Business For Review
+         * @description Submit a complete profile for review (owners and administrators). Moves
+         *     ``profile_status`` to ``in_review`` and ``verification_status`` to ``pending``;
+         *     the profile cannot be edited until a reviewer decides.
+         */
+        post: operations["submit_business_for_review_api_v1_businesses__business_id__submit_for_review_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -452,6 +496,88 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Review Queue
+         * @description Businesses waiting for a decision, oldest submission first. ``?status=`` shows
+         *     another status (for example ``changes_requested``).
+         */
+        get: operations["review_queue_api_v1_admin_reviews_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/businesses/{business_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Admin Business
+         * @description A business with private fields, members, listing counts and review history.
+         */
+        get: operations["admin_business_api_v1_admin_businesses__business_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/businesses/{business_id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Approve
+         * @description ``in_review`` -> ``approved`` (verification ``verified``). Optional notes.
+         */
+        post: operations["approve_api_v1_admin_businesses__business_id__approve_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/businesses/{business_id}/request-changes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Request Changes
+         * @description ``in_review`` -> ``changes_requested`` (verification ``unverified``). The notes
+         *     are shown to the business, which can edit and resubmit.
+         */
+        post: operations["request_changes_api_v1_admin_businesses__business_id__request_changes_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/businesses/{business_id}/uploads": {
         parameters: {
             query?: never;
@@ -515,6 +641,277 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/businesses/{business_id}/offers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Offers
+         * @description The business's offers, newest first. Filter with ``?status=``.
+         */
+        get: operations["list_offers_api_v1_businesses__business_id__offers_get"];
+        put?: never;
+        /**
+         * Create Offer
+         * @description Create a draft offer.
+         */
+        post: operations["create_offer_api_v1_businesses__business_id__offers_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{business_id}/offers/{offer_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Offer */
+        get: operations["get_offer_api_v1_businesses__business_id__offers__offer_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update Offer
+         * @description Partial edit. Archived offers cannot be edited.
+         */
+        patch: operations["update_offer_api_v1_businesses__business_id__offers__offer_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/businesses/{business_id}/offers/{offer_id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Publish Offer
+         * @description ``draft`` -> ``active``. The business must be approved and the offer complete.
+         */
+        post: operations["publish_offer_api_v1_businesses__business_id__offers__offer_id__publish_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{business_id}/offers/{offer_id}/pause": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Pause Offer
+         * @description ``active`` -> ``paused``.
+         */
+        post: operations["pause_offer_api_v1_businesses__business_id__offers__offer_id__pause_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{business_id}/offers/{offer_id}/resume": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Resume Offer
+         * @description ``paused`` -> ``active``. The business must be approved.
+         */
+        post: operations["resume_offer_api_v1_businesses__business_id__offers__offer_id__resume_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{business_id}/offers/{offer_id}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Archive Offer
+         * @description Any status but ``archived`` -> ``archived``. Final.
+         */
+        post: operations["archive_offer_api_v1_businesses__business_id__offers__offer_id__archive_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{business_id}/needs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Needs
+         * @description The business's needs, newest first. Filter with ``?status=``.
+         */
+        get: operations["list_needs_api_v1_businesses__business_id__needs_get"];
+        put?: never;
+        /**
+         * Create Need
+         * @description Create a draft need.
+         */
+        post: operations["create_need_api_v1_businesses__business_id__needs_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{business_id}/needs/{need_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Need */
+        get: operations["get_need_api_v1_businesses__business_id__needs__need_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update Need
+         * @description Partial edit. Archived needs cannot be edited.
+         */
+        patch: operations["update_need_api_v1_businesses__business_id__needs__need_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/businesses/{business_id}/needs/{need_id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Publish Need
+         * @description ``draft`` -> ``active``. The business must be approved and the need complete.
+         */
+        post: operations["publish_need_api_v1_businesses__business_id__needs__need_id__publish_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{business_id}/needs/{need_id}/pause": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Pause Need
+         * @description ``active`` -> ``paused``.
+         */
+        post: operations["pause_need_api_v1_businesses__business_id__needs__need_id__pause_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{business_id}/needs/{need_id}/resume": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Resume Need
+         * @description ``paused`` -> ``active``. The business must be approved.
+         */
+        post: operations["resume_need_api_v1_businesses__business_id__needs__need_id__resume_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{business_id}/needs/{need_id}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Archive Need
+         * @description Any status but ``archived`` -> ``archived``. Final.
+         */
+        post: operations["archive_need_api_v1_businesses__business_id__needs__need_id__archive_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/public/businesses/{business_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Public Business Profile
+         * @description The public profile of an approved business. No login required. Drafts,
+         *     businesses in review and suspended businesses answer ``404 not_found``.
+         */
+        get: operations["get_public_business_profile_api_v1_public_businesses__business_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/": {
         parameters: {
             query?: never;
@@ -547,6 +944,100 @@ export interface components {
          * @enum {string}
          */
         AccountStatus: "active" | "suspended" | "deactivated";
+        /**
+         * AdminBusinessResponse
+         * @description Everything a reviewer needs to decide: the full profile including private
+         *     fields, members, listing counts by status, flagged categories and every decision.
+         */
+        AdminBusinessResponse: {
+            /** Description */
+            description: string | null;
+            /** Website Url */
+            website_url: string | null;
+            /** Social Links */
+            social_links: {
+                [key: string]: string;
+            };
+            /** Location City */
+            location_city: string | null;
+            /** Location Region */
+            location_region: string | null;
+            /** Location Country */
+            location_country: string | null;
+            service_area: components["schemas"]["ServiceArea"] | null;
+            /** Industry */
+            industry: string | null;
+            business_stage: components["schemas"]["BusinessStage"] | null;
+            team_size: components["schemas"]["TeamSize"] | null;
+            /** Categories */
+            categories: components["schemas"]["CategorySummary"][];
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Display Name */
+            display_name: string;
+            /** Legal Name */
+            legal_name: string | null;
+            profile_status: components["schemas"]["ProfileStatus"];
+            verification_status: components["schemas"]["VerificationStatus"];
+            /** Logo Upload Id */
+            logo_upload_id: string | null;
+            /** Cover Upload Id */
+            cover_upload_id: string | null;
+            /** Logo Url */
+            logo_url: string | null;
+            /** Cover Url */
+            cover_url: string | null;
+            completeness: components["schemas"]["CompletenessResponse"];
+            /** Submitted For Review At */
+            submitted_for_review_at: string | null;
+            /** Flagged Categories */
+            flagged_categories: components["schemas"]["CategorySummary"][];
+            /** Requires Additional Review */
+            requires_additional_review: boolean;
+            /** Members */
+            members: components["schemas"]["AdminMemberResponse"][];
+            /** Offer Counts */
+            offer_counts: {
+                [key: string]: number;
+            };
+            /** Need Counts */
+            need_counts: {
+                [key: string]: number;
+            };
+            /** Reviews */
+            reviews: components["schemas"]["ReviewResponse"][];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** AdminMemberResponse */
+        AdminMemberResponse: {
+            /**
+             * User Id
+             * Format: uuid
+             */
+            user_id: string;
+            /** Email */
+            email: string;
+            /** Display Name */
+            display_name: string;
+            role: components["schemas"]["BusinessRole"];
+        };
+        /** ApproveRequest */
+        ApproveRequest: {
+            /** Notes */
+            notes?: string | null;
+        };
         /** Body_upload_api_v1_businesses__business_id__uploads_post */
         Body_upload_api_v1_businesses__business_id__uploads_post: {
             /**
@@ -565,10 +1056,67 @@ export interface components {
             legal_name?: string | null;
         };
         /**
+         * BusinessProfileUpdateRequest
+         * @description A partial profile edit. Leave a field out to keep it; send ``null`` to clear an
+         *     optional field. Unknown fields (including ``profile_status``) are refused.
+         */
+        BusinessProfileUpdateRequest: {
+            /** Display Name */
+            display_name?: string | null;
+            /** Legal Name */
+            legal_name?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Website Url */
+            website_url?: string | null;
+            /** Social Links */
+            social_links?: {
+                [key: string]: string;
+            } | null;
+            /** Location City */
+            location_city?: string | null;
+            /** Location Region */
+            location_region?: string | null;
+            /** Location Country */
+            location_country?: string | null;
+            service_area?: components["schemas"]["ServiceArea"] | null;
+            /** Industry */
+            industry?: string | null;
+            business_stage?: components["schemas"]["BusinessStage"] | null;
+            team_size?: components["schemas"]["TeamSize"] | null;
+            /** Logo Upload Id */
+            logo_upload_id?: string | null;
+            /** Cover Upload Id */
+            cover_upload_id?: string | null;
+            /** Category Ids */
+            category_ids?: string[] | null;
+        };
+        /**
          * BusinessResponse
          * @description A business as seen by one of its members, with that member's role.
          */
         BusinessResponse: {
+            /** Description */
+            description: string | null;
+            /** Website Url */
+            website_url: string | null;
+            /** Social Links */
+            social_links: {
+                [key: string]: string;
+            };
+            /** Location City */
+            location_city: string | null;
+            /** Location Region */
+            location_region: string | null;
+            /** Location Country */
+            location_country: string | null;
+            service_area: components["schemas"]["ServiceArea"] | null;
+            /** Industry */
+            industry: string | null;
+            business_stage: components["schemas"]["BusinessStage"] | null;
+            team_size: components["schemas"]["TeamSize"] | null;
+            /** Categories */
+            categories: components["schemas"]["CategorySummary"][];
             /**
              * Id
              * Format: uuid
@@ -581,6 +1129,14 @@ export interface components {
             profile_status: components["schemas"]["ProfileStatus"];
             verification_status: components["schemas"]["VerificationStatus"];
             role: components["schemas"]["BusinessRole"];
+            /** Logo Upload Id */
+            logo_upload_id: string | null;
+            /** Cover Upload Id */
+            cover_upload_id: string | null;
+            completeness: components["schemas"]["CompletenessResponse"];
+            /** Submitted For Review At */
+            submitted_for_review_at: string | null;
+            latest_review: components["schemas"]["LatestReviewResponse"] | null;
             /**
              * Created At
              * Format: date-time
@@ -598,6 +1154,11 @@ export interface components {
          * @enum {string}
          */
         BusinessRole: "owner" | "administrator" | "member";
+        /**
+         * BusinessStage
+         * @enum {string}
+         */
+        BusinessStage: "idea" | "startup" | "growing" | "established";
         /**
          * CategoryResponse
          * @description A public service category.
@@ -619,6 +1180,41 @@ export interface components {
             /** Requires Review */
             requires_review: boolean;
         };
+        /** CategorySummary */
+        CategorySummary: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Slug */
+            slug: string;
+            /** Name */
+            name: string;
+            /** Requires Review */
+            requires_review: boolean;
+        };
+        /**
+         * CompletenessResponse
+         * @description ``score`` is 0 to 100. ``missing`` lists the items still needed before the
+         *     business can submit for review, in this order: ``legal_name``, ``description``,
+         *     ``industry``, ``business_stage``, ``team_size``, ``location`` (city and country),
+         *     ``service_area``, ``categories``, ``logo``. ``complete`` is true when ``missing`` is
+         *     empty.
+         */
+        CompletenessResponse: {
+            /** Score */
+            score: number;
+            /** Complete */
+            complete: boolean;
+            /** Missing */
+            missing: string[];
+        };
+        /**
+         * DeliveryFormat
+         * @enum {string}
+         */
+        DeliveryFormat: "remote" | "in_person" | "hybrid";
         /** ErrorBody */
         ErrorBody: {
             /** Code */
@@ -728,6 +1324,32 @@ export interface components {
             /** Usable */
             usable: boolean;
         };
+        /**
+         * LatestReviewResponse
+         * @description The latest review decision, as the business sees it (no reviewer identity).
+         */
+        LatestReviewResponse: {
+            decision: components["schemas"]["ReviewDecision"];
+            /** Notes */
+            notes: string | null;
+            /**
+             * Decided At
+             * Format: date-time
+             */
+            decided_at: string;
+        };
+        /**
+         * ListingStatus
+         * @description ``draft`` until published (API-2.8, approved businesses only). ``active`` is
+         *     visible to others; ``paused`` hides it without losing it; ``archived`` is final.
+         * @enum {string}
+         */
+        ListingStatus: "draft" | "active" | "paused" | "archived";
+        /**
+         * LocationPreference
+         * @enum {string}
+         */
+        LocationPreference: "remote" | "local" | "either";
         /** LoginRequest */
         LoginRequest: {
             /**
@@ -758,6 +1380,211 @@ export interface components {
             /** Business Name */
             business_name: string;
             role: components["schemas"]["BusinessRole"];
+        };
+        /** NeedCreateRequest */
+        NeedCreateRequest: {
+            /**
+             * Category Id
+             * Format: uuid
+             */
+            category_id: string;
+            /** Title */
+            title: string;
+            /** Deliverables */
+            deliverables?: string[] | null;
+            /** Value Min Minor */
+            value_min_minor?: number | null;
+            /** Value Max Minor */
+            value_max_minor?: number | null;
+            /** Currency */
+            currency?: string | null;
+            /** Desired Outcome */
+            desired_outcome?: string | null;
+            /** Desired Start Date */
+            desired_start_date?: string | null;
+            /** Desired End Date */
+            desired_end_date?: string | null;
+            location_preference?: components["schemas"]["LocationPreference"] | null;
+            /** Location Notes */
+            location_notes?: string | null;
+            urgency?: components["schemas"]["Urgency"] | null;
+        };
+        /** NeedResponse */
+        NeedResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Business Id
+             * Format: uuid
+             */
+            business_id: string;
+            category: components["schemas"]["CategorySummary"];
+            /** Title */
+            title: string;
+            /** Deliverables */
+            deliverables: string[];
+            /** Value Min Minor */
+            value_min_minor: number | null;
+            /** Value Max Minor */
+            value_max_minor: number | null;
+            /** Currency */
+            currency: string;
+            status: components["schemas"]["ListingStatus"];
+            /** Missing For Publish */
+            missing_for_publish: string[];
+            /** Published At */
+            published_at: string | null;
+            /** Archived At */
+            archived_at: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** Desired Outcome */
+            desired_outcome: string | null;
+            /** Desired Start Date */
+            desired_start_date: string | null;
+            /** Desired End Date */
+            desired_end_date: string | null;
+            location_preference: components["schemas"]["LocationPreference"] | null;
+            /** Location Notes */
+            location_notes: string | null;
+            urgency: components["schemas"]["Urgency"] | null;
+        };
+        /** NeedUpdateRequest */
+        NeedUpdateRequest: {
+            /** Category Id */
+            category_id?: string | null;
+            /** Title */
+            title?: string | null;
+            /** Deliverables */
+            deliverables?: string[] | null;
+            /** Value Min Minor */
+            value_min_minor?: number | null;
+            /** Value Max Minor */
+            value_max_minor?: number | null;
+            /** Currency */
+            currency?: string | null;
+            /** Desired Outcome */
+            desired_outcome?: string | null;
+            /** Desired Start Date */
+            desired_start_date?: string | null;
+            /** Desired End Date */
+            desired_end_date?: string | null;
+            location_preference?: components["schemas"]["LocationPreference"] | null;
+            /** Location Notes */
+            location_notes?: string | null;
+            urgency?: components["schemas"]["Urgency"] | null;
+        };
+        /** OfferCreateRequest */
+        OfferCreateRequest: {
+            /**
+             * Category Id
+             * Format: uuid
+             */
+            category_id: string;
+            /** Title */
+            title: string;
+            /** Deliverables */
+            deliverables?: string[] | null;
+            /** Value Min Minor */
+            value_min_minor?: number | null;
+            /** Value Max Minor */
+            value_max_minor?: number | null;
+            /** Currency */
+            currency?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Capacity */
+            capacity?: number | null;
+            /** Availability */
+            availability?: string | null;
+            delivery_format?: components["schemas"]["DeliveryFormat"] | null;
+            /** Location Restrictions */
+            location_restrictions?: string | null;
+        };
+        /** OfferResponse */
+        OfferResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Business Id
+             * Format: uuid
+             */
+            business_id: string;
+            category: components["schemas"]["CategorySummary"];
+            /** Title */
+            title: string;
+            /** Deliverables */
+            deliverables: string[];
+            /** Value Min Minor */
+            value_min_minor: number | null;
+            /** Value Max Minor */
+            value_max_minor: number | null;
+            /** Currency */
+            currency: string;
+            status: components["schemas"]["ListingStatus"];
+            /** Missing For Publish */
+            missing_for_publish: string[];
+            /** Published At */
+            published_at: string | null;
+            /** Archived At */
+            archived_at: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** Description */
+            description: string | null;
+            /** Capacity */
+            capacity: number | null;
+            /** Availability */
+            availability: string | null;
+            delivery_format: components["schemas"]["DeliveryFormat"] | null;
+            /** Location Restrictions */
+            location_restrictions: string | null;
+        };
+        /** OfferUpdateRequest */
+        OfferUpdateRequest: {
+            /** Category Id */
+            category_id?: string | null;
+            /** Title */
+            title?: string | null;
+            /** Deliverables */
+            deliverables?: string[] | null;
+            /** Value Min Minor */
+            value_min_minor?: number | null;
+            /** Value Max Minor */
+            value_max_minor?: number | null;
+            /** Currency */
+            currency?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Capacity */
+            capacity?: number | null;
+            /** Availability */
+            availability?: string | null;
+            delivery_format?: components["schemas"]["DeliveryFormat"] | null;
+            /** Location Restrictions */
+            location_restrictions?: string | null;
         };
         /**
          * PasswordResetConfirmRequest
@@ -796,6 +1623,52 @@ export interface components {
          */
         ProfileStatus: "draft" | "in_review" | "changes_requested" | "approved" | "suspended";
         /**
+         * PublicBusinessResponse
+         * @description An approved business as anyone may see it. No legal name, statuses, members or
+         *     completeness.
+         */
+        PublicBusinessResponse: {
+            /** Description */
+            description: string | null;
+            /** Website Url */
+            website_url: string | null;
+            /** Social Links */
+            social_links: {
+                [key: string]: string;
+            };
+            /** Location City */
+            location_city: string | null;
+            /** Location Region */
+            location_region: string | null;
+            /** Location Country */
+            location_country: string | null;
+            service_area: components["schemas"]["ServiceArea"] | null;
+            /** Industry */
+            industry: string | null;
+            business_stage: components["schemas"]["BusinessStage"] | null;
+            team_size: components["schemas"]["TeamSize"] | null;
+            /** Categories */
+            categories: components["schemas"]["CategorySummary"][];
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Display Name */
+            display_name: string;
+            /** Verified */
+            verified: boolean;
+            /** Logo Url */
+            logo_url: string | null;
+            /** Cover Url */
+            cover_url: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /**
          * RefreshRequest
          * @description The refresh token from the last login or refresh. Used by refresh and logout.
          */
@@ -825,6 +1698,11 @@ export interface components {
             /** Invite Code */
             invite_code?: string | null;
         };
+        /** RequestChangesRequest */
+        RequestChangesRequest: {
+            /** Notes */
+            notes: string;
+        };
         /** ResendVerificationRequest */
         ResendVerificationRequest: {
             /**
@@ -833,6 +1711,73 @@ export interface components {
              */
             email: string;
         };
+        /**
+         * ReviewDecision
+         * @enum {string}
+         */
+        ReviewDecision: "approved" | "changes_requested";
+        /** ReviewQueueItem */
+        ReviewQueueItem: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Display Name */
+            display_name: string;
+            /** Legal Name */
+            legal_name: string | null;
+            profile_status: components["schemas"]["ProfileStatus"];
+            verification_status: components["schemas"]["VerificationStatus"];
+            /** Submitted For Review At */
+            submitted_for_review_at: string | null;
+            completeness: components["schemas"]["CompletenessResponse"];
+            /** Categories */
+            categories: components["schemas"]["CategorySummary"][];
+            /** Flagged Categories */
+            flagged_categories: components["schemas"]["CategorySummary"][];
+            /** Requires Additional Review */
+            requires_additional_review: boolean;
+            latest_review: components["schemas"]["ReviewResponse"] | null;
+        };
+        /** ReviewQueueResponse */
+        ReviewQueueResponse: {
+            /** Items */
+            items: components["schemas"]["ReviewQueueItem"][];
+            /** Total */
+            total: number;
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+        };
+        /**
+         * ReviewResponse
+         * @description One review decision, with the reviewer (admin view).
+         */
+        ReviewResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            decision: components["schemas"]["ReviewDecision"];
+            /** Notes */
+            notes: string | null;
+            /** Reviewer User Id */
+            reviewer_user_id: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /**
+         * ServiceArea
+         * @description How far from its location a business works.
+         * @enum {string}
+         */
+        ServiceArea: "local" | "regional" | "national" | "international";
         /**
          * TeamMemberResponse
          * @description One person in a business, as listed on the team page.
@@ -854,6 +1799,12 @@ export interface components {
              */
             joined_at: string;
         };
+        /**
+         * TeamSize
+         * @description Headcount buckets, including the founders.
+         * @enum {string}
+         */
+        TeamSize: "just_me" | "2_10" | "11_50" | "51_200" | "201_plus";
         /**
          * TokenResponse
          * @description A new access token and the refresh token that replaces any previous one.
@@ -917,6 +1868,11 @@ export interface components {
              */
             url_expires_at: string;
         };
+        /**
+         * Urgency
+         * @enum {string}
+         */
+        Urgency: "low" | "medium" | "high";
         /**
          * UserResponse
          * @description A user as returned to that user. Never includes the password hash.
@@ -1507,6 +2463,144 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_business_profile_api_v1_businesses__business_id__profile_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BusinessProfileUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BusinessResponse"];
+                };
+            };
+            /** @description `unauthorized` or `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `business_role_required` */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business, or the caller is not a member */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `profile_not_editable`: the profile is in review or suspended */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `validation_error`, `invalid_category` */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    submit_business_for_review_api_v1_businesses__business_id__submit_for_review_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BusinessResponse"];
+                };
+            };
+            /** @description `unauthorized` or `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `business_role_required` */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business, or the caller is not a member */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `invalid_profile_status`: not in draft or changes_requested */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `profile_incomplete`: `details.missing` lists what is left */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
         };
@@ -2107,6 +3201,257 @@ export interface operations {
             };
         };
     };
+    review_queue_api_v1_admin_reviews_get: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["ProfileStatus"];
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewQueueResponse"];
+                };
+            };
+            /** @description `unauthorized` or `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `forbidden`: not support or administrator */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    admin_business_api_v1_admin_businesses__business_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminBusinessResponse"];
+                };
+            };
+            /** @description `unauthorized` or `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `forbidden`: not support or administrator */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    approve_api_v1_admin_businesses__business_id__approve_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ApproveRequest"] | null;
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminBusinessResponse"];
+                };
+            };
+            /** @description `unauthorized` or `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `forbidden`: not support or administrator */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `invalid_profile_status`: not in review */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    request_changes_api_v1_admin_businesses__business_id__request_changes_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RequestChangesRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminBusinessResponse"];
+                };
+            };
+            /** @description `unauthorized` or `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `forbidden`: not support or administrator */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `invalid_profile_status`: not in review */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     upload_api_v1_businesses__business_id__uploads_post: {
         parameters: {
             query?: never;
@@ -2259,6 +3604,1078 @@ export interface operations {
                 };
             };
             /** @description `not_found` */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_offers_api_v1_businesses__business_id__offers_get: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["ListingStatus"] | null;
+            };
+            header?: never;
+            path: {
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OfferResponse"][];
+                };
+            };
+            /** @description `unauthorized`, `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business or listing, or the caller is not a member */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_offer_api_v1_businesses__business_id__offers_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OfferCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OfferResponse"];
+                };
+            };
+            /** @description `unauthorized`, `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `business_role_required` */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business or listing, or the caller is not a member */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `invalid_listing_status` (archived) */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `validation_error`, `invalid_category`, `invalid_range`, `listing_incomplete` (an active or paused listing cannot lose required information) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    get_offer_api_v1_businesses__business_id__offers__offer_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                offer_id: string;
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OfferResponse"];
+                };
+            };
+            /** @description `unauthorized`, `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business or listing, or the caller is not a member */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_offer_api_v1_businesses__business_id__offers__offer_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                offer_id: string;
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OfferUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OfferResponse"];
+                };
+            };
+            /** @description `unauthorized`, `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `business_role_required` */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business or listing, or the caller is not a member */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `invalid_listing_status` (archived) */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `validation_error`, `invalid_category`, `invalid_range`, `listing_incomplete` (an active or paused listing cannot lose required information) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    publish_offer_api_v1_businesses__business_id__offers__offer_id__publish_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                offer_id: string;
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OfferResponse"];
+                };
+            };
+            /** @description `unauthorized`, `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `business_role_required` */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business or listing, or the caller is not a member */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `invalid_listing_status`, `business_not_approved` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `listing_incomplete` */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    pause_offer_api_v1_businesses__business_id__offers__offer_id__pause_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                offer_id: string;
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OfferResponse"];
+                };
+            };
+            /** @description `unauthorized`, `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `business_role_required` */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business or listing, or the caller is not a member */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `invalid_listing_status`, `business_not_approved` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `listing_incomplete` */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    resume_offer_api_v1_businesses__business_id__offers__offer_id__resume_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                offer_id: string;
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OfferResponse"];
+                };
+            };
+            /** @description `unauthorized`, `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `business_role_required` */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business or listing, or the caller is not a member */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `invalid_listing_status`, `business_not_approved` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `listing_incomplete` */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    archive_offer_api_v1_businesses__business_id__offers__offer_id__archive_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                offer_id: string;
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OfferResponse"];
+                };
+            };
+            /** @description `unauthorized`, `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `business_role_required` */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business or listing, or the caller is not a member */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `invalid_listing_status`, `business_not_approved` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `listing_incomplete` */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    list_needs_api_v1_businesses__business_id__needs_get: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["ListingStatus"] | null;
+            };
+            header?: never;
+            path: {
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NeedResponse"][];
+                };
+            };
+            /** @description `unauthorized`, `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business or listing, or the caller is not a member */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_need_api_v1_businesses__business_id__needs_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NeedCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NeedResponse"];
+                };
+            };
+            /** @description `unauthorized`, `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `business_role_required` */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business or listing, or the caller is not a member */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `invalid_listing_status` (archived) */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `validation_error`, `invalid_category`, `invalid_range`, `listing_incomplete` (an active or paused listing cannot lose required information) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    get_need_api_v1_businesses__business_id__needs__need_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                need_id: string;
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NeedResponse"];
+                };
+            };
+            /** @description `unauthorized`, `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business or listing, or the caller is not a member */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_need_api_v1_businesses__business_id__needs__need_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                need_id: string;
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NeedUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NeedResponse"];
+                };
+            };
+            /** @description `unauthorized`, `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `business_role_required` */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business or listing, or the caller is not a member */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `invalid_listing_status` (archived) */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `validation_error`, `invalid_category`, `invalid_range`, `listing_incomplete` (an active or paused listing cannot lose required information) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    publish_need_api_v1_businesses__business_id__needs__need_id__publish_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                need_id: string;
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NeedResponse"];
+                };
+            };
+            /** @description `unauthorized`, `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `business_role_required` */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business or listing, or the caller is not a member */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `invalid_listing_status`, `business_not_approved` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `listing_incomplete` */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    pause_need_api_v1_businesses__business_id__needs__need_id__pause_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                need_id: string;
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NeedResponse"];
+                };
+            };
+            /** @description `unauthorized`, `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `business_role_required` */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business or listing, or the caller is not a member */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `invalid_listing_status`, `business_not_approved` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `listing_incomplete` */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    resume_need_api_v1_businesses__business_id__needs__need_id__resume_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                need_id: string;
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NeedResponse"];
+                };
+            };
+            /** @description `unauthorized`, `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `business_role_required` */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business or listing, or the caller is not a member */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `invalid_listing_status`, `business_not_approved` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `listing_incomplete` */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    archive_need_api_v1_businesses__business_id__needs__need_id__archive_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                need_id: string;
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NeedResponse"];
+                };
+            };
+            /** @description `unauthorized`, `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `business_role_required` */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business or listing, or the caller is not a member */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `invalid_listing_status`, `business_not_approved` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `listing_incomplete` */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    get_public_business_profile_api_v1_public_businesses__business_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicBusinessResponse"];
+                };
+            };
+            /** @description `not_found`: no such business, or it is not approved */
             404: {
                 headers: {
                     [name: string]: unknown;

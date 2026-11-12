@@ -122,6 +122,14 @@ A user acts for one business at a time. The API keeps no current business (`bfb-
 
 The emailed invitation link opens `#/accept-invite?token=…`. Logged in, it accepts once (even under StrictMode), switches to the business and opens the dashboard. Logged out, it offers login or registration and comes back to the link afterwards. Unverified users get a resend button and a retry; wrong address, expired and used links each have their own message.
 
+### Public business profile
+
+`#/b/<business id>` (`src/features/businesses/PublicBusinessProfile.tsx`) is the public profile of a real business, from `GET /public/businesses/{id}`. It needs no login, so it sits outside the app shell with the onboarding header (log in / join, or "Go to dashboard" when logged in). The API answers `404` for anything that is not approved (draft, in review, changes requested, suspended, unknown), and the page shows one not-found state for all of them; an ID that is not a UUID shows it without asking the API.
+
+The page uses the prototype profile layout with real fields only: logo (initials without one), cover, display name, a "Verified business" badge when `verified`, industry, location, description, website and social links, categories, service area, stage and team size. Sections with no data are hidden. Offers, needs, ratings, exchanges and proposals are not shown: the API has no public listings or reviews yet (Phase 3). Signed image URLs expire after 15 minutes and are never stored.
+
+`#/business/<n>` stays the demo profile the marketplace and dashboard open (numeric IDs from `src/mocks/businesses.ts`) until Phase 3. A UUID on that route redirects to `#/b/<id>`. The business profile page (`#/profile`) shows "View public profile" once the active business is approved (`PublicProfileLink`).
+
 ## Product planning
 
 - [Development plan](./docs/DEVELOPMENT_PLAN.md)
