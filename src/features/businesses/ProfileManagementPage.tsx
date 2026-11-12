@@ -21,6 +21,7 @@ import {
 } from './profileFields'
 import { profileSchema, profileUpdate, profileValues, type ProfileValues } from './profileForm'
 import { BUSINESS_STAGE_LABELS } from './profileLabels'
+import { PortfolioEditor } from './PortfolioEditor'
 import { PublicProfileLink } from './PublicProfileLink'
 import { UPLOAD_LIMITS, type ImageCategory } from './uploadsApi'
 import { loadBusinessProfile, setBusinessProfile, useBusinessProfile } from './useBusinessProfile'
@@ -79,6 +80,7 @@ function ProfileEditor({ business }: { business: Business }) {
   const [saved, setSaved] = useState(false)
   const [problem, setProblem] = useState<string | null>(null)
   const [categoriesKey, setCategoriesKey] = useState(0)
+  const [portfolioDirty, setPortfolioDirty] = useState(false)
   const locked = lockReason(business)
   const editable = locked === null
   const fieldsEnabled = editable && editing
@@ -165,43 +167,46 @@ function ProfileEditor({ business }: { business: Business }) {
       {saved ? <div className="inline-success" role="status"><CircleCheck size={17} aria-hidden="true" /> Your business profile has been updated.</div> : null}
       {problem ? <div className="profile-notice profile-notice-error" role="alert">{problem}</div> : null}
       <div className="manage-profile-layout">
-        <section className="manage-profile-card" aria-label="Profile details">
-          <CoverImage business={business} editable={editable} />
-          <form id="profile-form" className="manage-profile-content" onSubmit={save} noValidate>
-            <LogoImage business={business} editable={editable} />
-            <div className="form-grid">
-              <Field label="Business name" error={errors.display_name?.message} disabled={!fieldsEnabled} {...register('display_name')} />
-              <Field label="Legal name" hint="Private: only BFB sees it." error={errors.legal_name?.message} disabled={!fieldsEnabled} {...register('legal_name')} />
-              <Field label="Industry" error={errors.industry?.message} disabled={!fieldsEnabled} {...register('industry')} />
-              <Field label="Website" placeholder="https://" error={errors.website_url?.message} disabled={!fieldsEnabled} {...register('website_url')} />
-              <Select label="Business stage" placeholder="Choose a stage" options={STAGE_OPTIONS} disabled={!fieldsEnabled} {...register('business_stage')} />
-              <Select label="Team size" placeholder="Choose a size" options={TEAM_SIZE_OPTIONS} disabled={!fieldsEnabled} {...register('team_size')} />
-              <Field label="City" error={errors.location_city?.message} disabled={!fieldsEnabled} {...register('location_city')} />
-              <Field label="State or region" error={errors.location_region?.message} disabled={!fieldsEnabled} {...register('location_region')} />
-              <Select label="Country" placeholder="Choose a country" options={getCountryOptions()} disabled={!fieldsEnabled} {...register('location_country')} />
-              <Select label="Service area" placeholder="Choose an area" options={SERVICE_AREA_OPTIONS} disabled={!fieldsEnabled} {...register('service_area')} />
-              <CategoryPicker
-                key={categoriesKey}
-                selected={categoryIds}
-                current={business.categories}
-                disabled={!fieldsEnabled}
-                error={errors.category_ids?.message}
-                onChange={(ids) => setValue('category_ids', ids, { shouldDirty: true, shouldValidate: true })}
-              />
-              <TextArea className="form-full" label="Business description" error={errors.description?.message} disabled={!fieldsEnabled} {...register('description')} />
-              <fieldset className="form-full profile-social" disabled={!fieldsEnabled}>
-                <legend>Social links</legend>
-                <div className="form-grid">
-                  {SOCIAL_LINK_KEYS.map((key) => (
-                    <Field key={key} label={SOCIAL_LINK_LABELS[key]} placeholder="https://" error={errors.social_links?.[key]?.message} {...register(`social_links.${key}`)} />
-                  ))}
-                </div>
-              </fieldset>
-            </div>
-          </form>
-        </section>
+        <div className="manage-profile-main">
+          <section className="manage-profile-card" aria-label="Profile details">
+            <CoverImage business={business} editable={editable} />
+            <form id="profile-form" className="manage-profile-content" onSubmit={save} noValidate>
+              <LogoImage business={business} editable={editable} />
+              <div className="form-grid">
+                <Field label="Business name" error={errors.display_name?.message} disabled={!fieldsEnabled} {...register('display_name')} />
+                <Field label="Legal name" hint="Private: only BFB sees it." error={errors.legal_name?.message} disabled={!fieldsEnabled} {...register('legal_name')} />
+                <Field label="Industry" error={errors.industry?.message} disabled={!fieldsEnabled} {...register('industry')} />
+                <Field label="Website" placeholder="https://" error={errors.website_url?.message} disabled={!fieldsEnabled} {...register('website_url')} />
+                <Select label="Business stage" placeholder="Choose a stage" options={STAGE_OPTIONS} disabled={!fieldsEnabled} {...register('business_stage')} />
+                <Select label="Team size" placeholder="Choose a size" options={TEAM_SIZE_OPTIONS} disabled={!fieldsEnabled} {...register('team_size')} />
+                <Field label="City" error={errors.location_city?.message} disabled={!fieldsEnabled} {...register('location_city')} />
+                <Field label="State or region" error={errors.location_region?.message} disabled={!fieldsEnabled} {...register('location_region')} />
+                <Select label="Country" placeholder="Choose a country" options={getCountryOptions()} disabled={!fieldsEnabled} {...register('location_country')} />
+                <Select label="Service area" placeholder="Choose an area" options={SERVICE_AREA_OPTIONS} disabled={!fieldsEnabled} {...register('service_area')} />
+                <CategoryPicker
+                  key={categoriesKey}
+                  selected={categoryIds}
+                  current={business.categories}
+                  disabled={!fieldsEnabled}
+                  error={errors.category_ids?.message}
+                  onChange={(ids) => setValue('category_ids', ids, { shouldDirty: true, shouldValidate: true })}
+                />
+                <TextArea className="form-full" label="Business description" error={errors.description?.message} disabled={!fieldsEnabled} {...register('description')} />
+                <fieldset className="form-full profile-social" disabled={!fieldsEnabled}>
+                  <legend>Social links</legend>
+                  <div className="form-grid">
+                    {SOCIAL_LINK_KEYS.map((key) => (
+                      <Field key={key} label={SOCIAL_LINK_LABELS[key]} placeholder="https://" error={errors.social_links?.[key]?.message} {...register(`social_links.${key}`)} />
+                    ))}
+                  </div>
+                </fieldset>
+              </div>
+            </form>
+          </section>
+          <PortfolioEditor business={business} onDirtyChange={setPortfolioDirty} />
+        </div>
         <CompletenessMeter business={business}>
-          <SubmitForReview business={business} unsavedChanges={editing} />
+          <SubmitForReview business={business} unsavedChanges={editing || portfolioDirty} />
         </CompletenessMeter>
       </div>
     </>

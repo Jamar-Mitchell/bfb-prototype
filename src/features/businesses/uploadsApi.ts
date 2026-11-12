@@ -7,6 +7,7 @@ import { businessPath } from '../../lib/businesses/activeBusiness'
 
 export type Upload = components['schemas']['UploadResponse']
 export type ImageCategory = 'logo' | 'cover'
+export type UploadCategory = ImageCategory | 'portfolio'
 
 const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'] as const
 
@@ -16,10 +17,13 @@ export const UPLOAD_LIMITS: Record<ImageCategory, { types: readonly string[]; ma
   cover: { types: IMAGE_TYPES, maxBytes: 10 * 1024 * 1024, label: 'cover image' },
 }
 
-const EXTENSION_TYPES: Record<string, string> = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp' }
+/** Portfolio work samples: images or a PDF, up to 15 MB. */
+export const PORTFOLIO_UPLOAD_LIMITS = { types: [...IMAGE_TYPES, 'application/pdf'] as readonly string[], maxBytes: 15 * 1024 * 1024 }
+
+const EXTENSION_TYPES: Record<string, string> = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp', pdf: 'application/pdf' }
 
 /** The type the server will see: the browser's, with `image/jpg` as JPEG, or a guess from the extension. */
-function fileType(file: File): string {
+export function fileType(file: File): string {
   if (file.type === 'image/jpg') return 'image/jpeg'
   if (file.type) return file.type
   const extension = file.name.split('.').pop()?.toLowerCase() ?? ''
@@ -39,13 +43,22 @@ export function checkImageFile(category: ImageCategory, file: File): string | nu
   return null
 }
 
+/** Why `file` can't be a portfolio work sample, or `null` if it can. Checked before uploading. */
+export function checkPortfolioFile(file: File): string | null {
+  if (!PORTFOLIO_UPLOAD_LIMITS.types.includes(fileType(file))) return 'Choose a JPEG, PNG or WebP image, or a PDF.'
+  if (file.size === 0) return 'That file is empty. Choose another one.'
+  if (file.size > PORTFOLIO_UPLOAD_LIMITS.maxBytes) return `Work samples must be ${formatMegabytes(PORTFOLIO_UPLOAD_LIMITS.maxBytes)} or smaller.`
+  return null
+}
+
 /**
- * Upload a logo or cover for the business (owners and administrators). Resolves with the
- * upload, whose `id` the profile stores and whose `url` is a short-lived preview link.
+ * Upload a file for the business (owners and administrators): a logo, a cover or a portfolio
+ * work sample. Resolves with the upload, whose `id` the record stores and whose `url` is a
+ * short-lived preview link.
  */
-export async function uploadImage(
+export async function uploadFile(
   businessId: string,
-  category: ImageCategory,
+  category: UploadCategory,
   file: File,
   onProgress?: (fraction: number) => void,
 ): Promise<Upload> {

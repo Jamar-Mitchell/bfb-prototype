@@ -31,6 +31,7 @@ function publicBusiness(overrides: Partial<PublicBusiness> = {}): PublicBusiness
     business_stage: 'growing',
     team_size: '2_10',
     categories: [{ id: 'cat-1', slug: 'branding-design', name: 'Branding & design', requires_review: false }],
+    portfolio: [],
     created_at: '2026-11-12T12:00:00Z',
     ...overrides,
   }

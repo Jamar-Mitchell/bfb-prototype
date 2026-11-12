@@ -64,6 +64,7 @@ function adminBusiness(overrides: Partial<AdminBusiness> = {}): AdminBusiness {
     offer_counts: { draft: 2, active: 0, paused: 0, archived: 1 },
     need_counts: { draft: 1, active: 0, paused: 0, archived: 0 },
     reviews: [{ id: 'review-1', decision: 'changes_requested', notes: 'Add your registered legal name.', reviewer_user_id: 'admin-1', created_at: '2026-11-10T09:00:00Z' }],
+    portfolio: [],
     created_at: '2026-11-01T00:00:00Z',
     updated_at: '2026-11-12T12:00:00Z',
     ...overrides,
@@ -249,6 +250,32 @@ describe('business review', () => {
     expect(within(offers).getAllByRole('cell').map((cell) => cell.textContent)).toEqual(['2', '0', '0', '1'])
     const history = screen.getByRole('region', { name: 'Review history' })
     expect(within(history).getByText('Add your registered legal name.')).toBeInTheDocument()
+  })
+
+  it('shows the portfolio read-only, with PDFs as file tiles', async () => {
+    const file = (type: string, name: string) => ({ content_type: type, url: `http://api.test/${name}?signature=x`, url_expires_at: '2026-11-12T12:15:00Z' })
+    const item = (id: string, title: string, extra: Partial<AdminBusiness['portfolio'][number]>) => ({
+      id, title, description: null, link_url: null, file: null, position: 0, upload_id: null, original_filename: null,
+      created_at: '2026-11-12T12:00:00Z', updated_at: '2026-11-12T12:00:00Z', ...extra,
+    })
+    const portfolio = [
+      item('item-1', 'Bakery identity', { file: file('image/png', 'bakery.png'), upload_id: 'upload-2' }),
+      item('item-2', 'Case study', { file: file('application/pdf', 'case.pdf'), upload_id: 'upload-3' }),
+    ]
+    await openDetail({
+      reply: ({ method, url }) => (method === 'get' && url === `/admin/businesses/${BUSINESS_ID}` ? { status: 200, data: adminBusiness({ portfolio }) } : undefined),
+    })
+
+    const section = screen.getByRole('region', { name: 'Portfolio' })
+    expect(within(section).getByText('2 work samples')).toBeInTheDocument()
+    expect(within(section).getByRole('link', { name: 'View image: Bakery identity' })).toHaveAttribute('href', 'http://api.test/bakery.png?signature=x')
+    expect(within(section).getByRole('link', { name: 'Open PDF: Case study' })).toHaveAttribute('href', 'http://api.test/case.pdf?signature=x')
+    expect(within(section).queryByRole('button')).not.toBeInTheDocument()
+  })
+
+  it('says when there are no work samples', async () => {
+    await openDetail()
+    expect(within(screen.getByRole('region', { name: 'Portfolio' })).getByText('No work samples.')).toBeInTheDocument()
   })
 
   it('approves with optional notes and returns to the queue with a toast', async () => {

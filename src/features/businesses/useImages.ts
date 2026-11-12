@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 
 import { toApiError } from '../../lib/api/errors'
 import { updateProfile } from './profileApi'
-import { checkImageFile, formatMegabytes, getUpload, UPLOAD_LIMITS, uploadImage, type ImageCategory, type Upload } from './uploadsApi'
+import { checkImageFile, formatMegabytes, getUpload, UPLOAD_LIMITS, uploadFile, type ImageCategory, type Upload } from './uploadsApi'
 import { loadBusinessProfile, setBusinessProfile } from './useBusinessProfile'
 
 // Signed URLs expire (15 minutes by default). Keep each in memory until a minute before then;
@@ -100,7 +100,7 @@ export function useImageUpload(businessId: string, category: ImageCategory) {
 
       setState({ status: 'uploading', progress: 0 })
       try {
-        const uploaded = await uploadImage(businessId, category, file, (progress) => setState({ status: 'uploading', progress }))
+        const uploaded = await uploadFile(businessId, category, file, (progress) => setState({ status: 'uploading', progress }))
         rememberUrl(uploaded)
         const field = category === 'logo' ? 'logo_upload_id' : 'cover_upload_id'
         setBusinessProfile(await updateProfile(businessId, { [field]: uploaded.id }))

@@ -66,3 +66,6 @@ export function applyProfileUpdate(business: Business, update: ProfileUpdate): B
   if (next.social_links === null) next.social_links = {}
   return withCompleteness(next)
 }
+
+/** `GET /businesses/{id}/portfolio` for a business with no work samples yet. */
+export const emptyPortfolio = { version: 0, max_items: 24, items: [] }

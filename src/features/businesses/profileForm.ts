@@ -14,7 +14,7 @@ export function normalizeUrl(value: string): string {
   return `https://${trimmed}`
 }
 
-function isWebUrl(value: string): boolean {
+export function isWebUrl(value: string): boolean {
   if (!value.trim()) return true
   try {
     const url = new URL(normalizeUrl(value))

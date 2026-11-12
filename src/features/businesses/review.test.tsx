@@ -8,7 +8,7 @@ import { useToastStore } from '../../components/feedback'
 import { ACCESS_TOKEN_KEY, clearStoredSession, REFRESH_TOKEN_KEY } from '../../lib/auth/tokens'
 import { useSessionStore } from '../../stores/session'
 import { apiErrorBody, apiMembership, apiUser, mockApi, tokenBody, type MockHandler, type MockReply } from '../../test/mockApi'
-import { answeredProfile, apiCategories, profileBusiness } from '../../test/profileServer'
+import { answeredProfile, apiCategories, emptyPortfolio, profileBusiness } from '../../test/profileServer'
 import type { Business } from './profileApi'
 
 const complete = { ...answeredProfile, logo_upload_id: 'logo-1' }
@@ -31,6 +31,7 @@ function apiServer({ business: initial, reply }: ServerOptions) {
     if (method === 'get' && url === '/account') return { status: 200, data: { user, memberships: [apiMembership({ role: server.business.role })] } }
     if (method === 'get' && url === '/categories') return { status: 200, data: apiCategories }
     if (method === 'get' && url === '/businesses/business-1') return { status: 200, data: server.business }
+    if (method === 'get' && url === '/businesses/business-1/portfolio') return { status: 200, data: emptyPortfolio }
     if (method === 'post' && url === '/businesses/business-1/submit-for-review') {
       server.business = { ...server.business, profile_status: 'in_review', verification_status: 'pending', submitted_for_review_at: '2026-11-12T12:00:00Z' }
       return { status: 200, data: server.business }
