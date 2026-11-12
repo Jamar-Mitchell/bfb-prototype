@@ -14,16 +14,15 @@
 .text-button { border: 0; background: none; color: var(--navy); font-weight: 600; }
 .icon-button { border: 1px solid var(--border); width: 40px; height: 40px; display: grid; place-items: center; background: white; color: var(--navy); border-radius: var(--radius-control); position: relative; }
 .brand { display: flex; align-items: center; gap: 11px; border: 0; background: none; padding: 0; text-align: left; }
-.brand-mark { width: 72px; height: 37px; display: block; flex: 0 0 auto; }
+.brand-mark { width: 70px; aspect-ratio: 297 / 160; display: block; flex: 0 0 auto; }
 .brand-mark svg { width: 100%; height: 100%; display: block; overflow: visible; }
-.brand-b-shape { fill: var(--navy); }
-.brand-f-stem, .brand-arrow-shape { fill: var(--blue); }
+.brand-letters, .brand-return { color: var(--navy); }
+.brand-f { color: var(--blue); }
 .brand-copy { display: flex; flex-direction: column; border-left: 1px solid var(--border); padding-left: 10px; }
 .brand-copy strong { font: 700 var(--text-sm)/1.3 var(--font-heading); letter-spacing: .75px; color: var(--navy); }
 .brand-copy small { color: var(--muted); font-size: var(--text-xs); margin-top: 2px; }
 .brand-light .brand-copy strong { color: white; }
-.brand-light .brand-b-shape { fill: white; }
-.brand-light .brand-f-stem, .brand-light .brand-arrow-shape { fill: #54b4ff; }
+.brand-light .brand-letters, .brand-light .brand-return { color: white; }
 .brand-light .brand-copy { border-color: rgba(255,255,255,.25); }
 .brand-light .brand-copy small { color: #99adbf; }
 .section-kicker { color: var(--blue); font-size: var(--text-base); letter-spacing: .11em; font-weight: 800; text-transform: uppercase; }
