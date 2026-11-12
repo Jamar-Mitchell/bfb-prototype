@@ -5,7 +5,6 @@ import { useSessionStore } from '../../stores/session'
 import {
   ACCESS_TOKEN_KEY,
   clearStoredSession,
-  onSessionExpired,
   REFRESH_TOKEN_KEY,
   storeSession,
 } from '../auth/tokens'
@@ -32,20 +31,16 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 describe('API client refresh-then-retry', () => {
   let api: ReturnType<typeof mockApi>
-  const expired = vi.fn()
-  let unsubscribe: () => void
+  const sessionExpired = () => useSessionStore.getState().endReason === 'expired'
 
   beforeEach(() => {
     localStorage.clear()
     clearStoredSession()
     storeSession(tokenBody('old-access', 'old-refresh'))
-    expired.mockReset()
-    unsubscribe = onSessionExpired(expired)
   })
 
   afterEach(() => {
     api?.restore()
-    unsubscribe()
     vi.unstubAllGlobals()
   })
 
@@ -66,7 +61,7 @@ describe('API client refresh-then-retry', () => {
     expect(localStorage.getItem(ACCESS_TOKEN_KEY)).toBe('new-access')
     expect(localStorage.getItem(REFRESH_TOKEN_KEY)).toBe('new-refresh')
     expect(useSessionStore.getState().accessToken).toBe('new-access')
-    expect(expired).not.toHaveBeenCalled()
+    expect(sessionExpired()).toBe(false)
   })
 
   it('clears the session and asks for login when the refresh token is rejected', async () => {
@@ -79,7 +74,8 @@ describe('API client refresh-then-retry', () => {
     expect(localStorage.getItem(ACCESS_TOKEN_KEY)).toBeNull()
     expect(localStorage.getItem(REFRESH_TOKEN_KEY)).toBeNull()
     expect(useSessionStore.getState()).toMatchObject({ accessToken: null, user: null })
-    expect(expired).toHaveBeenCalledOnce()
+    expect(useSessionStore.getState().status).toBe('anonymous')
+    expect(sessionExpired()).toBe(true)
   })
 
   it.each([
@@ -93,7 +89,7 @@ describe('API client refresh-then-retry', () => {
     expect(localStorage.getItem(REFRESH_TOKEN_KEY)).toBe('old-refresh')
     expect(useSessionStore.getState().accessToken).toBe('old-access')
     expect(useSessionStore.getState().user).not.toBeNull()
-    expect(expired).not.toHaveBeenCalled()
+    expect(sessionExpired()).toBe(false)
   })
 
   it('uses the token another tab stored when this tab’s refresh loses the race (grace window)', async () => {
@@ -108,7 +104,7 @@ describe('API client refresh-then-retry', () => {
 
     expect(useSessionStore.getState().accessToken).toBe('new-access')
     expect(localStorage.getItem(REFRESH_TOKEN_KEY)).toBe('newer-refresh')
-    expect(expired).not.toHaveBeenCalled()
+    expect(sessionExpired()).toBe(false)
   })
 
   it('does not refresh when another tab already stored a newer access token', async () => {
@@ -140,7 +136,7 @@ describe('API client refresh-then-retry', () => {
     })
 
     expect(api.adapter).toHaveBeenCalledOnce()
-    expect(expired).not.toHaveBeenCalled()
+    expect(sessionExpired()).toBe(false)
   })
 
   it('holds a Web Lock around the refresh when the browser supports it', async () => {

@@ -23,14 +23,17 @@ describe('session store', () => {
     })
 
     expect(useSessionStore.getState()).toMatchObject({
+      status: 'authenticated',
       accessToken: 'access-token',
       activeBusiness: { id: 'business-1' },
       user: { id: 'user-1' },
     })
 
-    useSessionStore.getState().clearSession()
+    useSessionStore.getState().clearSession('logged-out')
 
     expect(useSessionStore.getState()).toMatchObject({
+      status: 'anonymous',
+      endReason: 'logged-out',
       accessToken: null,
       activeBusiness: null,
       user: null,

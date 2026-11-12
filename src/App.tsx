@@ -1,8 +1,15 @@
+import { useEffect } from 'react'
+
 import { AppRoutes } from './app/router/routes'
-import { useSessionExpiredRedirect } from './app/useSessionExpiredRedirect'
+import { restoreSession } from './lib/auth/session'
+import { syncSessionAcrossTabs } from './lib/auth/tokens'
 
 function App() {
-  useSessionExpiredRedirect()
+  useEffect(() => {
+    void restoreSession()
+    return syncSessionAcrossTabs()
+  }, [])
+
   return <AppRoutes />
 }
 

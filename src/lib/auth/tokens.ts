@@ -1,4 +1,4 @@
-import { useSessionStore, type SessionUser } from '../../stores/session'
+import { useSessionStore, type SessionEndReason, type SessionUser } from '../../stores/session'
 import type { components } from '../api/schema'
 
 export type TokenResponse = components['schemas']['TokenResponse']
@@ -67,26 +67,40 @@ export function adoptStoredAccessToken(accessToken: string) {
 }
 
 /** Forget both tokens and the in-memory session. */
-export function clearStoredSession() {
+export function clearStoredSession(reason?: SessionEndReason) {
   generation += 1
   write(ACCESS_TOKEN_KEY, null)
   write(REFRESH_TOKEN_KEY, null)
-  useSessionStore.getState().clearSession()
+  useSessionStore.getState().clearSession(reason)
 }
 
-type Listener = () => void
-const expiredListeners = new Set<Listener>()
-
-/** Called when the API ends the session (refresh rejected). Returns an unsubscribe function. */
-export function onSessionExpired(listener: Listener): () => void {
-  expiredListeners.add(listener)
-  return () => {
-    expiredListeners.delete(listener)
-  }
-}
-
-/** The refresh token was rejected: clear everything and tell the app to send the user to log in. */
+/** The refresh token was rejected: the user has to log in again. Route guards send them to login. */
 export function endExpiredSession() {
-  clearStoredSession()
-  expiredListeners.forEach((listener) => listener())
+  clearStoredSession('expired')
+}
+
+/**
+ * Follow other tabs: when one logs out, this one does too; when one refreshes,
+ * this one uses the new access token. Returns a function that stops watching.
+ */
+export function syncSessionAcrossTabs(): () => void {
+  const onStorage = (event: StorageEvent) => {
+    if (event.storageArea !== localStorage) return
+    if (event.key !== null && event.key !== ACCESS_TOKEN_KEY && event.key !== REFRESH_TOKEN_KEY) return
+
+    const session = useSessionStore.getState()
+    if (session.status !== 'authenticated') return
+
+    const { accessToken, refreshToken } = readStoredTokens()
+
+    if (!refreshToken) {
+      generation += 1
+      session.clearSession('logged-out')
+    } else if (accessToken && accessToken !== session.accessToken) {
+      session.setAccessToken(accessToken)
+    }
+  }
+
+  window.addEventListener('storage', onStorage)
+  return () => window.removeEventListener('storage', onStorage)
 }

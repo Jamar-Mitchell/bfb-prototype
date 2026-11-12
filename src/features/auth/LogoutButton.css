@@ -1,0 +1,15 @@
+/* Sits where the prototype's account chevron was, in the sidebar account row. */
+.account-logout {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--muted);
+  transition: background .2s ease, color .2s ease;
+}
+
+.account-logout:hover { background: var(--pale-blue); color: var(--blue); }
