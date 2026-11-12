@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" fill="none" role="img" aria-label="BFB">
+  <defs><clipPath id="bfb-icon-clip"><rect width="128" height="128" rx="28"/></clipPath></defs>
+  <g clip-path="url(#bfb-icon-clip)" stroke-linejoin="round">
+    <rect width="128" height="128" fill="#087FE5"/>
+    <path d="M45.764 36.046H70.316" stroke="#FFFFFF" stroke-width="10.676"/>
+    <path d="M79.24 36.046L70.025 26.437V45.654Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="3.203"/>
+    <path d="M42.229 97.05V36.046H57.48" stroke="#FFFFFF" stroke-width="10.676" stroke-linecap="round"/>
+    <path d="M148 66.548H63.915" stroke="#071D36" stroke-width="10.676"/>
+    <path d="M54.991 66.548L64.206 56.94V76.156Z" fill="#071D36" stroke="#071D36" stroke-width="3.203"/>
+  </g>
+</svg>
