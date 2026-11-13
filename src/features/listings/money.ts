@@ -30,7 +30,8 @@ export function minorToMajor(minor: number | null | undefined): string {
   return cents === 0 ? String(whole) : `${whole}.${String(cents).padStart(2, '0')}`
 }
 
-function formatAmount(minor: number, currency: string): string {
+/** `150000` → `"$1,500"`, `150050` → `"$1,500.50"`. */
+export function formatAmount(minor: number, currency: string): string {
   const fractionDigits = minor % 100 === 0 ? 0 : 2
   try {
     return new Intl.NumberFormat('en-US', {

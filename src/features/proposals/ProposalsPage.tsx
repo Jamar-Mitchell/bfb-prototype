@@ -7,6 +7,7 @@ import { EmptyState, ErrorState, LoadingState, showErrorToast } from '../../comp
 import { toApiError } from '../../lib/api/errors'
 import { useActiveBusiness } from '../../lib/businesses/useActiveBusiness'
 import { MatchBusinessHeader } from '../matching/MatchCard'
+import { canAnswerMatches } from '../matching/matchResponses'
 import { proposalStatusLabel, proposalTiming, versionLabel, waitingOnText } from './proposalCopy'
 import { listProposalTab, PROPOSAL_TABS, readProposalTab, type ProposalSummary, type ProposalTab } from './proposalsApi'
 import { useWaitingProposals } from './waitingProposals'
@@ -115,7 +116,7 @@ export function ProposalsPage() {
         {state.kind === 'ready' && state.items.length > 0 && (
           <>
             <ul className="proposal-list" aria-label={`${tabLabel} proposals`}>
-              {state.items.map((item) => <ProposalRow key={item.id} proposal={item} />)}
+              {state.items.map((item) => <ProposalRow key={item.id} proposal={item} canEdit={canAnswerMatches(business.role)} />)}
             </ul>
             {state.nextCursor && (
               <div className="match-more">
@@ -132,10 +133,12 @@ export function ProposalsPage() {
 }
 
 /** One proposal: the other business, the summary, the version, the status in words, whose turn and when. */
-function ProposalRow({ proposal }: { proposal: ProposalSummary }) {
+function ProposalRow({ proposal, canEdit }: { proposal: ProposalSummary; canEdit: boolean }) {
   const name = proposal.other_business.display_name
   const timing = proposalTiming(proposal)
   const waitingOn = waitingOnText(proposal, name)
+  // Your own unsent first version opens in the builder.
+  const edit = canEdit && proposal.status === 'draft' && proposal.waiting_on === 'us'
   return (
     <li className={`proposal-row proposal-row-${proposal.status}`}>
       <div className="proposal-row-business">
@@ -153,8 +156,8 @@ function ProposalRow({ proposal }: { proposal: ProposalSummary }) {
       </div>
       <div className="proposal-row-foot">
         <span className={`match-timing match-timing-${timing.tone}`}><Clock3 size={14} aria-hidden="true" /> {timing.text}</span>
-        <Link className="button button-secondary button-small" to={paths.proposal(proposal.id)} aria-label={`Open proposal with ${name}`}>
-          Open <ArrowRight size={15} aria-hidden="true" />
+        <Link className="button button-secondary button-small" to={edit ? paths.proposalEdit(proposal.id) : paths.proposal(proposal.id)} aria-label={`${edit ? 'Edit' : 'Open'} proposal with ${name}`}>
+          {edit ? 'Edit' : 'Open'} <ArrowRight size={15} aria-hidden="true" />
         </Link>
       </div>
     </li>
