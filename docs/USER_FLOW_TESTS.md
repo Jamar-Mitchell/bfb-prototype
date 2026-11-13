@@ -242,7 +242,7 @@ Use the proposal both businesses accepted in 14.33. Locally the legal documents 
 | 15.1 | Right after the second business accepts (14.33) | The toast ends "BFB prepared the agreement."; the green Accepted panel says BFB prepared the Business Exchange Agreement and has "Open the agreement" | [ ] |
 | 15.2 | Open the match as either business | "Proposal accepted" with "Open the agreement" and "Open the proposal" | [ ] |
 | 15.3 | Press "Open the agreement" | `/agreements/<id>`: "EXCHANGE AGREEMENT", the other business's name, a "Ready for signers" pill and the red banner "Draft terms, not reviewed by counsel. Not for real exchanges." above everything else | [ ] |
-| 15.4 | Read the page | "Where it stands" says which version both accepted, that each business names who signs next, and the sign-by date (30 days on). The document reads in full in a white frame with no scroll bar of its own; under it the document fingerprint in small print. The side column has a neutral "Signing comes next." card, Status (sign by, the proposal version, the Exchange Terms version, legal review) and both parties with legal name, entity type and address as they were at acceptance | [ ] |
+| 15.4 | Read the page | "Where it stands" says which version both accepted, that each business names who signs next, and the sign-by date (30 days on). The document reads in full in a white frame with no scroll bar of its own; under it the document fingerprint in small print. The side column has a Signing card (both businesses with "No signer yet" and "Must be signed by …"), Status (sign by, the proposal version, the Exchange Terms version, legal review) and both parties with legal name, entity type and address as they were at acceptance | [ ] |
 | 15.5 | Press the Exchange Terms version link | A new tab opens the Exchange Terms at that version, with the draft banner | [ ] |
 | 15.6 | Open the agreement as the other business | The same document and banner, with that business's name marked "Your business" under Parties | [ ] |
 | 15.7 | Open `/agreements`, then each tab | "Agreements" in the sidebar under Proposals; the agreement under Open with "Ready for signers", "Draft terms", "Sign by …" and the draft banner above the list; Signed and Closed are empty with a line saying what goes there | [ ] |
@@ -250,6 +250,17 @@ Use the proposal both businesses accepted in 14.33. Locally the legal documents 
 | 15.9 | Log out and open `/legal/exchange-terms` | The Exchange Terms with the public header (Log in, Join BFB), version, published date, legal review, the draft banner, the full text and its fingerprint. `/legal/exchange-terms/nope` says that version doesn't exist and links to the current one | [ ] |
 | 15.10 | Repeat 15.3, 15.7 and 15.9 at phone width (about 390 px) | The banner, status and signing card come first, then the document, which wraps to the screen and reads without zooming; no sideways scrolling | [ ] |
 | 15.11 | With the API set to refuse drafts (`BFB_ALLOW_DRAFT_LEGAL_DOCUMENTS=false`), accept a proposal so it becomes final | The accept dialog stays open and says the legal documents are still drafts waiting for review by counsel, so the agreement can't be prepared yet, and that nothing changed. The proposal is still open | [ ] |
+| 15.12 | As an owner of the first business, press "Name who signs" in the Signing card | A dialog lists only the business's owners and administrators (you marked "(you)" and chosen), says how many members can't sign with a Team page link, and has an optional title. Escape closes it | [ ] |
+| 15.13 | Choose yourself, add a title and press "Name signer" | The card shows your name and title with an amber "Waiting to confirm"; the button becomes "Change signer"; a "Your signature" panel opens above "Where it stands" | [ ] |
+| 15.14 | Press "Confirm" without ticking the boxes | Nothing is sent; each unticked box turns red with a line saying what to tick. The two checkbox texts match the API's consent wording exactly, with a red "Draft wording" pill and the wording version above them | [ ] |
+| 15.15 | Tick both boxes and confirm | Toast "Confirmed. Signing starts once …"; the panel says you confirmed and that signing starts once the other business names its signer and they confirm, with "Change your details"; the card shows a blue "Confirmed" | [ ] |
+| 15.16 | Press "Change signer", choose an administrator, then cancel | The dialog marks you "Current signer" and warns that the new signer replaces you and must confirm. Cancel changes nothing | [ ] |
+| 15.17 | Open the agreement as a member of the first business | The Signing card shows who signs and "Only owners and administrators of … can name who signs." No buttons, no "Your signature" panel | [ ] |
+| 15.18 | As the other business's owner, name yourself and confirm | Toast "Confirmed. Signing has started."; the pill becomes "Out for signature"; "Your signature" asks you to type your full name as you confirmed it. Changing signers is no longer offered | [ ] |
+| 15.19 | Back as the first signer, reload, type a different name and press "Sign agreement" | The field turns red: "This doesn't match the name you confirmed, … Capitals and extra spaces don't matter." | [ ] |
+| 15.20 | Type your name in different capitals and press "Sign agreement" | Toast "Signed. Waiting for …'s signer."; the panel says you signed and who you are waiting for; the card shows "Signed on …" for you and "Confirmed" for the other business | [ ] |
+| 15.21 | As the other signer, reload and sign | Toast "Signed. Both businesses have signed the agreement."; the pill and Status read "Signed", "Where it stands" turns green, the card says "Both businesses signed." with both "Signed on …"; "Your signature" is gone | [ ] |
+| 15.22 | Repeat 15.14 and 15.19 at phone width | Name and title stack, the boxes and the sign field fit the screen, no sideways scrolling | [ ] |
 
 ## 16. Across the app
 
@@ -265,5 +276,5 @@ Use the proposal both businesses accepted in 14.33. Locally the legal documents 
 
 - Exchanges, messages, the landing page and the dashboard's "Recommended for you" still use demo data until their phases.
 - Emails are printed, not sent, until an email provider is chosen ([DESIGN_SIGNOFFS.md](DESIGN_SIGNOFFS.md) row 37).
-- Signing an agreement arrives with FE-5.2; until then the agreement page shows "Signing comes next."
+- Signing uses the development provider (a typed name inside BFB) locally. Staging and production have no signature provider yet, so the second confirmation there says signing isn't switched on ([DESIGN_SIGNOFFS.md](DESIGN_SIGNOFFS.md) row 135).
 - Design and product items waiting on sign-off are in [DESIGN_SIGNOFFS.md](DESIGN_SIGNOFFS.md). A flow that passes here can still change there.

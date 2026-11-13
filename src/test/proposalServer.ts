@@ -1,4 +1,4 @@
-import type { Agreement, AgreementSummary, ExchangeTerms } from '../features/agreements/agreementsApi'
+import type { Agreement, AgreementSigner, AgreementSummary, ExchangeTerms, SignerConsent } from '../features/agreements/agreementsApi'
 import type { BusinessMatch, MatchBusiness } from '../features/matching/matchInboxApi'
 import type { Proposal, ProposalSummary, ProposalTerms, SentVersion } from '../features/proposals/proposalsApi'
 import { apiBusiness, apiErrorBody, apiMembership, apiUser, tokenBody, type MockHandler, type MockReply, type MockRequest } from './mockApi'
@@ -200,6 +200,51 @@ export function acceptedMatch(overrides: Partial<BusinessMatch> = {}): BusinessM
 
 const address = { line1: '1 Main Street', line2: null, city: 'Detroit', region: 'MI', postal_code: '48201', country: 'US' }
 
+/** The consent wording a signer confirms, as the API returns it on the agreement. */
+export const SIGNER_CONSENT: SignerConsent = {
+  version: '2026-11-draft-1',
+  authority: 'I confirm that the name and title above are mine and correct, and that I am authorized to sign this agreement on behalf of the business named as my party, and to bind that business to it.',
+  esign_consent: 'DRAFT — not reviewed by counsel. Not for real exchanges. I agree to use electronic records and electronic signatures for this agreement.',
+  is_draft: true,
+}
+
+/**
+ * A named signer. Side a (Northstar Digital) defaults to the logged-in user, Alex Morgan; side b
+ * to Sam Lee of Northside Studio.
+ */
+export function signer(side: 'a' | 'b', overrides: Partial<AgreementSigner> = {}): AgreementSigner {
+  const a = side === 'a'
+  return {
+    id: `signer-${side}`,
+    side,
+    business_id: a ? 'business-1' : STUDIO_ID,
+    user_id: a ? 'user-1' : 'user-studio',
+    full_name: a ? 'Alex Morgan' : 'Sam Lee',
+    title: null,
+    email: a ? 'founder@example.com' : 'sam@studio.example',
+    status: 'pending',
+    named_at: '2026-11-17T12:00:00Z',
+    confirmed: false,
+    authority_confirmed_at: null,
+    esign_consent_at: null,
+    consent_text_version: null,
+    signed_at: null,
+    ...overrides,
+  }
+}
+
+/** A signer who confirmed name, title, authority and consent. */
+export function confirmedSigner(side: 'a' | 'b', overrides: Partial<AgreementSigner> = {}): AgreementSigner {
+  return signer(side, {
+    title: side === 'a' ? 'Founder' : 'Studio Director',
+    confirmed: true,
+    authority_confirmed_at: '2026-11-18T12:00:00Z',
+    esign_consent_at: '2026-11-18T12:00:00Z',
+    consent_text_version: SIGNER_CONSENT.version,
+    ...overrides,
+  })
+}
+
 /** The agreement generated when both businesses accepted version 1. Northstar Digital is side a. */
 export function agreementDetail(overrides: Partial<Agreement> = {}): Agreement {
   return {
@@ -220,6 +265,15 @@ export function agreementDetail(overrides: Partial<Agreement> = {}): Agreement {
     legal_review_status: 'draft',
     content_sha256: '4f0e'.repeat(16),
     html: '<!DOCTYPE html><html lang="en"><body><h1>Business Exchange Agreement</h1></body></html>',
+    signers: [],
+    signer_consent: SIGNER_CONSENT,
+    signature_provider: null,
+    signing_started_at: null,
+    signed_at: null,
+    voided_at: null,
+    void_reason: null,
+    exchange: null,
+    signed_document: null,
     generated_at: '2026-11-16T12:00:00Z',
     expires_at: '2026-12-16T12:00:00Z',
     created_at: '2026-11-16T12:00:00Z',
