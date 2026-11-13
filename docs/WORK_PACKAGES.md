@@ -1,6 +1,6 @@
 # BFB Frontend Work Packages
 
-This file breaks the [development plan](DEVELOPMENT_PLAN.md#delivery-phases) into packages that one agent session can finish in one pull request. Phases 1 and 2 are broken down in detail. Later phases stay as outlines in the development plan and will be broken down when Phase 2 is close to done.
+This file breaks the [development plan](DEVELOPMENT_PLAN.md#delivery-phases) into packages that one agent session can finish in one pull request. Phases 1 to 3 are broken down in detail. Later phases stay as outlines in the development plan and will be broken down when the phase before them is close to done.
 
 The API has a matching file: `bfb-api/docs/WORK_PACKAGES.md`. Frontend packages list the API packages they need.
 
@@ -16,6 +16,8 @@ The API has a matching file: `bfb-api/docs/WORK_PACKAGES.md`. Frontend packages 
 7. In the same pull request, set the package to `done`.
 
 Every package also meets the plan's [definition of done](DEVELOPMENT_PLAN.md#definition-of-done) for the frontend: loading, empty, success and error states; BFB terminology; accessible critical interactions; tests for the logic it adds.
+
+Open design sign-offs and product decisions are tracked in [DESIGN_SIGNOFFS.md](DESIGN_SIGNOFFS.md). Add a row there for any new screen or default a package introduces.
 
 **Keep the approved look.** The prototype is the visual reference. Packages change structure and data, not the design, unless the package says otherwise. Prototype screens that are not wired to the API yet (marketplace, exchanges, messages) keep working on demo data from `src/mocks/` until their phase.
 
@@ -34,6 +36,10 @@ A slice is a working piece of the product you can demo end to end. It is done wh
 | S6 Offers and needs | Create, edit and pause offers and needs as drafts | API-2.4, API-2.5 | FE-2.3, FE-2.4 |
 | S7 Portfolio | Upload work samples and reorder them | API-2.6 | FE-2.5 |
 | S8 Verification and approval | Submit a business for review, approve it as an admin, publish offers and needs | API-2.7, API-2.8 | FE-2.6, FE-2.7 |
+| S9 Marketplace | Search and filter real offers and needs from approved businesses | API-3.1 | FE-3.1 |
+| S10 Saved businesses | Save businesses from the marketplace or a public profile and see them on one page | API-3.2 | FE-3.2 |
+| S11 Concierge matches | As an operator, see suggested fits for a business and create a match between two businesses | API-3.3, API-3.4 | FE-3.5 |
+| S12 Respond to matches | As a business, see why you were matched, accept or decline, and leave feedback | API-3.5, API-3.6 | FE-3.3, FE-3.4 |
 
 Recommended order is S0 through S8. The frontend S0 packages need no API work and can start now.
 
@@ -59,6 +65,11 @@ Recommended order is S0 through S8. The frontend S0 packages need no API work an
 | FE-2.6 | Submit for review and status banner | FE-2.2, API-2.7 | done |
 | FE-2.7 | Admin review queue | FE-1.2, API-2.8 | done |
 | FE-2.8 | Public business profile from the API | FE-1.2, API-2.2 | done |
+| FE-3.1 | Marketplace search and filters from the API | FE-2.8, API-3.1 | todo |
+| FE-3.2 | Saved businesses | FE-3.1, API-3.2 | todo |
+| FE-3.3 | Match inbox and explainable match cards | FE-1.4, API-3.5 | todo |
+| FE-3.4 | Accept, decline and feedback | FE-3.3, API-3.6 | todo |
+| FE-3.5 | Admin match workspace | FE-2.7, API-3.4 | todo |
 
 ## Phase 0: Foundation
 
@@ -259,3 +270,62 @@ Scope:
 
 Done when:
 - An approved business's profile shows real data, and an unapproved one shows the not-found state.
+
+## Phase 3: Marketplace and matching
+
+Phase goal: help businesses find relevant opportunities without overstating match quality. **No screen shows fabricated precision**: no percentages, scores or star ratings for fit. Show the fit band in words (Strong fit, Potential fit, Limited fit) and the reasons behind it. Factor and reason codes are documented in `bfb-api/docs/MATCHING.md`; map them to copy in one place.
+
+### FE-3.1 Marketplace search and filters from the API
+
+Scope:
+- Replace the prototype marketplace's demo data (`src/mocks/businesses`) with `GET /marketplace/listings`, keeping the prototype's look: banner, search bar, category chips, location filter and card grid.
+- Offers and needs tabs (or a toggle), category chips from `GET /categories`, delivery and location filters, an optional value range. Filters live in the URL query so a search can be shared and survives reload.
+- Cards show the listing title, kind, category, value in dollars, the business name, logo and location, and open the business's public profile (`/b/:id`).
+- Hide the viewer's own business. "Load more" with the cursor.
+- Remove the prototype's numeric "match" claims on cards and the "Best match" sort until matching backs them; sort is "Newest" or "Most relevant" when searching.
+- The old `/business/:id` demo profile and its mock data can go once nothing links to them.
+
+Done when:
+- Tests cover a search updating the URL, a filter change refetching, the empty state with reset, load more, and an API error.
+
+### FE-3.2 Saved businesses
+
+Scope:
+- The save button on marketplace cards and on the public profile (when logged in) calls the API instead of local storage. Optimistic toggle that rolls back on failure.
+- A Saved businesses page reached from the sidebar, with an empty state pointing to the marketplace.
+- Drop the `bfb-saved` local-storage key.
+
+Done when:
+- Tests cover saving, unsaving, a failed save rolling back, and the saved list.
+
+### FE-3.3 Match inbox and explainable match cards
+
+Scope:
+- A Matches page in the sidebar listing the active business's matches, with tabs for open, accepted and closed (declined, expired, withdrawn). A count of open matches waiting on your business on the sidebar item and the dashboard.
+- A match card: the other business (logo, name, location, verified badge), the fit band in words, the top two or three reasons, and the expiry ("Respond by 4 Dec").
+- Match detail at `/matches/:id`: each offer-need pair side by side with every factor as fits, partial, conflict or "needs confirmation", the operator note, both businesses' responses, and a link to the other business's public profile.
+
+Done when:
+- Tests cover each band and factor outcome rendering as words (and no numbers), the empty state, and an expired match showing as closed.
+
+### FE-3.4 Accept, decline and feedback
+
+Scope:
+- Accept and Decline on the match detail for owners and administrators; members see the status read-only with who can respond.
+- Decline opens a dialog with reason choices and optional text, and says the other business will not see the reason.
+- After both accept, the detail says what happens next ("A proposal can be started in the next release" until Phase 4).
+- A small feedback prompt on the detail ("Was this match useful?") with optional reasons and a comment, editable later.
+
+Done when:
+- Tests cover accept, decline with a reason, a `409 invalid_match_status` (already expired or answered) refreshing the match, a member seeing no buttons, and saving feedback.
+
+### FE-3.5 Admin match workspace
+
+Scope:
+- A Matches tab in the admin area. Pick an approved business, see its candidate businesses ranked with fit band and factor results, open one to choose offer-need pairs, write an operator note, set an expiry, and create the match.
+- A list of matches with status and business filters; a detail with both responses, decline reasons, feedback and a Withdraw action with a reason.
+- Show `409 match_exists` with a link to the existing match.
+
+Done when:
+- Tests cover choosing pairs and creating a match, the `match_exists` error, withdraw, and the list filters.
+
