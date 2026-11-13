@@ -25,8 +25,13 @@ Last updated: 12 November 2026 (end of Phase 2, start of Phase 3).
 | 43 | Marketplace banner line "Every business here was reviewed by BFB" (replaces "Personalized using your onboarding preferences", which was not true) | `/marketplace` | FE-3.1 | [ ] |
 | 46 | Save button: the prototype's bookmark on marketplace cards, and a "Save" / "Saved" button beside the name on the public profile (logged in, not your own business). A failed save flips back with a red-icon toast | `/marketplace`, `/b/<business id>` | FE-3.2 | [ ] |
 | 47 | Saved businesses page and its sidebar item: one row per business with logo, name, location, service area, saved date, "View business" and the bookmark; empty state pointing to the marketplace | `/saved` | FE-3.2 | [ ] |
+| 49 | Fit band and factor wording, shared by every match screen (`src/features/matching/fitCopy.ts`): "Strong fit" green, "Potential fit" blue, "Limited fit" amber; each factor as name, result word (Fits, Partial, Conflict, Needs confirmation) with a tick, dash, cross or question icon, and a one-sentence reason. No numbers, scores or counts | `/admin/matches/new`, `/admin/matches/<id>` | FE-3.5 | [ ] |
+| 50 | Admin "Matches" sidebar item and the Review queue / Matches tabs under the admin headings; the matches list with status and business filters, status and fit pills, both responses per row, "Load more" | `/admin/matches` | FE-3.5 | [ ] |
+| 51 | New match, step 1 and 2: approved-business list with a name filter, then the business's suggested fits ranked best first, each with one line per offer-need pair, its fit band, and "Choose pairs" or "Open match" when one is already open | `/admin/matches/new` | FE-3.5 | [ ] |
+| 52 | Pair picker: a checkbox per offer-need pair with "Offer from … → Need from …", category, band and factor list; side card with the note for both businesses, the "Expires on" date (default 14 days) and "Create match"; the red "already have an open match" notice linking to it | `/admin/matches/new?business=<id>&candidate=<id>` | FE-3.5 | [ ] |
+| 53 | Match detail: note, offers and needs as snapshotted, responses with staff-only decline reasons, status card with expiry and withdrawal reason, feedback card (staff only, once the API sends it), and the withdraw dialog with a required reason | `/admin/matches/<id>` | FE-3.5 | [ ] |
 
-Phase 3 adds rows below 12, numbered from 41. Still to come: fit-band wording, match cards and detail, and the admin match workspace.
+Phase 3 adds rows below 12, numbered from 41. Still to come: the business match cards and detail.
 
 ## Product decisions
 
@@ -68,6 +73,9 @@ Decisions made to start Phase 3. Each can be changed later.
 | 44 | Marketplace category chips | Every active category is a chip, including those with 0 listings for the current search. Hide the empty ones? | |
 | 45 | Marketplace banner photos | Still the prototype's three demo photos, as decoration. Replace with BFB brand imagery? | |
 | 48 | Unsaving on the Saved page | The row stays, faded, with "Removed from saved", so it can be saved again; it is gone on the next visit. Remove it at once instead? | |
+| 54 | Choosing a business to match | The API has no staff business search, so the workspace lists approved businesses (up to 1,000, from the review list) and filters them by name in the browser. Add a search endpoint before the pilot grows? | |
+| 55 | Match expiry chosen by staff | A date, default 14 days away, from tomorrow up to 90 days; the match expires at the end of that day in the operator's time zone | |
+| 56 | Pairs preselected in the pair picker | None: staff tick each offer-need pair to introduce. Preselect the best pair? | |
 
 ## Before staging
 

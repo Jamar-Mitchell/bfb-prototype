@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
-import { ArrowLeft, ArrowUpRight, Check, MessageSquareWarning, TriangleAlert } from 'lucide-react'
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { ArrowLeft, ArrowUpRight, Check, Link2, MessageSquareWarning, TriangleAlert } from 'lucide-react'
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import { paths } from '../../app/router/paths'
 import { ErrorState, LoadingState, showToast } from '../../components/feedback'
@@ -154,6 +154,11 @@ export function AdminBusinessPage() {
               </>
             ) : (
               <p>Decisions can only be made while a business is in review. This one is {PROFILE_STATUS_LABELS[business.profile_status].toLowerCase()}.</p>
+            )}
+            {business.profile_status === 'approved' && (
+              <Link className="button button-secondary" to={`${paths.adminNewMatch}?business=${business.id}`}>
+                <Link2 size={16} aria-hidden="true" /> Find matches
+              </Link>
             )}
           </section>
           <HistoryCard business={business} />

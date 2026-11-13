@@ -23,9 +23,15 @@ export const paths = {
   /** Admin review queue (support and administrator users only). */
   admin: '/admin',
   adminBusiness: (id: string) => `/admin/businesses/${id}`,
+  /** Admin match workspace: the list of concierge matches, creating one, and a match's detail. */
+  adminMatches: '/admin/matches',
+  adminNewMatch: '/admin/matches/new',
+  adminMatch: (id: string) => `/admin/matches/${id}`,
 } as const
 
 export const adminBusinessPattern = '/admin/businesses/:businessId'
+
+export const adminMatchPattern = '/admin/matches/:matchId'
 
 export const publicBusinessPattern = '/b/:businessId'
 

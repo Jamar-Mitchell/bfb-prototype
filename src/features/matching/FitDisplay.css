@@ -1,0 +1,19 @@
+/* Fit band and factor results (fitCopy.ts). Words and colour only: never a score. */
+.fit-band { display: inline-block; border-radius: 999px; padding: 4px 10px; font-size: var(--text-md); font-weight: 800; white-space: nowrap; border: 1px solid var(--border); background: var(--surface-muted); color: var(--slate); }
+.fit-band-strong { background: var(--green-pale); border-color: #ccecdf; color: var(--green); }
+.fit-band-potential { background: var(--pale-blue); border-color: #c9e5ff; color: var(--blue); }
+.fit-band-limited { background: var(--amber-pale); border-color: #f1dca8; color: var(--amber); }
+
+.fit-factors { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.fit-factor { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 9px; align-items: start; }
+.fit-factor-icon { width: 20px; height: 20px; border-radius: var(--radius-round); display: grid; place-items: center; background: var(--surface-muted); color: var(--muted); border: 1px solid var(--border); }
+.fit-factor-fits .fit-factor-icon { background: var(--green-pale); border-color: #ccecdf; color: var(--green); }
+.fit-factor-partial .fit-factor-icon { background: var(--pale-blue); border-color: #c9e5ff; color: var(--blue); }
+.fit-factor-conflict .fit-factor-icon { background: #fff7f8; border-color: #efcbd0; color: #a8323f; }
+.fit-factor-text { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; min-width: 0; }
+.fit-factor-text strong { color: var(--navy); font-size: var(--text-base); }
+.fit-factor-outcome { font-size: var(--text-md); font-weight: 700; color: var(--muted); }
+.fit-factor-fits .fit-factor-outcome { color: var(--green); }
+.fit-factor-partial .fit-factor-outcome { color: var(--blue); }
+.fit-factor-conflict .fit-factor-outcome { color: #a8323f; }
+.fit-factor-reason { flex-basis: 100%; color: var(--slate); font-size: var(--text-base); line-height: 1.5; }
