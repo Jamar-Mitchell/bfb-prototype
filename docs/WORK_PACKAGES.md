@@ -17,7 +17,7 @@ The API has a matching file: `bfb-api/docs/WORK_PACKAGES.md`. Frontend packages 
 
 Every package also meets the plan's [definition of done](DEVELOPMENT_PLAN.md#definition-of-done) for the frontend: loading, empty, success and error states; BFB terminology; accessible critical interactions; tests for the logic it adds.
 
-Open design sign-offs and product decisions are tracked in [DESIGN_SIGNOFFS.md](DESIGN_SIGNOFFS.md). Add a row there for any new screen or default a package introduces.
+Open design sign-offs and product decisions are tracked in [DESIGN_SIGNOFFS.md](DESIGN_SIGNOFFS.md). Add a row there for any new screen or default a package introduces, and add or update the steps for any user-facing flow in [USER_FLOW_TESTS.md](USER_FLOW_TESTS.md).
 
 **Keep the approved look.** The prototype is the visual reference. Packages change structure and data, not the design, unless the package says otherwise. Prototype screens that are not wired to the API yet (marketplace, exchanges, messages) keep working on demo data from `src/mocks/` until their phase.
 
