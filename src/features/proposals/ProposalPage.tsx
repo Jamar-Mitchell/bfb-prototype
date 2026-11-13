@@ -72,6 +72,11 @@ function isConflict(error: ApiError): boolean {
  */
 export function ProposalPage() {
   const { proposalId = '' } = useParams()
+  // A fresh page per proposal: no dialog, notice or old proposal carried over.
+  return <ProposalView key={proposalId} proposalId={proposalId} />
+}
+
+function ProposalView({ proposalId }: { proposalId: string }) {
   const business = useActiveBusiness()
   const navigate = useNavigate()
   const [proposal, setProposal] = useState<Proposal | null>(null)
