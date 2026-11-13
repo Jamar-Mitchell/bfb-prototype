@@ -74,7 +74,7 @@ Recommended order is S0 through S8. The frontend S0 packages need no API work an
 | FE-3.4 | Accept, decline and feedback | FE-3.3, API-3.6 | done |
 | FE-3.5 | Admin match workspace | FE-2.7, API-3.4 | done |
 | FE-4.1 | Proposals page and starting a proposal | FE-3.4, API-4.2 | done |
-| FE-4.2 | Proposal builder | FE-4.1, API-4.2 | todo |
+| FE-4.2 | Proposal builder | FE-4.1, API-4.2 | in progress |
 | FE-4.3 | Proposal review, decline and counteroffer | FE-4.2, API-4.3 | todo |
 | FE-4.4 | Version timeline and changes | FE-4.3, API-4.3 | todo |
 | FE-4.5 | Accept a proposal and party details | FE-4.3, API-4.4 | todo |
