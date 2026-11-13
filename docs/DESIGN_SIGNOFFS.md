@@ -123,6 +123,20 @@ Decisions made to start Phase 4. Each can be changed later.
 | 94 | Defaults for a new milestone and cash adjustment | A new milestone is delivered by your business, with no service. The cash adjustment from the comparison is paid by the business that provides less, for the difference; when it is paid is left to choose | |
 | 95 | Wording for who owns the work | "Ownership transfers on completion", "License to use", "Each keeps its own", each with a one-line explanation. Needs legal review with row 76 | |
 
+## Phase 5 defaults
+
+Decisions made to start Phase 5. Numbered from 130 so they do not collide with Phase 4 rows still being added.
+
+| # | Decision | Default built | Answer |
+|---|---|---|---|
+| 130 | Legal document structure | Standard Exchange Terms (versioned, incorporated by reference) plus a short per-deal Exchange Agreement generated from the accepted proposal | |
+| 131 | Legal review | First versions are drafts written from LEGAL.md and marked "not reviewed by counsel". Staging and production refuse to generate agreements from drafts | |
+| 132 | Signers | One per business: an owner or administrator, who confirms name, title, authority and electronic consent | |
+| 133 | Signing provider | A development provider signs inside BFB with a typed name, local and demo only. A real provider is needed before real exchanges | |
+| 134 | Signing deadline | 30 days after the agreement is generated, then it expires | |
+| 135 | E-signature provider | Not chosen. Options: DocuSign, Dropbox Sign, BoldSign | |
+| 136 | PDF library | Not approved. Needed for real PDFs of the agreement and certificate (API-5.7) | |
+
 ## Before staging
 
 | # | Item | Status |
