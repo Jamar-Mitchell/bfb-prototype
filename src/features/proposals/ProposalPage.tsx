@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, FilePen } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 
 import { paths } from '../../app/router/paths'
@@ -8,6 +8,7 @@ import { toApiError } from '../../lib/api/errors'
 import { useActiveBusiness } from '../../lib/businesses/useActiveBusiness'
 import { PublicProfileLink } from '../businesses/PublicProfileLink'
 import { MatchBusinessHeader } from '../matching/MatchCard'
+import { canAnswerMatches } from '../matching/matchResponses'
 import { formatMatchDate } from '../matching/matchInboxDisplay'
 import { proposalStatusLabel, versionLabel, waitingOnText } from './proposalCopy'
 import { getProposal, isOpen, type Proposal } from './proposalsApi'
@@ -81,6 +82,13 @@ export function ProposalPage() {
           <section className="match-panel proposal-overview" aria-labelledby="proposal-overview-title">
             <h2 id="proposal-overview-title">{summary ?? 'No summary yet'}</h2>
             <OverviewText proposal={proposal} />
+            {proposal.draft && canAnswerMatches(business.role) && (
+              <div className="proposal-overview-actions">
+                <Link className="button button-primary button-small" to={paths.proposalEdit(proposal.id)}>
+                  <FilePen size={15} aria-hidden="true" /> Continue editing
+                </Link>
+              </div>
+            )}
           </section>
         </div>
         <aside className="match-side">

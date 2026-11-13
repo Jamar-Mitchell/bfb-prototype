@@ -9,23 +9,29 @@ interface DeliverablesFieldProps {
   onChange: (value: string[]) => void
   error?: string
   hint?: string
+  /** Defaults suit listings; the proposal builder also uses it for exclusions. */
+  label?: string
+  placeholder?: string
+  /** What one item is called in messages, e.g. "deliverable" or "exclusion". */
+  noun?: string
+  max?: number
 }
 
-/** A list of short deliverables: type one, add it, remove any. Enter adds instead of submitting the form. */
-export function DeliverablesField({ value, onChange, error, hint }: DeliverablesFieldProps) {
+/** A list of short items such as deliverables: type one, add it, remove any. Enter adds instead of submitting the form. */
+export function DeliverablesField({ value, onChange, error, hint, label = 'Deliverables', placeholder = 'e.g. Brand guidelines', noun = 'deliverable', max = MAX_DELIVERABLES }: DeliverablesFieldProps) {
   const [draft, setDraft] = useState('')
   const [problem, setProblem] = useState<string | null>(null)
-  const full = value.length >= MAX_DELIVERABLES
+  const full = value.length >= max
 
   const add = () => {
     const item = draft.trim()
     if (!item) return
     if (item.length > MAX_DELIVERABLE_LENGTH) {
-      setProblem(`Keep each deliverable to ${MAX_DELIVERABLE_LENGTH} characters.`)
+      setProblem(`Keep each ${noun} to ${MAX_DELIVERABLE_LENGTH} characters.`)
       return
     }
     if (value.some((existing) => existing.toLowerCase() === item.toLowerCase())) {
-      setProblem('That deliverable is already on the list.')
+      setProblem(`That ${noun} is already on the list.`)
       return
     }
     onChange([...value, item])
@@ -43,8 +49,8 @@ export function DeliverablesField({ value, onChange, error, hint }: Deliverables
   return (
     <div className="form-full listing-deliverables">
       <FormField
-        label="Deliverables"
-        hint={full ? `That’s the limit of ${MAX_DELIVERABLES}.` : hint}
+        label={label}
+        hint={full ? `That’s the limit of ${max}.` : hint}
         error={problem ?? error}
       >
         {(a11y) => (
@@ -53,7 +59,7 @@ export function DeliverablesField({ value, onChange, error, hint }: Deliverables
               className="form-field-control"
               value={draft}
               disabled={full}
-              placeholder="e.g. Brand guidelines"
+              placeholder={placeholder}
               onChange={(event) => setDraft(event.target.value)}
               onKeyDown={onKeyDown}
               {...a11y}
@@ -65,7 +71,7 @@ export function DeliverablesField({ value, onChange, error, hint }: Deliverables
         )}
       </FormField>
       {value.length > 0 ? (
-        <ul className="listing-deliverable-list" aria-label="Deliverables added">
+        <ul className="listing-deliverable-list" aria-label={`${label} added`}>
           {value.map((item, index) => (
             <li key={`${item}-${index}`}>
               <span>{item}</span>

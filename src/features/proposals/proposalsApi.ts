@@ -1,4 +1,4 @@
-import { apiGet, apiPost } from '../../lib/api/requests'
+import { apiDelete, apiGet, apiPost, apiPut } from '../../lib/api/requests'
 import type { components } from '../../lib/api/schema'
 
 type Schemas = components['schemas']
@@ -148,4 +148,64 @@ export function getProposal(businessId: string, proposalId: string): Promise<Pro
  */
 export function startProposal(businessId: string, matchId: string): Promise<Proposal> {
   return apiPost('/businesses/{business_id}/matches/{match_id}/proposals', undefined, { path: { business_id: businessId, match_id: matchId } })
+}
+
+/**
+ * Replaces this business's whole draft (no per-field saves). `revision` is the one last returned;
+ * an older one is `409 stale_draft` with `details.revision`. Returns the detail with the new
+ * revision and the recomputed `missing`.
+ */
+export function saveDraft(businessId: string, proposalId: string, revision: number, terms: ProposalTerms): Promise<Proposal> {
+  return apiPut('/businesses/{business_id}/proposals/{proposal_id}/draft', { revision, terms }, { path: { business_id: businessId, proposal_id: proposalId } })
+}
+
+/** Default and range of days the other business has to answer a sent version. */
+export const EXPIRY_DAYS = { default: 14, min: 1, max: 30 } as const
+
+/**
+ * Sends the draft: it becomes the current version and counts as this business's acceptance.
+ * `422 proposal_incomplete` with `details.missing` when anything is missing.
+ */
+export function sendDraft(businessId: string, proposalId: string, expiresInDays: number): Promise<Proposal> {
+  return apiPost('/businesses/{business_id}/proposals/{proposal_id}/draft/send', { expires_in_days: expiresInDays }, { path: { business_id: businessId, proposal_id: proposalId } })
+}
+
+/** Discards the draft. Discarding version 1 before anything was sent withdraws the proposal. */
+export function discardDraft(businessId: string, proposalId: string): Promise<Proposal> {
+  return apiDelete('/businesses/{business_id}/proposals/{proposal_id}/draft', { path: { business_id: businessId, proposal_id: proposalId } })
+}
+
+/** An offer the builder can turn into a service. */
+export interface OfferChoice {
+  id: string
+  title: string
+  description: string | null
+  deliverables: string[]
+  value_min_minor: number | null
+}
+
+/** This business's active offers. */
+export async function listOwnActiveOffers(businessId: string): Promise<OfferChoice[]> {
+  const offers = await apiGet('/businesses/{business_id}/offers', { path: { business_id: businessId } })
+  return offers.filter((offer) => offer.status === 'active')
+}
+
+/**
+ * Another business's active offers. There is no endpoint for one business's offers, so this
+ * reads active offers on the marketplace (a few pages at most) and keeps that business's.
+ */
+export async function listOtherActiveOffers(viewerBusinessId: string, otherBusinessId: string): Promise<OfferChoice[]> {
+  const found: OfferChoice[] = []
+  let cursor: string | null = null
+  for (let read = 0; read < COUNT_PAGE_LIMIT; read += 1) {
+    const page = await apiGet('/marketplace/listings', {
+      query: { kind: 'offer', limit: 50, exclude_business_id: viewerBusinessId, ...(cursor ? { cursor } : {}) },
+    })
+    for (const item of page.items) {
+      if (item.kind === 'offer' && item.business.id === otherBusinessId) found.push(item)
+    }
+    cursor = page.next_cursor
+    if (!cursor) break
+  }
+  return found
 }

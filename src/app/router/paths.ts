@@ -17,6 +17,8 @@ export const paths = {
   /** The active business's proposals, and one proposal. */
   proposals: '/proposals',
   proposal: (id: string) => `/proposals/${id}`,
+  /** The proposal builder: this business's draft. */
+  proposalEdit: (id: string) => `/proposals/${id}/edit`,
   exchanges: '/exchanges',
   messages: '/messages',
   profile: '/profile',
@@ -42,6 +44,8 @@ export const adminMatchPattern = '/admin/matches/:matchId'
 export const matchPattern = '/matches/:matchId'
 
 export const proposalPattern = '/proposals/:proposalId'
+
+export const proposalEditPattern = '/proposals/:proposalId/edit'
 
 export const publicBusinessPattern = '/b/:businessId'
 

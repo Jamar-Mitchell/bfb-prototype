@@ -1,0 +1,87 @@
+/* Proposal builder (FE-4.2). A new screen with no prototype: built from the match detail's
+   panels, the listing form's fields and chips, and the portfolio's sticky save bar. */
+
+.proposal-builder-layout { grid-template-columns: minmax(0, 1fr) 310px; }
+.proposal-builder-side { position: sticky; top: 16px; }
+.proposal-section { scroll-margin-top: 16px; }
+.proposal-section:focus, .proposal-side:focus, .proposal-item:focus { outline: none; }
+.proposal-section:focus-visible, .proposal-side:focus-visible, .proposal-item:focus-visible { box-shadow: 0 0 0 3px rgba(var(--blue-rgb), .25); }
+.proposal-section-body { padding: 18px 21px 4px; display: flex; flex-direction: column; }
+
+.proposal-grid { display: grid; grid-template-columns: 1fr 1fr; column-gap: 14px; }
+.proposal-grid-3 { grid-template-columns: repeat(3, 1fr); }
+
+.proposal-side { scroll-margin-top: 16px; border-radius: var(--radius-lg); }
+.proposal-side + .proposal-side { border-top: 1px solid var(--border); padding-top: 18px; margin-top: 4px; }
+.proposal-side-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.proposal-side-head h3 { margin: 0; font-size: var(--text-xl); color: var(--navy); overflow-wrap: anywhere; }
+.proposal-side-head span { color: var(--slate); font-size: var(--text-base); font-weight: 700; }
+.proposal-empty-line { margin: 0 0 14px; color: var(--muted); font-size: var(--text-base); }
+
+.proposal-items { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.proposal-item { border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px 15px 0; background: var(--surface-muted); scroll-margin-top: 16px; }
+.proposal-item .form-field-control { background: white; }
+.proposal-item-head { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; min-width: 0; }
+.proposal-item-head strong { color: var(--navy); font-size: var(--text-lg); overflow-wrap: anywhere; flex: 1; min-width: 0; }
+.proposal-item-tools { display: flex; gap: 4px; }
+.proposal-item-head .icon-button { width: 30px; height: 30px; }
+.proposal-item-head .icon-button:disabled { opacity: .35; cursor: default; }
+.proposal-item-remove:hover:not(:disabled) { color: #c43d4b; border-color: #efcbd0; background: #fff7f8; }
+.proposal-step { flex: 0 0 auto; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; background: var(--pale-blue); color: var(--blue); font-size: var(--text-sm); font-weight: 800; }
+.proposal-tag { flex: 0 0 auto; background: var(--pale-blue); color: var(--blue); border-radius: 999px; padding: 2px 8px; font-size: var(--text-2xs); font-weight: 700; }
+
+.proposal-add-row { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px; margin: 14px 0 18px; }
+.proposal-add-row .proposal-empty-line { margin: 0; flex-basis: 100%; }
+.proposal-add-select { margin-bottom: 0; flex: 1 1 220px; }
+.proposal-add-row .button { min-height: 44px; }
+
+.proposal-money, .proposal-number { display: flex; align-items: center; gap: 8px; }
+.proposal-money span, .proposal-number span { color: var(--muted); font-weight: 700; font-size: var(--text-base); }
+
+.proposal-choices { margin-bottom: 18px; }
+.proposal-choice { align-items: flex-start; }
+.proposal-choice input { margin-top: 2px; flex: 0 0 auto; }
+.proposal-choice span { display: flex; flex-direction: column; gap: 2px; }
+.proposal-choice strong { color: var(--navy); font-size: var(--text-base); }
+.proposal-choice small { color: var(--muted); font-size: var(--text-sm); line-height: 1.45; }
+.proposal-text-button { align-self: flex-start; color: #a8323f; padding: 0; margin-bottom: 18px; font-size: var(--text-base); text-decoration: underline; }
+
+/* Side panels. */
+.proposal-values .match-status-facts dd { font-variant-numeric: tabular-nums; }
+.proposal-values-difference { font-weight: 700; }
+.proposal-values-difference dt { color: var(--navy) !important; }
+.proposal-values-words, .proposal-values-cash { margin: 0; color: var(--slate); font-size: var(--text-base); line-height: 1.5; }
+.proposal-values-note { margin: 0; color: var(--amber); font-size: var(--text-sm); }
+.proposal-values-foot { color: var(--text-subtle); font-size: var(--text-sm); line-height: 1.45; }
+.proposal-missing-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; width: 100%; }
+.proposal-missing-list li { display: flex; gap: 7px; align-items: flex-start; color: var(--amber); }
+.proposal-missing-list svg { flex: 0 0 auto; margin-top: 3px; }
+.proposal-missing-list .text-button { text-align: left; padding: 0; color: var(--slate); font-size: var(--text-base); font-weight: 600; line-height: 1.45; text-decoration: underline; text-decoration-color: #c9d3de; text-underline-offset: 3px; }
+.proposal-missing-list .text-button:hover { color: var(--navy); text-decoration-color: currentColor; }
+.proposal-ready { margin: 0; display: flex; align-items: center; gap: 7px; color: var(--green); font-size: var(--text-base); font-weight: 700; }
+
+/* The sticky bar: saved state on the left, discard and send on the right. */
+.proposal-savebar { position: sticky; bottom: 16px; z-index: 5; margin-top: 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; background: var(--navy); color: white; border-radius: var(--radius-lg); padding: 10px 12px 10px 16px; box-shadow: 0 10px 28px rgba(var(--navy-rgb), .22); font-size: var(--text-base); font-weight: 600; }
+.proposal-savebar > div { display: flex; gap: 8px; flex-wrap: wrap; }
+.proposal-savebar .button-secondary { background: transparent; color: white; border-color: rgba(255, 255, 255, .4); }
+.proposal-savebar .button-primary:disabled { opacity: .5; box-shadow: none; }
+.proposal-save { display: inline-flex; align-items: center; gap: 7px; }
+.proposal-save-failed { color: #ffc9cf; }
+.proposal-save-retry { color: white; text-decoration: underline; padding: 0; font-size: inherit; }
+
+.proposal-dialog .form-field { margin-bottom: 0; }
+.proposal-builder-closed { font-size: 18px; margin: 0; color: var(--navy); }
+.proposal-overview p svg { vertical-align: -2px; }
+
+@media (max-width: 960px) {
+  .proposal-builder-side { position: static; order: -1; }
+}
+
+@media (max-width: 620px) {
+  .proposal-grid, .proposal-grid-3 { grid-template-columns: 1fr; }
+  .proposal-section-body { padding: 16px 16px 2px; }
+  .proposal-item { padding: 12px 12px 0; }
+  .proposal-savebar { bottom: 10px; }
+  .proposal-savebar > div { width: 100%; }
+  .proposal-savebar > div .button { flex: 1; }
+}

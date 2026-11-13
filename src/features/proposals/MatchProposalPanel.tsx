@@ -63,7 +63,7 @@ export function MatchProposalPanel({ business, matchId, otherName, onMatchChange
     try {
       const proposal = await startProposal(business.id, matchId)
       showToast(`Proposal started. Only your business can see it until you send it.`)
-      navigate(paths.proposal(proposal.id))
+      navigate(paths.proposalEdit(proposal.id))
     } catch (caught) {
       const error = toApiError(caught)
       const existing = error.code === 'proposal_exists' ? detailString(error, 'proposal_id') : null
