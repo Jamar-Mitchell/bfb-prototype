@@ -18,6 +18,7 @@ import { LandingPage } from '../../features/landing/LandingPage'
 import { ListingsPage } from '../../features/listings/ListingsPage'
 import { Marketplace } from '../../features/matching/Marketplace'
 import { MessagesPage } from '../../features/messages/MessagesPage'
+import { SavedBusinessesPage } from '../../features/saved/SavedBusinessesPage'
 import { Onboarding } from '../../features/onboarding/Onboarding'
 import { AcceptInvitePage } from '../../features/team/AcceptInvitePage'
 import { TeamPage } from '../../features/team/TeamPage'
@@ -132,6 +133,7 @@ export const routes: RouteObject[] = [
             children: [
               { path: paths.dashboard, element: <DashboardRoute /> },
               { path: paths.marketplace, element: <Marketplace /> },
+              { path: paths.saved, element: <SavedBusinessesPage /> },
               { path: '/business/:id/*', element: <BusinessRoute /> },
               { path: paths.exchanges, element: <ExchangesPage /> },
               { path: paths.messages, element: <MessagesPage /> },

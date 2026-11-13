@@ -74,6 +74,7 @@
 
 .toast span { flex: 1; }
 .toast-icon { color: #5fd4a5; flex-shrink: 0; }
+.toast-error .toast-icon { color: #ff8a8a; }
 
 .toast-close {
   display: grid;

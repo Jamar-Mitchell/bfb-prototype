@@ -31,6 +31,8 @@ export function searchListings(
     query: {
       ...filters,
       exclude_business_id: options.viewerBusinessId,
+      // Fills each item's `saved` flag for the viewer's business.
+      business_id: options.viewerBusinessId,
       limit: PAGE_SIZE,
       cursor: options.cursor ?? undefined,
     },

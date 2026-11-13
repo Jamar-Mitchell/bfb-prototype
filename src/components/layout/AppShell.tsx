@@ -2,6 +2,7 @@ import { useState, type ReactNode } from 'react'
 import { useLocation } from 'react-router-dom'
 import {
   Bell,
+  Bookmark,
   BriefcaseBusiness,
   Building2,
   Compass,
@@ -37,6 +38,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const navItems = [
     { id: paths.dashboard, label: 'Dashboard', icon: LayoutDashboard },
     { id: paths.marketplace, label: 'Marketplace', icon: Compass },
+    { id: paths.saved, label: 'Saved businesses', icon: Bookmark },
     { id: paths.exchanges, label: 'Exchanges', icon: Handshake, count: '3' },
     { id: paths.messages, label: 'Messages', icon: MessageCircle, unread: true },
   ]

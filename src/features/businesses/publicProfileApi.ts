@@ -8,6 +8,10 @@ export type PublicBusiness = components['schemas']['PublicBusinessResponse']
  * Anything not approved, and unknown IDs, fail with `404 not_found`. Image URLs are signed for
  * 15 minutes: refetch rather than keep them.
  */
-export function getPublicBusiness(businessId: string) {
-  return apiGet('/public/businesses/{target_id}', { path: { target_id: businessId } })
+export function getPublicBusiness(businessId: string, viewerBusinessId: string | null = null) {
+  return apiGet('/public/businesses/{target_id}', {
+    path: { target_id: businessId },
+    // With the business the user browses as, `saved` says whether it saved this one (needs a login).
+    query: viewerBusinessId ? { business_id: viewerBusinessId } : undefined,
+  })
 }

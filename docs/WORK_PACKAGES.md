@@ -66,7 +66,7 @@ Recommended order is S0 through S8. The frontend S0 packages need no API work an
 | FE-2.7 | Admin review queue | FE-1.2, API-2.8 | done |
 | FE-2.8 | Public business profile from the API | FE-1.2, API-2.2 | done |
 | FE-3.1 | Marketplace search and filters from the API | FE-2.8, API-3.1 | done |
-| FE-3.2 | Saved businesses | FE-3.1, API-3.2 | todo |
+| FE-3.2 | Saved businesses | FE-3.1, API-3.2 | done |
 | FE-3.3 | Match inbox and explainable match cards | FE-1.4, API-3.5 | todo |
 | FE-3.4 | Accept, decline and feedback | FE-3.3, API-3.6 | todo |
 | FE-3.5 | Admin match workspace | FE-2.7, API-3.4 | todo |

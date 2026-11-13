@@ -1,13 +1,16 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import { ArrowUpRight, BadgeCheck, CalendarDays, Globe, MapPin, SearchX, ShieldCheck } from 'lucide-react'
 import { useParams } from 'react-router-dom'
 
 import { isBusinessUuid, paths } from '../../app/router/paths'
 import { useAppNavigate } from '../../app/router/useAppNavigate'
-import { EmptyState, ErrorState, LoadingState } from '../../components/feedback'
+import { EmptyState, ErrorState, LoadingState, Toaster } from '../../components/feedback'
 import { Logo } from '../../components/ui/Logo'
 import { toApiError } from '../../lib/api/errors'
+import { useMemberships } from '../../lib/businesses/useActiveBusiness'
 import { useSessionStore } from '../../stores/session'
+import { SaveButton } from '../saved/SaveButton'
+import { useSaveToggle } from '../saved/useSaveToggle'
 import { BusinessLogo } from './BusinessLogo'
 import { PortfolioGallery } from './PortfolioGallery'
 import {
@@ -35,17 +38,33 @@ type LoadState =
  * `GET /public/businesses/{id}`. Works logged in or out. Draft, in-review and unknown
  * businesses all show the same not-found state, as the API does not tell them apart.
  */
+/**
+ * The business a logged-in user browses as, once the session and memberships are known:
+ * `undefined` while still loading, `null` when logged out or without a business.
+ */
+function useViewerBusinessId(): string | null | undefined {
+  useMemberships()
+  return useSessionStore((state) => {
+    if (state.status === 'idle' || state.status === 'restoring') return undefined
+    if (state.status !== 'authenticated') return null
+    if (state.memberships === null && !state.membershipsError) return undefined
+    return state.activeBusiness?.id ?? null
+  })
+}
+
 export function PublicBusinessProfilePage() {
   const { businessId } = useParams()
   const validId = isBusinessUuid(businessId)
+  const viewerBusinessId = useViewerBusinessId()
   const [state, setState] = useState<LoadState>(validId ? { kind: 'loading' } : { kind: 'not-found' })
   const [reloadKey, setReloadKey] = useState(0)
 
   useEffect(() => {
-    if (!validId) return
+    // Wait for the session, so a logged-in user's request carries their business and one request is enough.
+    if (!validId || viewerBusinessId === undefined) return
     let live = true
     setState({ kind: 'loading' })
-    getPublicBusiness(businessId)
+    getPublicBusiness(businessId, viewerBusinessId)
       .then((business) => {
         if (live) setState({ kind: 'ready', business })
       })
@@ -57,7 +76,7 @@ export function PublicBusinessProfilePage() {
     return () => {
       live = false
     }
-  }, [businessId, validId, reloadKey])
+  }, [businessId, validId, viewerBusinessId, reloadKey])
 
   const retry = useCallback(() => setReloadKey((key) => key + 1), [])
 
@@ -68,8 +87,14 @@ export function PublicBusinessProfilePage() {
         {state.kind === 'loading' && <LoadingState label="Loading business profile…" />}
         {state.kind === 'error' && <ErrorState title="We couldn’t load this profile" error={state.error} onRetry={retry} />}
         {state.kind === 'not-found' && <ProfileNotFound />}
-        {state.kind === 'ready' && <PublicProfileView business={state.business} />}
+        {state.kind === 'ready' && (
+          <PublicProfileView
+            business={state.business}
+            action={viewerBusinessId && viewerBusinessId !== state.business.id ? <ProfileSaveButton business={state.business} viewerBusinessId={viewerBusinessId} /> : null}
+          />
+        )}
       </main>
+      <Toaster />
     </div>
   )
 }
@@ -112,7 +137,22 @@ function ProfileNotFound() {
   )
 }
 
-export function PublicProfileView({ business }: { business: PublicBusiness }) {
+function ProfileSaveButton({ business, viewerBusinessId }: { business: PublicBusiness; viewerBusinessId: string }) {
+  const { isSaved, isPending, toggle } = useSaveToggle(viewerBusinessId)
+  const saved = isSaved(business.id, business.saved)
+  return (
+    <SaveButton
+      labelled
+      name={business.display_name}
+      saved={saved}
+      pending={isPending(business.id)}
+      onToggle={() => void toggle(business.id, business.display_name, saved)}
+    />
+  )
+}
+
+/** The profile itself. `action` sits beside the name, e.g. the save button for a logged-in viewer. */
+export function PublicProfileView({ business, action }: { business: PublicBusiness; action?: ReactNode }) {
   const location = formatLocation(business)
   const subtitle = business.industry ?? business.categories[0]?.name
   const socials = orderedSocialLinks(business.social_links)
@@ -134,6 +174,7 @@ export function PublicProfileView({ business }: { business: PublicBusiness }) {
             <div className="profile-title">
               <h1 id="public-profile-name">{business.display_name}</h1>
               {business.verified && <span className="verified"><BadgeCheck size={12} aria-hidden="true" /> Verified business</span>}
+              {action && <span className="public-profile-action">{action}</span>}
             </div>
             {subtitle && <p>{subtitle}</p>}
             <div className="profile-meta">
