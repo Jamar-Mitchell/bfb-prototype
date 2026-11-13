@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { ArrowLeft, ArrowRight, Check, Handshake, Lock, Quote, X } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, Lock, Quote, X } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 
 import { paths } from '../../app/router/paths'
@@ -8,6 +8,8 @@ import { toApiError, type ApiError } from '../../lib/api/errors'
 import { updateBusinessRole } from '../../lib/businesses/activeBusiness'
 import { useActiveBusiness } from '../../lib/businesses/useActiveBusiness'
 import { PublicProfileLink } from '../businesses/PublicProfileLink'
+import { MatchProposalPanel } from '../proposals/MatchProposalPanel'
+import '../proposals/Proposals.css'
 import { FactorList, FitBandBadge } from './FitDisplay'
 import { DeclineMatchDialog } from './DeclineMatchDialog'
 import { DECLINE_REASON_LABELS, MATCH_RESPONSE_LABELS, MATCH_STATUS_LABELS, type MatchResponse, type MatchStatus } from './fitCopy'
@@ -133,13 +135,15 @@ export function BusinessMatchPage() {
       <div className="match-layout">
         <div className="match-main">
           {match.status === 'accepted' && (
-            <section className="match-panel match-next" aria-labelledby="match-next-title">
-              <Handshake size={22} aria-hidden="true" />
-              <div>
-                <h2 id="match-next-title">You both accepted</h2>
-                <p>{other.display_name} is expecting to hear from you. A proposal can be started in the next release; until then, BFB will help you connect.</p>
-              </div>
-            </section>
+            <MatchProposalPanel
+              business={business}
+              matchId={match.id}
+              otherName={other.display_name}
+              onMatchChanged={(message) => {
+                setNotice(message)
+                reload()
+              }}
+            />
           )}
           {match.operator_note && (
             <section className="match-panel match-note" aria-labelledby="match-note-title">

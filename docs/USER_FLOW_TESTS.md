@@ -1,10 +1,10 @@
 # User Flow Tests
 
-Manual, end-to-end checks of everything built through Phase 3. Use it before a demo, after a large merge, or before handing the app to pilot users. Automated tests cover the logic; this doc covers what a person sees when they use the app.
+Manual, end-to-end checks of everything built so far, through the start of Phase 4. Use it before a demo, after a large merge, or before handing the app to pilot users. Automated tests cover the logic; this doc covers what a person sees when they use the app.
 
 Each flow lists steps and what should happen. Tick a row when it passes. When one fails, note the flow number, the step, and what you saw, then file it or hand it to an agent.
 
-Last updated: 13 November 2026 (end of Phase 3).
+Last updated: 13 November 2026 (start of Phase 4).
 
 ## Setup
 
@@ -191,19 +191,33 @@ Use the match from flow 12. Log in as each owner in a different window.
 | 13.11 | As staff, withdraw an open match with a reason | Moves to Closed for both businesses; feedback is no longer offered | [ ] |
 | 13.12 | Open a match in two windows, answer in one, then the other | The second shows that it was already answered and refreshes | [ ] |
 
-## 14. Across the app
+## 14. Proposals
+
+Use the match from flow 13 once both businesses accepted it. Log in as each owner in a different window.
+
+| # | Steps | Expected | Pass |
+|---|---|---|---|
+| 14.1 | As Northline's owner, open the accepted match | "You both accepted" panel with "Start a proposal" | [ ] |
+| 14.2 | As a member of Northline, open the same match | No start button; a line says owners and administrators can start one | [ ] |
+| 14.3 | As Northline's owner, press "Start a proposal" | Toast "Proposal started…"; the proposal page opens | [ ] |
+| 14.4 | Open `/proposals`, then each tab | Nothing under Waiting on you; the new proposal under Drafts as "Draft", "Not sent yet", "Waiting on you to send it" | [ ] |
+| 14.5 | Go back to the match | The panel links to the open proposal instead of offering to start one | [ ] |
+| 14.6 | As Harbor's owner, open `/proposals?tab=them` and the match | The proposal shows as "Being prepared" with no terms; the match links to it and has no start button | [ ] |
+| 14.7 | In two windows as Northline's owner and administrator, press "Start a proposal" in both before reloading | The second says a proposal is already open and links to it | [ ] |
+
+## 15. Across the app
 
 | # | Check | Expected | Pass |
 |---|---|---|---|
-| 14.1 | Repeat flows 10, 11 and 13 at phone width (about 390 px) | Usable, no sideways scrolling | [ ] |
-| 14.2 | Use the main flows with the keyboard only | Every control reachable; dialogs trap focus and close with Escape | [ ] |
-| 14.3 | Stop the API and visit each main page | Clear error with a retry, no blank screens | [ ] |
-| 14.4 | Slow the network (browser throttling) | Loading states show, no layout jumps | [ ] |
-| 14.5 | Search the whole app for fit numbers | None. Fit is always Strong, Potential or Limited in words | [ ] |
+| 15.1 | Repeat flows 10, 11, 13 and 14 at phone width (about 390 px) | Usable, no sideways scrolling | [ ] |
+| 15.2 | Use the main flows with the keyboard only | Every control reachable; dialogs trap focus and close with Escape | [ ] |
+| 15.3 | Stop the API and visit each main page | Clear error with a retry, no blank screens | [ ] |
+| 15.4 | Slow the network (browser throttling) | Loading states show, no layout jumps | [ ] |
+| 15.5 | Search the whole app for fit numbers | None. Fit is always Strong, Potential or Limited in words | [ ] |
 
 ## Known gaps (not failures)
 
 - Exchanges, messages, the landing page and the dashboard's "Recommended for you" still use demo data until their phases.
 - Emails are printed, not sent, until an email provider is chosen ([DESIGN_SIGNOFFS.md](DESIGN_SIGNOFFS.md) row 37).
-- Proposals start in Phase 4; after both businesses accept a match, the app says so.
+- The proposal page shows where a proposal stands but not yet its full terms; review, counteroffers and accepting arrive with the rest of Phase 4.
 - Design and product items waiting on sign-off are in [DESIGN_SIGNOFFS.md](DESIGN_SIGNOFFS.md). A flow that passes here can still change there.

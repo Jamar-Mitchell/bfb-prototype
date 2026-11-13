@@ -318,7 +318,7 @@ describe('answering a match', () => {
     fireEvent.click(within(panel).getByRole('button', { name: 'Accept match' }))
 
     expect(await screen.findByRole('heading', { name: 'You both accepted' })).toBeInTheDocument()
-    expect(screen.getByText(/A proposal can be started in the next release/)).toBeInTheDocument()
+    expect(await screen.findByRole('button', { name: 'Start a proposal' })).toBeInTheDocument()
     expect(screen.queryByRole('region', { name: 'Your answer' })).not.toBeInTheDocument()
     expect(api.calls('post', `${DETAIL}/accept`)).toHaveLength(1)
     expect(useToastStore.getState().toasts.at(-1)?.message).toBe('You and Northside Studio both accepted.')

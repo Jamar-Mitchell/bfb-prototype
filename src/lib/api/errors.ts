@@ -70,6 +70,11 @@ export type ApiErrorCode =
   | 'invalid_match_status'
   // Marketplace (API-3.1)
   | 'invalid_cursor'
+  // Proposals (API-4.2)
+  | 'proposal_exists'
+  | 'invalid_proposal_status'
+  | 'stale_draft'
+  | 'proposal_incomplete'
   // Feature codes are added by later packages; keep the type open for them.
   | (string & {})
 
@@ -135,6 +140,10 @@ export const API_ERROR_MESSAGES: Record<string, string> = {
   match_exists: 'These two businesses already have an open match.',
   invalid_match_pair: 'One of the chosen offers or needs is no longer available. Reload and choose again.',
   invalid_match_status: 'This match is no longer open, so nothing was changed.',
+  proposal_exists: 'This match already has an open proposal.',
+  invalid_proposal_status: 'This proposal changed since you loaded it, so nothing was changed.',
+  stale_draft: 'This draft was changed somewhere else since you loaded it.',
+  proposal_incomplete: 'Fill in what’s missing before sending the proposal.',
 }
 
 /** User-facing copy for an error code. Unknown codes fall back to the generic message. */

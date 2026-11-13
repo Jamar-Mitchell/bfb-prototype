@@ -2,7 +2,7 @@
 
 Built work that is waiting on Jamar's sign-off. Each item is already in the app with the default described here, so nothing is blocked. To review an item, run the app locally and open the route listed. Tick the box when it is approved, or write the change you want under the item and an agent will pick it up.
 
-Last updated: 12 November 2026 (end of Phase 2, start of Phase 3).
+Last updated: 13 November 2026 (start of Phase 4).
 
 ## Design sign-offs
 
@@ -38,8 +38,12 @@ Last updated: 12 November 2026 (end of Phase 2, start of Phase 3).
 | 65 | Decline dialog: "Decline the match with …?", the reasons as selectable rows (optional), an optional note, the lock line "seen by BFB only, never by …", and a red "Decline match" button. Your own reason then shows under your response, marked as seen by BFB only | `/matches/<id>`, Decline | FE-3.4 | [ ] |
 | 66 | Both-accepted next step: a pale-green "You both accepted" panel above the pairs saying a proposal can be started in the next release and BFB will help you connect | `/matches/<id>` on an accepted match | FE-3.4 | [ ] |
 | 67 | "Was this match useful?" card under the pairs: Useful / Not useful chips, then reason chips for that rating plus "Something else", a comment box and "Save feedback"; once saved, the rating pill, reasons and comment with "Edit feedback". Hidden on withdrawn matches | `/matches/<id>` | FE-3.4 | [ ] |
+| 79 | "Proposals" sidebar item (file-and-pen icon) under Matches, with the count of proposals waiting on your business's answer | Sidebar | FE-4.1 | [ ] |
+| 80 | Proposals page: Waiting on you / Waiting on them / Drafts / Accepted / Closed tabs (kept in the URL; Waiting on you shows the count; the tabs scroll sideways on a phone), one row per proposal with logo or initials, name, location, the summary (or "No summary yet"), a status pill (Draft, Being prepared, Sent, Countered, Accepted, Declined, Withdrawn, Expired), "Version N" or "Not sent yet", whose turn (amber when it is yours), a timing line ("Respond by 27 Nov" in amber, "… responds by …", "Last edited …") and "Open"; an empty state per tab | `/proposals` | FE-4.1 | [ ] |
+| 81 | Accepted match next step: the pale-green "You both accepted" panel now has "Start a proposal" (owners and administrators), a lock line for members, or, once a proposal exists, "There's an open proposal for this match. Waiting on …", its status pill and "Open the proposal" | `/matches/<id>` on an accepted match | FE-4.1 | [ ] |
+| 82 | Proposal page, first cut: the summary as the heading, one line on where it stands ("Your business is writing version 1…", "… is writing the first version"), a Status card (status, version, whose turn, respond by, closed) and the other business's card. FE-4.3 adds the full terms | `/proposals/<id>` | FE-4.1 | [ ] |
 
-Phase 3 adds rows below 12, numbered from 41.
+Phase 3 adds rows below 12, numbered from 41. Phase 4 continues from 79.
 
 ## Product decisions
 
@@ -105,6 +109,9 @@ Decisions made to start Phase 4. Each can be changed later.
 | 76 | IP terms choices | Transfer on payment and completion, license to use, or each keeps their own. Wording needs legal review before launch | |
 | 77 | Party details for agreements | Legal name, entity type and registered address are required before accepting; private | |
 | 78 | Value comparison | Shows each side's total and the difference, and offers a cash adjustment for the difference. No fairness score | |
+| 83 | Which tab a proposal is on | Your own unsent first version is under Drafts, not Waiting on you; a counteroffer you are writing stays under Waiting on you; the other business's unsent first version is under Waiting on them as "Being prepared". The sidebar count is the Waiting on you tab | |
+| 84 | Finding a match's proposal | The match carries no proposal, so the accepted match page reads the business's proposals (up to 500) and links the match's open or accepted one. Add the proposal to the match API? | |
+| 85 | Closed proposals tab | Like matches (row 63): the API filters on one status at a time, so Closed reads the unfiltered list and keeps declined, withdrawn and expired proposals in the browser. Add a "closed" filter to the API? | |
 
 ## Before staging
 

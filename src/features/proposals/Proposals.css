@@ -1,0 +1,39 @@
+/* Proposals (FE-4.1): the list by tab, the proposal page and starting one from a match. New
+   screens with no prototype: built from the match inbox's tabs, cards, pills and panels. */
+
+.proposal-tabs { overflow-x: auto; scrollbar-width: none; }
+.proposal-tabs button { white-space: nowrap; }
+
+.proposal-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.proposal-row { background: white; border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 16px 18px; display: grid; grid-template-columns: minmax(200px, 260px) minmax(0, 1fr) auto; gap: 18px; align-items: center; transition: .2s ease; }
+.proposal-row:hover { box-shadow: 0 10px 25px rgba(var(--navy-rgb), .06); }
+.proposal-row-declined, .proposal-row-withdrawn, .proposal-row-expired { background: #fbfcfd; }
+.proposal-row-business { min-width: 0; }
+.proposal-row-body { min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.proposal-row-summary { margin: 0; color: var(--navy); font-size: var(--text-lg); font-weight: 600; line-height: 1.45; overflow-wrap: anywhere; }
+.proposal-row-muted { color: var(--muted); font-weight: 500; }
+.proposal-row-facts { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; color: var(--muted); font-size: var(--text-base); }
+.proposal-row-turn { font-weight: 600; color: var(--slate); }
+.proposal-row-turn-us { color: var(--amber); }
+.proposal-row-foot { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+
+.proposal-pill-draft { background: var(--surface-muted); }
+.proposal-pill-sent, .proposal-pill-countered { background: var(--pale-blue); border-color: #c9e5ff; color: var(--blue); }
+.proposal-pill-accepted { background: var(--green-pale); border-color: #ccecdf; color: var(--green); }
+.proposal-pill-declined { background: #fff7f8; border-color: #efcbd0; color: #a8323f; }
+.proposal-pill-withdrawn, .proposal-pill-expired { color: var(--muted); }
+
+/* Starting a proposal from an accepted match. */
+.match-next-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 12px; }
+.match-next .match-answer-who { margin-top: 10px; font-size: var(--text-base); }
+
+/* The proposal page (until the full review arrives in FE-4.3). */
+.proposal-heading h1 { overflow-wrap: anywhere; }
+.proposal-overview { padding: 20px 21px; display: flex; flex-direction: column; gap: 14px; }
+.proposal-overview p { margin: 0; color: var(--slate); font-size: var(--text-lg); line-height: 1.6; }
+.proposal-overview-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+@media (max-width: 900px) {
+  .proposal-row { grid-template-columns: 1fr; gap: 12px; }
+  .proposal-row-foot { flex-direction: row; justify-content: space-between; align-items: center; flex-wrap: wrap; padding-top: 12px; border-top: 1px solid var(--border); }
+}
