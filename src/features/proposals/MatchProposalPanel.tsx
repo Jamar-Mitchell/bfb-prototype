@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { ArrowRight, FileSignature, Handshake, Lock } from 'lucide-react'
+import { useState } from 'react'
+import { ArrowRight, CircleCheck, FileSignature, Handshake, Lock } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 
 import { paths } from '../../app/router/paths'
@@ -8,17 +8,12 @@ import { toApiError, type ApiError } from '../../lib/api/errors'
 import { updateBusinessRole } from '../../lib/businesses/activeBusiness'
 import { canAnswerMatches } from '../matching/matchResponses'
 import type { SessionBusiness } from '../../stores/session'
-import { proposalStatusLabel, waitingOnText } from './proposalCopy'
-import { findMatchProposal, startProposal, type ProposalStatus, type WaitingOn } from './proposalsApi'
+import type { components } from '../../lib/api/schema'
+import { PROPOSAL_STATUS_LABELS } from './proposalCopy'
+import { isOpen, startProposal } from './proposalsApi'
 
-/** The match's proposal as far as this panel needs it. */
-interface FoundProposal {
-  id: string
-  status: ProposalStatus
-  waiting_on: WaitingOn | null
-}
-
-type Lookup = { kind: 'loading' } | { kind: 'none' } | { kind: 'found'; proposal: FoundProposal } | { kind: 'exists'; proposalId: string }
+/** The match's proposal as the match detail carries it: the accepted one, else the newest. */
+export type MatchProposal = components['schemas']['MatchProposalResponse']
 
 function detailString(error: ApiError, key: string): string | null {
   const details = error.details
@@ -29,34 +24,21 @@ function detailString(error: ApiError, key: string): string | null {
 
 /**
  * The next step on a match both businesses accepted: "Start a proposal" for owners and
- * administrators, or a link to the match's open proposal. `onMatchChanged` reloads the match
- * when the API says it is no longer accepted.
+ * administrators, a link to the match's open proposal, or, once both businesses accepted a
+ * proposal, that it is accepted and the agreement comes next. `onMatchChanged` reloads the
+ * match when the API says it is no longer accepted.
  */
-export function MatchProposalPanel({ business, matchId, otherName, onMatchChanged }: {
+export function MatchProposalPanel({ business, matchId, otherName, proposal, onMatchChanged }: {
   business: SessionBusiness
   matchId: string
   otherName: string
+  proposal: MatchProposal | null
   onMatchChanged: (message: string) => void
 }) {
   const navigate = useNavigate()
-  const [lookup, setLookup] = useState<Lookup>({ kind: 'loading' })
+  const [existingId, setExistingId] = useState<string | null>(null)
   const [starting, setStarting] = useState(false)
   const canStart = canAnswerMatches(business.role)
-
-  useEffect(() => {
-    let live = true
-    findMatchProposal(business.id, matchId)
-      .then((found) => {
-        if (live) setLookup(found ? { kind: 'found', proposal: found } : { kind: 'none' })
-      })
-      .catch(() => {
-        // Not knowing is fine: starting answers `proposal_exists` with the open one.
-        if (live) setLookup({ kind: 'none' })
-      })
-    return () => {
-      live = false
-    }
-  }, [business.id, matchId])
 
   const start = async () => {
     setStarting(true)
@@ -68,7 +50,7 @@ export function MatchProposalPanel({ business, matchId, otherName, onMatchChange
       const error = toApiError(caught)
       const existing = error.code === 'proposal_exists' ? detailString(error, 'proposal_id') : null
       if (existing) {
-        setLookup({ kind: 'exists', proposalId: existing })
+        setExistingId(existing)
       } else if (error.code === 'invalid_match_status') {
         onMatchChanged('This match is no longer accepted, so a proposal can’t be started.')
       } else if (error.code === 'business_role_required') {
@@ -81,21 +63,29 @@ export function MatchProposalPanel({ business, matchId, otherName, onMatchChange
     }
   }
 
+  const accepted = proposal?.status === 'accepted' ? proposal : null
+  const open = proposal && isOpen(proposal.status) ? proposal : null
+  const closed = proposal && !accepted && !open ? proposal : null
   let body
-  if (lookup.kind === 'found' || lookup.kind === 'exists') {
-    const id = lookup.kind === 'found' ? lookup.proposal.id : lookup.proposalId
-    const found = lookup.kind === 'found' ? lookup.proposal : null
-    const turn = found ? waitingOnText(found, otherName) : null
+  if (accepted) {
     body = (
       <>
         <p>
-          {lookup.kind === 'exists'
-            ? 'A proposal for this match is already open.'
-            : found?.status === 'accepted'
-              ? `You and ${otherName} accepted a proposal.`
-              : `There’s an open proposal for this match.${turn ? ` ${turn}.` : ''}`}
+          You and {otherName} accepted version {accepted.accepted_version_number} of the proposal. The agreement and signatures come next.
         </p>
-        {found && found.status !== 'accepted' && <span className={`match-pill proposal-pill-${found.status}`}>{proposalStatusLabel(found)}</span>}
+        <div className="match-next-actions">
+          <Link className="button button-primary button-small" to={paths.proposal(accepted.id)}>
+            Open the proposal <ArrowRight size={15} aria-hidden="true" />
+          </Link>
+        </div>
+      </>
+    )
+  } else if (open || existingId) {
+    const id = open?.id ?? existingId ?? ''
+    body = (
+      <>
+        <p>{open ? 'There’s an open proposal for this match.' : 'A proposal for this match is already open.'}</p>
+        {open && <span className={`match-pill proposal-pill-${open.status}`}>{open.status === 'draft' ? 'Not sent yet' : PROPOSAL_STATUS_LABELS[open.status]}</span>}
         <div className="match-next-actions">
           <Link className="button button-primary button-small" to={paths.proposal(id)}>
             Open the proposal <ArrowRight size={15} aria-hidden="true" />
@@ -106,14 +96,17 @@ export function MatchProposalPanel({ business, matchId, otherName, onMatchChange
   } else {
     body = (
       <>
-        <p>{otherName} is expecting to hear from you. A proposal sets out who provides what, by when and on what terms.</p>
-        {lookup.kind === 'loading' ? (
-          <p className="match-answer-who" role="status">Checking for a proposal…</p>
-        ) : canStart ? (
+        <p>
+          {closed
+            ? `The last proposal was ${PROPOSAL_STATUS_LABELS[closed.status].toLowerCase()}. You can start a new one.`
+            : `${otherName} is expecting to hear from you. A proposal sets out who provides what, by when and on what terms.`}
+        </p>
+        {canStart ? (
           <div className="match-next-actions">
             <button type="button" className="button button-primary button-small" onClick={() => void start()} disabled={starting}>
               <FileSignature size={15} aria-hidden="true" /> {starting ? 'Starting…' : 'Start a proposal'}
             </button>
+            {closed && <Link className="proposal-version-open" to={paths.proposal(closed.id)}>See the last proposal</Link>}
           </div>
         ) : (
           <p className="match-answer-who"><Lock size={13} aria-hidden="true" /> Only owners and administrators of {business.name} can start a proposal.</p>
@@ -124,9 +117,9 @@ export function MatchProposalPanel({ business, matchId, otherName, onMatchChange
 
   return (
     <section className="match-panel match-next" aria-labelledby="match-next-title">
-      <Handshake size={22} aria-hidden="true" />
+      {accepted ? <CircleCheck size={22} aria-hidden="true" /> : <Handshake size={22} aria-hidden="true" />}
       <div>
-        <h2 id="match-next-title">You both accepted</h2>
+        <h2 id="match-next-title">{accepted ? 'Proposal accepted' : 'You both accepted'}</h2>
         {body}
       </div>
     </section>

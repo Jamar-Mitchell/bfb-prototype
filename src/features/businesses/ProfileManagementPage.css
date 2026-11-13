@@ -84,3 +84,20 @@
   .profile-social .form-grid { grid-template-columns: 1fr; }
 }
 .manage-profile-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* Legal details for agreements (FE-4.5): private party details, saved on their own. */
+.legal-details { padding: 20px 24px 24px; scroll-margin-top: 16px; }
+.legal-details:focus { outline: none; }
+.legal-details:focus-visible { box-shadow: 0 0 0 3px rgba(var(--blue-rgb), .25); }
+.legal-details-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; flex-wrap: wrap; }
+.legal-details-head > div { flex: 1 1 320px; min-width: 0; }
+.legal-details-head h2 { display: flex; align-items: center; gap: 8px; margin: 0 0 6px; color: var(--navy); font-size: var(--text-xl); }
+.legal-details-head h2 svg { color: var(--blue); }
+.legal-details-head p { margin: 0; color: var(--muted); font-size: var(--text-sm); line-height: 1.55; }
+.legal-details-private { display: inline-flex; align-items: center; gap: 4px; color: var(--slate); font-weight: 600; }
+.legal-details-status { display: flex; align-items: center; gap: 7px; margin: 14px 0 0; font-size: var(--text-sm); font-weight: 700; }
+.legal-details-missing { color: var(--amber); }
+.legal-details-ready { color: var(--green); }
+.legal-details .inline-success, .legal-details .profile-notice { margin: 14px 0 0; }
+.legal-details-form .form-grid { margin-top: 18px; }
+.legal-details-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; flex-wrap: wrap; }

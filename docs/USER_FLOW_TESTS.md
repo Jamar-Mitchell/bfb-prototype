@@ -225,6 +225,13 @@ Use the match from flow 13 once both businesses accepted it. Log in as each owne
 | 14.26 | After the counteroffer in 14.21, open the proposal as either business | "Versions" lists version 2 (Current) and version 1 (Replaced), each with who sent it, when, and who accepted it | [ ] |
 | 14.27 | Read "What changed from version 1" | One row per change you made: the value and the end date, each with the old value struck through and the new one; an added or removed service or milestone shows as Added or Removed | [ ] |
 | 14.28 | Press "Open version 1" | The version as it was sent, marked "Replaced by version 2", with a link to the current one and no buttons to act on it | [ ] |
+| 14.29 | As an owner whose business has no legal details, press Accept on a proposal sent to you, then "Accept proposal" | The dialog summarises what you provide and receive, the cash adjustment and the end date; then "Add your legal details first" lists what is missing, with a link | [ ] |
+| 14.30 | Send a counteroffer before adding legal details | The send dialog shows the same box; the draft stays saved | [ ] |
+| 14.31 | Follow "Add legal details" | The profile opens at "Legal details for agreements", ready to edit. Fill in legal name, entity type and address and save: "Ready for agreements." Log out and open the public profile: none of it shows | [ ] |
+| 14.32 | As a member, open the profile | Legal details are visible but cannot be edited | [ ] |
+| 14.33 | Send the counteroffer, then as the other business accept it | Both see "Accepted" with "Both businesses accepted version N" and that the agreement and signatures come next; no buttons. Versions shows version N as Accepted by both | [ ] |
+| 14.34 | Open the match as either business | "Proposal accepted" with a link to the proposal; the proposal is under Accepted on `/proposals` | [ ] |
+| 14.35 | Open the proposal in two windows; send a counter from one, then press Accept on the old version in the other | A notice says a newer version replaced it and the current one loads | [ ] |
 
 ## 15. Across the app
 
@@ -240,5 +247,5 @@ Use the match from flow 13 once both businesses accepted it. Log in as each owne
 
 - Exchanges, messages, the landing page and the dashboard's "Recommended for you" still use demo data until their phases.
 - Emails are printed, not sent, until an email provider is chosen ([DESIGN_SIGNOFFS.md](DESIGN_SIGNOFFS.md) row 37).
-- Accepting a proposal arrives with the rest of Phase 4.
+- After both businesses accept a proposal, the agreement and signatures arrive in Phase 5.
 - Design and product items waiting on sign-off are in [DESIGN_SIGNOFFS.md](DESIGN_SIGNOFFS.md). A flow that passes here can still change there.

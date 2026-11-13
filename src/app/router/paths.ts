@@ -24,6 +24,8 @@ export const paths = {
   exchanges: '/exchanges',
   messages: '/messages',
   profile: '/profile',
+  /** The profile's "Legal details for agreements" section, brought into view. */
+  profileLegalDetails: '/profile?section=legal-details',
   listings: '/listings',
   team: '/team',
   /** Prototype profile of a demo business (marketplace data until Phase 3). */
@@ -66,3 +68,6 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 export function isBusinessUuid(value: string | undefined): value is string {
   return value !== undefined && UUID.test(value)
 }
+
+/** The id of the profile's legal details section, and its `?section=` value. */
+export const LEGAL_DETAILS_SECTION = 'legal-details'

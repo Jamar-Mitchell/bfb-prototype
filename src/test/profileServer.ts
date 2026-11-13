@@ -35,7 +35,7 @@ export function withCompleteness(business: Business): Business {
 
 /** A business with its completeness worked out from its fields. */
 export function profileBusiness(overrides: Partial<Business> = {}): Business {
-  return withCompleteness(apiBusiness(overrides))
+  return withPartyDetails(withCompleteness(apiBusiness(overrides)))
 }
 
 /** Every required item filled except the logo. */
@@ -64,8 +64,22 @@ export function applyProfileUpdate(business: Business, update: ProfileUpdate): B
     })
   }
   if (next.social_links === null) next.social_links = {}
-  return withCompleteness(next)
+  return withPartyDetails(withCompleteness(next))
 }
 
 /** `GET /businesses/{id}/portfolio` for a business with no work samples yet. */
 export const emptyPortfolio = { version: 0, max_items: 24, items: [] }
+
+/** `registered_address` and `party_details_missing` the way the API returns them. */
+export function withPartyDetails(business: Business): Business {
+  const address = { line1: null, line2: null, city: null, region: null, postal_code: null, country: null, ...(business.registered_address ?? {}) }
+  const missing = [
+    !business.legal_name && 'legal_name',
+    !business.entity_type && 'entity_type',
+    !address.line1 && 'registered_address.line1',
+    !address.city && 'registered_address.city',
+    !address.postal_code && 'registered_address.postal_code',
+    !address.country && 'registered_address.country',
+  ].filter((key): key is string => Boolean(key))
+  return { ...business, registered_address: address, party_details_missing: missing }
+}

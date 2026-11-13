@@ -127,22 +127,6 @@ export async function countWaitingProposals(businessId: string): Promise<number>
   return count
 }
 
-/**
- * The match's open or accepted proposal, if any, newest first. The match detail carries no
- * proposal, so this reads the business's proposals (a few pages at most) and picks the match's.
- */
-export async function findMatchProposal(businessId: string, matchId: string): Promise<ProposalSummary | null> {
-  let cursor: string | null = null
-  for (let read = 0; read < COUNT_PAGE_LIMIT; read += 1) {
-    const page = await listProposals(businessId, { limit: 100, cursor })
-    const found = page.items.find((item) => item.match_id === matchId && (isOpen(item.status) || item.status === 'accepted'))
-    if (found) return found
-    cursor = page.next_cursor
-    if (!cursor) break
-  }
-  return null
-}
-
 export function getProposal(businessId: string, proposalId: string): Promise<Proposal> {
   return apiGet('/businesses/{business_id}/proposals/{proposal_id}', { path: { business_id: businessId, proposal_id: proposalId } })
 }
@@ -256,5 +240,17 @@ export function getVersionChanges(businessId: string, proposalId: string, versio
   return apiGet('/businesses/{business_id}/proposals/{proposal_id}/versions/{version_number}/changes', {
     path: { business_id: businessId, proposal_id: proposalId, version_number: versionNumber },
     ...(from ? { query: { from } } : {}),
+  })
+}
+
+/**
+ * Accepts the current sent version for this business. `409 invalid_proposal_status` with
+ * `details.reason` `closed`, `not_current_version` or `already_accepted` (and
+ * `details.current_version_number`); then `422 party_details_missing` with `details.missing`.
+ * When both businesses have accepted, the proposal is `accepted`.
+ */
+export function acceptVersion(businessId: string, proposalId: string, versionNumber: number): Promise<Proposal> {
+  return apiPost('/businesses/{business_id}/proposals/{proposal_id}/versions/{version_number}/accept', undefined, {
+    path: { business_id: businessId, proposal_id: proposalId, version_number: versionNumber },
   })
 }

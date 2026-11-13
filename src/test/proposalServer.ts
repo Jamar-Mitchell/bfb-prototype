@@ -183,6 +183,7 @@ export function acceptedMatch(overrides: Partial<BusinessMatch> = {}): BusinessM
     other: { side: 'b', business: studio, response: 'accepted', responded_at: '2026-11-12T11:00:00Z' },
     components: [],
     my_feedback: null,
+    proposal: null,
     expires_at: '2026-11-26T12:00:00Z',
     closed_at: '2026-11-12T11:00:00Z',
     created_at: '2026-11-12T09:00:00Z',

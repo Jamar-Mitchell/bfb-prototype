@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { ArrowLeft, Lock, Send, Trash2 } from 'lucide-react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
@@ -8,9 +8,11 @@ import { toApiError, type ApiError } from '../../lib/api/errors'
 import { updateBusinessRole } from '../../lib/businesses/activeBusiness'
 import { useActiveBusiness } from '../../lib/businesses/useActiveBusiness'
 import type { SessionBusiness } from '../../stores/session'
+import { partyDetailsMissingFrom } from '../businesses/partyDetails'
 import { canAnswerMatches } from '../matching/matchResponses'
 import { ConfirmDialog } from '../team/ConfirmDialog'
 import { goTo, MissingChecklist, SaveIndicator, SendProposalDialog, ValueComparisonPanel } from './BuilderPanels'
+import { PartyDetailsPrompt } from './PartyDetailsPrompt'
 import { CashSection, MilestonesSection, ServicesSection, SummarySection, TermsSection } from './BuilderSections'
 import { sectionAnchor } from './proposalCopy'
 import { cashForDifference, compareValues, normalizeTerms, type DraftTerms } from './proposalDraft'
@@ -126,7 +128,7 @@ function Builder({ business, proposal, draft, back, notice, onNotice, onReload }
   const [missing, setMissing] = useState<string[]>(draft.missing)
   const [offers, setOffers] = useState<Record<Side, OfferChoice[] | null>>({ a: null, b: null })
   const [sending, setSending] = useState<'closed' | 'open' | 'busy'>('closed')
-  const [sendError, setSendError] = useState<string | null>(null)
+  const [sendError, setSendError] = useState<ReactNode>(null)
   const [discarding, setDiscarding] = useState<'closed' | 'open' | 'busy'>('closed')
 
   const refused = (error: ApiError) => {
@@ -200,6 +202,9 @@ function Builder({ business, proposal, draft, back, notice, onNotice, onReload }
         setSending('closed')
         onNotice(refusalNotice(error))
         requestAnimationFrame(() => document.getElementById('proposal-missing-title')?.scrollIntoView?.({ block: 'center' }))
+      } else if (error.code === 'party_details_missing') {
+        setSendError(<PartyDetailsPrompt action="send" missing={partyDetailsMissingFrom(error.details)} />)
+        setSending('open')
       } else if (error.code === 'invalid_proposal_status' || error.code === 'business_role_required' || error.code === 'stale_draft') {
         refused(error)
       } else {
