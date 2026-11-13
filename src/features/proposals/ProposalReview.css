@@ -57,6 +57,40 @@
 
 .proposal-review-layout .match-answer .button { justify-content: center; }
 
+/* Versions and what changed (FE-4.4). */
+.proposal-version-list { list-style: none; margin: 0; padding: 0; }
+.proposal-version { padding: 16px 21px; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.proposal-version + .proposal-version { border-top: 1px solid var(--border); }
+.proposal-version-current { background: #fbfdff; }
+.proposal-version-head { display: flex; align-items: center; gap: 10px; }
+.proposal-version-head strong { color: var(--navy); font-size: var(--text-lg); }
+.proposal-version p { margin: 0; color: var(--slate); font-size: var(--text-base); line-height: 1.5; }
+.proposal-version-open { display: inline-flex; align-items: center; gap: 5px; color: var(--blue); font-size: var(--text-base); font-weight: 700; }
+.proposal-version-changes { width: 100%; }
+.proposal-version-changes-page { padding: 16px 21px; }
+.proposal-version-toggle { display: inline-flex; align-items: center; gap: 5px; padding: 0; color: var(--blue); font-size: var(--text-base); font-weight: 700; }
+.proposal-changes-note { margin: 8px 0 0 !important; color: var(--muted) !important; }
+.proposal-changes-error { color: #a8323f !important; }
+.proposal-changes-error .text-button { padding: 0; color: inherit; text-decoration: underline; font-size: inherit; }
+.proposal-changes { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; width: 100%; }
+.proposal-change { display: grid; grid-template-columns: 78px minmax(0, 1fr); gap: 10px; align-items: start; border: 1px solid var(--border); border-radius: var(--radius-md); background: white; padding: 9px 12px; }
+.proposal-change-kind { justify-self: start; border-radius: 999px; padding: 2px 8px; font-size: var(--text-2xs); font-weight: 800; background: var(--surface-muted); color: var(--slate); border: 1px solid var(--border); }
+.proposal-change-added .proposal-change-kind { background: var(--green-pale); border-color: #ccecdf; color: var(--green); }
+.proposal-change-removed .proposal-change-kind { background: #fff7f8; border-color: #efcbd0; color: #a8323f; }
+.proposal-change-changed .proposal-change-kind { background: var(--pale-blue); border-color: #c9e5ff; color: var(--blue); }
+.proposal-change > div { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.proposal-change strong { color: var(--navy); font-size: var(--text-base); overflow-wrap: anywhere; }
+.proposal-change p { margin: 0; color: var(--slate); font-size: var(--text-base); line-height: 1.5; overflow-wrap: anywhere; }
+.proposal-change-values { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.proposal-change-values del { color: var(--muted); }
+.proposal-change-values ins { text-decoration: none; color: var(--navy); font-weight: 700; }
+.proposal-change-values svg { color: var(--muted); flex: 0 0 auto; }
+
+.proposal-version-page { display: flex; flex-direction: column; gap: 18px; max-width: 880px; }
+.proposal-replaced { background: #fffaf0; border-color: #f3e5bf; }
+.proposal-replaced h2 { display: flex; align-items: center; gap: 7px; color: var(--amber) !important; font-size: var(--text-lg) !important; }
+.proposal-replaced a { color: var(--blue); font-weight: 700; }
+
 /* On a phone the answer and status come before the document, as in the builder. */
 @media (max-width: 960px) {
   .proposal-review-layout .match-side { order: -1; }
@@ -71,4 +105,6 @@
   .proposal-timeline-date { text-align: left; }
   .proposal-timeline-item > div { padding-left: 0; }
   .proposal-doc-terms > div { grid-template-columns: 1fr; gap: 2px; }
+  .proposal-version, .proposal-version-changes-page { padding: 14px 16px; }
+  .proposal-change { grid-template-columns: 1fr; gap: 6px; }
 }

@@ -19,6 +19,8 @@ export const paths = {
   proposal: (id: string) => `/proposals/${id}`,
   /** The proposal builder: this business's draft. */
   proposalEdit: (id: string) => `/proposals/${id}/edit`,
+  /** One sent version of a proposal, read-only. */
+  proposalVersion: (id: string, versionNumber: number) => `/proposals/${id}/versions/${versionNumber}`,
   exchanges: '/exchanges',
   messages: '/messages',
   profile: '/profile',
@@ -46,6 +48,8 @@ export const matchPattern = '/matches/:matchId'
 export const proposalPattern = '/proposals/:proposalId'
 
 export const proposalEditPattern = '/proposals/:proposalId/edit'
+
+export const proposalVersionPattern = '/proposals/:proposalId/versions/:versionNumber'
 
 export const publicBusinessPattern = '/b/:businessId'
 

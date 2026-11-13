@@ -16,6 +16,9 @@ export type ProposalDraft = Schemas['DraftResponse']
 export type Side = Schemas['Side']
 export type WaitingOn = Schemas['WaitingOn']
 export type SentVersion = Schemas['SentVersionResponse']
+export type VersionSummary = Schemas['VersionSummaryResponse']
+export type VersionChanges = Schemas['VersionChangesResponse']
+export type TermsChange = Schemas['TermsChange']
 export type ProposalDeclineReason = Schemas['ProposalDeclineReason']
 export type ProposalWithdrawReason = Schemas['WithdrawRequest']['reason']
 
@@ -236,4 +239,22 @@ export function declineProposal(businessId: string, proposalId: string, body: Cl
 /** Withdraws the current version. Only the business that sent it; discards any open draft. */
 export function withdrawProposal(businessId: string, proposalId: string, body: CloseBody<ProposalWithdrawReason>): Promise<Proposal> {
   return apiPost('/businesses/{business_id}/proposals/{proposal_id}/withdraw', body, { path: { business_id: businessId, proposal_id: proposalId } })
+}
+
+/** One sent version in full. Any member; works on closed proposals. A draft is `404`. */
+export function getVersion(businessId: string, proposalId: string, versionNumber: number): Promise<SentVersion> {
+  return apiGet('/businesses/{business_id}/proposals/{proposal_id}/versions/{version_number}', {
+    path: { business_id: businessId, proposal_id: proposalId, version_number: versionNumber },
+  })
+}
+
+/**
+ * What changed from version `from` (default the one before) to `versionNumber`, item by item.
+ * The API does the comparison; the page only renders it (bfb-api docs/PROPOSALS.md, "Changes").
+ */
+export function getVersionChanges(businessId: string, proposalId: string, versionNumber: number, from?: number): Promise<VersionChanges> {
+  return apiGet('/businesses/{business_id}/proposals/{proposal_id}/versions/{version_number}/changes', {
+    path: { business_id: businessId, proposal_id: proposalId, version_number: versionNumber },
+    ...(from ? { query: { from } } : {}),
+  })
 }
