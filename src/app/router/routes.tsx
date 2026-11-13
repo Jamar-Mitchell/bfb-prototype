@@ -1,5 +1,8 @@
 import { Navigate, Outlet, useLocation, useParams, useRoutes, type RouteObject } from 'react-router-dom'
 
+import { AgreementPage } from '../../features/agreements/AgreementPage'
+import { AgreementsPage } from '../../features/agreements/AgreementsPage'
+import { ExchangeTermsPage } from '../../features/agreements/ExchangeTermsPage'
 import { AppShell } from '../../components/layout/AppShell'
 import { AdminBusinessPage } from '../../features/admin/AdminBusinessPage'
 import { MatchDetailPage } from '../../features/admin/MatchDetailPage'
@@ -32,7 +35,7 @@ import { Onboarding } from '../../features/onboarding/Onboarding'
 import { AcceptInvitePage } from '../../features/team/AcceptInvitePage'
 import { TeamPage } from '../../features/team/TeamPage'
 import { businesses } from '../../mocks/businesses'
-import { adminBusinessPattern, adminMatchPattern, getBusinessIdFromPath, isBusinessUuid, matchPattern, paths, proposalEditPattern, proposalPattern, proposalVersionPattern, publicBusinessPattern } from './paths'
+import { adminBusinessPattern, adminMatchPattern, agreementPattern, exchangeTermsVersionPattern, getBusinessIdFromPath, isBusinessUuid, matchPattern, paths, proposalEditPattern, proposalPattern, proposalVersionPattern, publicBusinessPattern } from './paths'
 import { useActiveBusinessId, useMemberships } from '../../lib/businesses/useActiveBusiness'
 import { RequireAuth } from './RequireAuth'
 import { RequireBusiness } from './RequireBusiness'
@@ -115,6 +118,9 @@ export const routes: RouteObject[] = [
   { path: paths.acceptInvite, element: <AcceptInvitePage /> },
   // A real business's public profile: no login needed, so it sits outside the app shell.
   { path: publicBusinessPattern, element: <PublicBusinessProfilePage /> },
+  // The Exchange Terms every agreement incorporates: public, like the business profile.
+  { path: paths.exchangeTerms, element: <ExchangeTermsPage /> },
+  { path: exchangeTermsVersionPattern, element: <ExchangeTermsPage /> },
   {
     // App-shell routes need a logged-in user.
     element: <RequireAuth />,
@@ -154,6 +160,8 @@ export const routes: RouteObject[] = [
               { path: proposalPattern, element: <ProposalPage /> },
               { path: proposalEditPattern, element: <ProposalBuilderPage /> },
               { path: proposalVersionPattern, element: <ProposalVersionPage /> },
+              { path: paths.agreements, element: <AgreementsPage /> },
+              { path: agreementPattern, element: <AgreementPage /> },
               { path: '/business/:id/*', element: <BusinessRoute /> },
               { path: paths.exchanges, element: <ExchangesPage /> },
               { path: paths.messages, element: <MessagesPage /> },

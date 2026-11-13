@@ -75,6 +75,8 @@ export type ApiErrorCode =
   | 'invalid_proposal_status'
   | 'stale_draft'
   | 'proposal_incomplete'
+  // Agreements (API-5.2)
+  | 'legal_document_not_reviewed'
   // Feature codes are added by later packages; keep the type open for them.
   | (string & {})
 
@@ -144,6 +146,7 @@ export const API_ERROR_MESSAGES: Record<string, string> = {
   invalid_proposal_status: 'This proposal changed since you loaded it, so nothing was changed.',
   stale_draft: 'This draft was changed somewhere else since you loaded it.',
   proposal_incomplete: 'Fill in what’s missing before sending the proposal.',
+  legal_document_not_reviewed: 'BFB’s legal documents are still drafts waiting for review by counsel, so agreements can’t be prepared yet.',
 }
 
 /** User-facing copy for an error code. Unknown codes fall back to the generic message. */

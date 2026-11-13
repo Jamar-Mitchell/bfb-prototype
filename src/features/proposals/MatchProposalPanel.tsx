@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ArrowRight, CircleCheck, FileSignature, Handshake, Lock } from 'lucide-react'
+import { ArrowRight, CircleCheck, FileSignature, Handshake, Lock, ScrollText } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 
 import { paths } from '../../app/router/paths'
@@ -9,6 +9,7 @@ import { updateBusinessRole } from '../../lib/businesses/activeBusiness'
 import { canAnswerMatches } from '../matching/matchResponses'
 import type { SessionBusiness } from '../../stores/session'
 import type { components } from '../../lib/api/schema'
+import type { AgreementLink } from '../agreements/agreementsApi'
 import { PROPOSAL_STATUS_LABELS } from './proposalCopy'
 import { isOpen, startProposal } from './proposalsApi'
 
@@ -25,14 +26,16 @@ function detailString(error: ApiError, key: string): string | null {
 /**
  * The next step on a match both businesses accepted: "Start a proposal" for owners and
  * administrators, a link to the match's open proposal, or, once both businesses accepted a
- * proposal, that it is accepted and the agreement comes next. `onMatchChanged` reloads the
- * match when the API says it is no longer accepted.
+ * proposal, links to its agreement and the proposal. `onMatchChanged` reloads the match when
+ * the API says it is no longer accepted.
  */
-export function MatchProposalPanel({ business, matchId, otherName, proposal, onMatchChanged }: {
+export function MatchProposalPanel({ business, matchId, otherName, proposal, agreement = null, onMatchChanged }: {
   business: SessionBusiness
   matchId: string
   otherName: string
   proposal: MatchProposal | null
+  /** The match's agreement, once the accepted proposal produced one. */
+  agreement?: AgreementLink | null
   onMatchChanged: (message: string) => void
 }) {
   const navigate = useNavigate()
@@ -71,10 +74,16 @@ export function MatchProposalPanel({ business, matchId, otherName, proposal, onM
     body = (
       <>
         <p>
-          You and {otherName} accepted version {accepted.accepted_version_number} of the proposal. The agreement and signatures come next.
+          You and {otherName} accepted version {accepted.accepted_version_number} of the proposal.{' '}
+          {agreement ? 'BFB prepared the Business Exchange Agreement from it for both businesses to sign.' : 'BFB is preparing the agreement from it.'}
         </p>
         <div className="match-next-actions">
-          <Link className="button button-primary button-small" to={paths.proposal(accepted.id)}>
+          {agreement && (
+            <Link className="button button-primary button-small" to={paths.agreement(agreement.id)}>
+              <ScrollText size={15} aria-hidden="true" /> Open the agreement
+            </Link>
+          )}
+          <Link className={agreement ? 'proposal-version-open' : 'button button-primary button-small'} to={paths.proposal(accepted.id)}>
             Open the proposal <ArrowRight size={15} aria-hidden="true" />
           </Link>
         </div>

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { ArrowLeft, Check, FilePen, Lock, Repeat2, Undo2, X } from 'lucide-react'
+import { ArrowLeft, Check, FilePen, Lock, Repeat2, ScrollText, Undo2, X } from 'lucide-react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import { paths } from '../../app/router/paths'
@@ -68,6 +68,13 @@ export function proposalConflictText(error: ApiError): string {
       return 'This proposal changed since you opened it, so we loaded it again.'
   }
 }
+
+/**
+ * The final acceptance is refused (`409 legal_document_not_reviewed`) where agreements may not
+ * use draft legal documents. Nothing changed, so the dialog stays open and says why.
+ */
+export const LEGAL_NOT_REVIEWED_TEXT =
+  'We couldn’t make this final. BFB’s legal documents are still drafts waiting for review by counsel, so the agreement can’t be prepared yet. Nothing changed: the proposal is as it was, and you can accept once reviewed documents are published.'
 
 /** A refusal the page answers by loading the proposal again. */
 function isConflict(error: ApiError): boolean {
@@ -177,11 +184,14 @@ function ProposalView({ proposalId }: { proposalId: string }) {
       setDialog(null)
       setNotice(null)
       setProposal(updated)
-      showToast(updated.status === 'accepted' ? `You and ${other.display_name} accepted version ${current.version_number}.` : `Version ${current.version_number} accepted.`)
+      showToast(updated.status === 'accepted'
+        ? `You and ${other.display_name} accepted version ${current.version_number}.${updated.agreement ? ' BFB prepared the agreement.' : ''}`
+        : `Version ${current.version_number} accepted.`)
       void refreshWaitingProposals(business.id)
     } catch (caught) {
       const error = toApiError(caught)
       if (error.code === 'party_details_missing') setAcceptMissing(partyDetailsMissingFrom(error.details))
+      else if (error.code === 'legal_document_not_reviewed') setAcceptError(LEGAL_NOT_REVIEWED_TEXT)
       else if (isConflict(error)) refresh(error)
       else setAcceptError(`We couldn’t accept the proposal. ${error.userMessage}`)
     } finally {
@@ -226,9 +236,18 @@ function ProposalView({ proposalId }: { proposalId: string }) {
           <section className={`match-panel proposal-standing proposal-standing-${proposal.status}`} aria-labelledby="proposal-standing-title">
             <h2 id="proposal-standing-title" className="match-side-title">{proposal.status === 'accepted' ? 'Accepted' : 'Where it stands'}</h2>
             <p>{proposalStandingText(proposal)}</p>
-            {proposal.status === 'accepted' && (
-              <p className="proposal-next">This version is final. Next, BFB prepares the Business Exchange Agreement from it for both businesses to sign; agreements and signatures arrive in the next release.</p>
-            )}
+            {proposal.status === 'accepted' && (proposal.agreement ? (
+              <>
+                <p className="proposal-next">This version is final. BFB prepared the Business Exchange Agreement from it for both businesses to sign.</p>
+                <div className="match-next-actions proposal-agreement-link">
+                  <Link className="button button-primary button-small" to={paths.agreement(proposal.agreement.id)}>
+                    <ScrollText size={15} aria-hidden="true" /> Open the agreement
+                  </Link>
+                </div>
+              </>
+            ) : (
+              <p className="proposal-next">This version is final. BFB is preparing the Business Exchange Agreement from it for both businesses to sign.</p>
+            ))}
           </section>
           {current && <ProposalDocument version={current} names={names} mySide={proposal.me.side} />}
           <VersionTimeline proposal={proposal} businessId={business.id} />

@@ -7,7 +7,7 @@ import { useToastStore } from '../../components/feedback'
 import { ACCESS_TOKEN_KEY, clearStoredSession, REFRESH_TOKEN_KEY } from '../../lib/auth/tokens'
 import { useSessionStore } from '../../stores/session'
 import { apiErrorBody, mockApi, type MockReply, type MockRequest } from '../../test/mockApi'
-import { acceptedMatch, completeTerms, draftProposal, MATCH_ID, PROPOSAL, PROPOSAL_ID, proposalServer, sentProposal, sentVersion, type ProposalServerOptions } from '../../test/proposalServer'
+import { acceptedMatch, AGREEMENT_ID, completeTerms, draftProposal, MATCH_ID, PROPOSAL, PROPOSAL_ID, proposalServer, sentProposal, sentVersion, type ProposalServerOptions } from '../../test/proposalServer'
 
 function renderAt(path: string) {
   return render(
@@ -48,6 +48,7 @@ const acceptedProposal = sentProposal({
   current_version: sentVersion({ accepted_by: ['a', 'b'] }),
   accepted_version_number: 1,
   agreement_source_id: 'source-1',
+  agreement: { id: AGREEMENT_ID, status: 'ready' },
   closed_at: '2026-11-16T12:00:00Z',
 })
 
@@ -84,12 +85,13 @@ describe('accepting a proposal', () => {
     fireEvent.click(within(dialog).getByRole('button', { name: 'Accept proposal' }))
 
     expect(await screen.findByText('Both businesses accepted version 1 on 16 Nov.')).toBeInTheDocument()
-    expect(screen.getByText(/This version is final. Next, BFB prepares the Business Exchange Agreement/)).toBeInTheDocument()
+    expect(screen.getByText(/This version is final. BFB prepared the Business Exchange Agreement from it/)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Open the agreement' })).toHaveAttribute('href', `/agreements/${AGREEMENT_ID}`)
     expect(screen.getAllByText('Accepted').length).toBeGreaterThan(0)
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     expect(screen.queryByRole('region', { name: 'Your answer' })).not.toBeInTheDocument()
     expect(api!.calls('post', ACCEPT)).toHaveLength(1)
-    expect(useToastStore.getState().toasts.at(-1)?.message).toBe('You and Northside Studio accepted version 1.')
+    expect(useToastStore.getState().toasts.at(-1)?.message).toBe('You and Northside Studio accepted version 1. BFB prepared the agreement.')
   })
 
   it('explains missing party details and links to the profile section', async () => {
@@ -104,6 +106,31 @@ describe('accepting a proposal', () => {
     expect(within(dialog).getByText(/Still needed: legal name and city/)).toBeInTheDocument()
     expect(within(dialog).getByRole('link', { name: /Add legal details/ })).toHaveAttribute('href', '/profile?section=legal-details')
     expect(screen.getByText(/It’s your turn to answer/)).toBeInTheDocument()
+  })
+
+  it('explains when the final acceptance is refused because the legal documents are drafts', async () => {
+    statefulServer({
+      [ACCEPT]: () => ({ status: 409, data: apiErrorBody('legal_document_not_reviewed', { documents: [{ kind: 'exchange_terms', version: '2026-11-draft-1', legal_review_status: 'draft' }] }) }),
+    })
+    renderAt(`/proposals/${PROPOSAL_ID}`)
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Accept' }))
+    const dialog = screen.getByRole('dialog')
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Accept proposal' }))
+
+    expect(await within(dialog).findByRole('alert')).toHaveTextContent(
+      'We couldn’t make this final. BFB’s legal documents are still drafts waiting for review by counsel, so the agreement can’t be prepared yet. Nothing changed',
+    )
+    expect(api!.calls('get', PROPOSAL)).toHaveLength(1)
+    expect(screen.getByText(/It’s your turn to answer/)).toBeInTheDocument()
+  })
+
+  it('says the agreement is being prepared when an accepted proposal has none yet', async () => {
+    start({ proposal: { ...acceptedProposal, agreement: null } })
+    renderAt(`/proposals/${PROPOSAL_ID}`)
+
+    expect(await screen.findByText(/BFB is preparing the Business Exchange Agreement/)).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'Open the agreement' })).not.toBeInTheDocument()
   })
 
   it('refuses accepting a replaced version and loads the current one', async () => {
@@ -133,7 +160,9 @@ describe('accepting a proposal', () => {
     renderAt(`/proposals/${PROPOSAL_ID}`)
 
     expect(await screen.findByText('Both businesses accepted version 1 on 16 Nov.')).toBeInTheDocument()
-    expect(screen.getByRole('region', { name: 'Accepted' })).toHaveTextContent('agreements and signatures arrive in the next release')
+    const accepted = screen.getByRole('region', { name: 'Accepted' })
+    expect(accepted).not.toHaveTextContent(/next release|come next/)
+    expect(within(accepted).getByRole('link', { name: 'Open the agreement' })).toHaveAttribute('href', `/agreements/${AGREEMENT_ID}`)
     expect(screen.queryByRole('button', { name: /Withdraw|Accept|Counter|Decline/ })).not.toBeInTheDocument()
     const versions = screen.getByRole('list', { name: 'Versions' })
     expect(within(versions).getByText('Accepted')).toBeInTheDocument()
@@ -141,11 +170,12 @@ describe('accepting a proposal', () => {
   })
 
   it('shows the accepted proposal on the match', async () => {
-    start({ match: acceptedMatch({ proposal: { id: PROPOSAL_ID, status: 'accepted', accepted_version_number: 2 } }) })
+    start({ match: acceptedMatch({ proposal: { id: PROPOSAL_ID, status: 'accepted', accepted_version_number: 2 }, agreement: { id: AGREEMENT_ID, status: 'ready' } }) })
     renderAt(`/matches/${MATCH_ID}`)
 
     const panel = await screen.findByRole('region', { name: 'Proposal accepted' })
-    expect(panel).toHaveTextContent('You and Northside Studio accepted version 2 of the proposal. The agreement and signatures come next.')
+    expect(panel).toHaveTextContent('You and Northside Studio accepted version 2 of the proposal. BFB prepared the Business Exchange Agreement from it for both businesses to sign.')
+    expect(within(panel).getByRole('link', { name: 'Open the agreement' })).toHaveAttribute('href', `/agreements/${AGREEMENT_ID}`)
     expect(within(panel).getByRole('link', { name: /Open the proposal/ })).toHaveAttribute('href', `/proposals/${PROPOSAL_ID}`)
     expect(within(panel).queryByRole('button', { name: 'Start a proposal' })).not.toBeInTheDocument()
   })

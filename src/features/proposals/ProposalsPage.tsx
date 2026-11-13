@@ -34,7 +34,7 @@ const EMPTY: Record<ProposalTab, { title: string; description: string }> = {
   },
   accepted: {
     title: 'No accepted proposals yet',
-    description: 'Proposals both businesses accept move here. The agreement comes next.',
+    description: 'Proposals both businesses accept move here, each with the agreement BFB prepares from it.',
   },
   closed: {
     title: 'No closed proposals',
