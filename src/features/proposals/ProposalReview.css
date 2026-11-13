@@ -57,6 +57,11 @@
 
 .proposal-review-layout .match-answer .button { justify-content: center; }
 
+/* On a phone the answer and status come before the document, as in the builder. */
+@media (max-width: 960px) {
+  .proposal-review-layout .match-side { order: -1; }
+}
+
 @media (max-width: 620px) {
   .proposal-doc-head, .proposal-doc-section { padding-left: 16px; padding-right: 16px; }
   .proposal-doc-sides { grid-template-columns: 1fr; }

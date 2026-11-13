@@ -21,7 +21,8 @@ export interface CloseDialogCopy {
 }
 
 const schema = z.object({
-  reason: z.string().min(1, 'Choose a reason.'),
+  // An unchecked radio group is null in the browser and '' before any choice.
+  reason: z.string({ error: 'Choose a reason.' }).min(1, 'Choose a reason.'),
   text: z.string().trim().max(CLOSE_TEXT_MAX, `Keep it under ${CLOSE_TEXT_MAX.toLocaleString('en-US')} characters.`),
 })
 

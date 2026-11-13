@@ -214,6 +214,14 @@ Use the match from flow 13 once both businesses accepted it. Log in as each owne
 | 14.15 | Fill in everything until the checklist says "Everything needed is filled in", then Send | The dialog shows 14 days and the respond-by date; after sending, the proposal page opens and Harbor sees it under Waiting on you with "Respond by" | [ ] |
 | 14.16 | Start a proposal on another accepted match and "Discard draft" | Asks first; then back on the match, which offers "Start a proposal" again | [ ] |
 | 14.17 | As a member, open `/proposals/<id>/edit` | No editor; a note says owners and administrators write proposals | [ ] |
+| 14.18 | As Harbor's owner, open the proposal Northline sent | It reads as one document: summary, dates, what each business provides with values side by side and the difference, the cash adjustment in a sentence, milestones by date, terms in plain sentences. No scores or percentages. "Your answer" offers Counter and Decline | [ ] |
+| 14.19 | As Northline's owner, open the same proposal | Same document; "Your proposal" offers only Withdraw | [ ] |
+| 14.20 | As a member of either business, open it | Same document; a lock line instead of buttons | [ ] |
+| 14.21 | As Harbor's owner, press Counter | The builder opens as "Counteroffer to Northline…" with every field copied from the current version. Change a value and the end date, then send | [ ] |
+| 14.22 | Back on the proposal page, as each business | Version 2, status Countered; it is now Northline's turn to answer, and Harbor sees Withdraw | [ ] |
+| 14.23 | On another proposal, press Decline and then "Decline proposal" without choosing a reason | "Choose a reason."; choose one, add a note and decline: the page says your business declined it, and nothing can be done with it. The other business sees it declined, with no reason | [ ] |
+| 14.24 | As the sender of another proposal, press Withdraw, choose a reason and withdraw | The page says your business withdrew it; the other business sees it withdrawn, with no reason | [ ] |
+| 14.25 | Open a proposal in two windows; decline it in one, then press Counter in the other | A red notice says the proposal closed since you opened it, and the page shows it closed | [ ] |
 
 ## 15. Across the app
 
@@ -229,5 +237,5 @@ Use the match from flow 13 once both businesses accepted it. Log in as each owne
 
 - Exchanges, messages, the landing page and the dashboard's "Recommended for you" still use demo data until their phases.
 - Emails are printed, not sent, until an email provider is chosen ([DESIGN_SIGNOFFS.md](DESIGN_SIGNOFFS.md) row 37).
-- The proposal page shows where a proposal stands but not yet its full terms; review, counteroffers and accepting arrive with the rest of Phase 4.
+- Accepting a proposal and the version timeline arrive with the rest of Phase 4.
 - Design and product items waiting on sign-off are in [DESIGN_SIGNOFFS.md](DESIGN_SIGNOFFS.md). A flow that passes here can still change there.
