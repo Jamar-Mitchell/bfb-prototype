@@ -74,7 +74,7 @@ export function AcceptProposalDialog({ proposal, version, busy, error, onAccept,
               ? `${otherName} accepted this version when they sent it, so accepting makes it final for both businesses.`
               : `Once ${otherName} accepts it too, it is final for both businesses.`}{' '}
             {proposal.draft ? `Your counteroffer draft (version ${proposal.draft.version_number}) is deleted. ` : ''}
-            The agreement and signatures come next.
+            BFB then prepares the agreement for both businesses to sign.
           </p>
           {error}
         </div>

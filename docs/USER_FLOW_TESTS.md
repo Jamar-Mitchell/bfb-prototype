@@ -1,10 +1,10 @@
 # User Flow Tests
 
-Manual, end-to-end checks of everything built so far, through the start of Phase 4. Use it before a demo, after a large merge, or before handing the app to pilot users. Automated tests cover the logic; this doc covers what a person sees when they use the app.
+Manual, end-to-end checks of everything built so far, through the start of Phase 5. Use it before a demo, after a large merge, or before handing the app to pilot users. Automated tests cover the logic; this doc covers what a person sees when they use the app.
 
 Each flow lists steps and what should happen. Tick a row when it passes. When one fails, note the flow number, the step, and what you saw, then file it or hand it to an agent.
 
-Last updated: 13 November 2026 (start of Phase 4).
+Last updated: 13 November 2026 (FE-5.1, agreements).
 
 ## Setup
 
@@ -229,23 +229,41 @@ Use the match from flow 13 once both businesses accepted it. Log in as each owne
 | 14.30 | Send a counteroffer before adding legal details | The send dialog shows the same box; the draft stays saved | [ ] |
 | 14.31 | Follow "Add legal details" | The profile opens at "Legal details for agreements", ready to edit. Fill in legal name, entity type and address and save: "Ready for agreements." Log out and open the public profile: none of it shows | [ ] |
 | 14.32 | As a member, open the profile | Legal details are visible but cannot be edited | [ ] |
-| 14.33 | Send the counteroffer, then as the other business accept it | Both see "Accepted" with "Both businesses accepted version N" and that the agreement and signatures come next; no buttons. Versions shows version N as Accepted by both | [ ] |
+| 14.33 | Send the counteroffer, then as the other business accept it | Both see "Accepted" with "Both businesses accepted version N" and "Open the agreement"; no other buttons. Versions shows version N as Accepted by both | [ ] |
 | 14.34 | Open the match as either business | "Proposal accepted" with a link to the proposal; the proposal is under Accepted on `/proposals` | [ ] |
 | 14.35 | Open the proposal in two windows; send a counter from one, then press Accept on the old version in the other | A notice says a newer version replaced it and the current one loads | [ ] |
 
-## 15. Across the app
+## 15. Agreements
+
+Use the proposal both businesses accepted in 14.33. Locally the legal documents are drafts and drafts are allowed, so accepting generates the agreement.
+
+| # | Steps | Expected | Pass |
+|---|---|---|---|
+| 15.1 | Right after the second business accepts (14.33) | The toast ends "BFB prepared the agreement."; the green Accepted panel says BFB prepared the Business Exchange Agreement and has "Open the agreement" | [ ] |
+| 15.2 | Open the match as either business | "Proposal accepted" with "Open the agreement" and "Open the proposal" | [ ] |
+| 15.3 | Press "Open the agreement" | `/agreements/<id>`: "EXCHANGE AGREEMENT", the other business's name, a "Ready for signers" pill and the red banner "Draft terms, not reviewed by counsel. Not for real exchanges." above everything else | [ ] |
+| 15.4 | Read the page | "Where it stands" says which version both accepted, that each business names who signs next, and the sign-by date (30 days on). The document reads in full in a white frame with no scroll bar of its own; under it the document fingerprint in small print. The side column has a neutral "Signing comes next." card, Status (sign by, the proposal version, the Exchange Terms version, legal review) and both parties with legal name, entity type and address as they were at acceptance | [ ] |
+| 15.5 | Press the Exchange Terms version link | A new tab opens the Exchange Terms at that version, with the draft banner | [ ] |
+| 15.6 | Open the agreement as the other business | The same document and banner, with that business's name marked "Your business" under Parties | [ ] |
+| 15.7 | Open `/agreements`, then each tab | "Agreements" in the sidebar under Proposals; the agreement under Open with "Ready for signers", "Draft terms", "Sign by …" and the draft banner above the list; Signed and Closed are empty with a line saying what goes there | [ ] |
+| 15.8 | Log in as a third business and open the agreement's link | "We couldn't find this agreement", saying only the two businesses can open it and which business you are acting for. No document | [ ] |
+| 15.9 | Log out and open `/legal/exchange-terms` | The Exchange Terms with the public header (Log in, Join BFB), version, published date, legal review, the draft banner, the full text and its fingerprint. `/legal/exchange-terms/nope` says that version doesn't exist and links to the current one | [ ] |
+| 15.10 | Repeat 15.3, 15.7 and 15.9 at phone width (about 390 px) | The banner, status and signing card come first, then the document, which wraps to the screen and reads without zooming; no sideways scrolling | [ ] |
+| 15.11 | With the API set to refuse drafts (`BFB_ALLOW_DRAFT_LEGAL_DOCUMENTS=false`), accept a proposal so it becomes final | The accept dialog stays open and says the legal documents are still drafts waiting for review by counsel, so the agreement can't be prepared yet, and that nothing changed. The proposal is still open | [ ] |
+
+## 16. Across the app
 
 | # | Check | Expected | Pass |
 |---|---|---|---|
-| 15.1 | Repeat flows 10, 11, 13 and 14 at phone width (about 390 px) | Usable, no sideways scrolling | [ ] |
-| 15.2 | Use the main flows with the keyboard only | Every control reachable; dialogs trap focus and close with Escape | [ ] |
-| 15.3 | Stop the API and visit each main page | Clear error with a retry, no blank screens | [ ] |
-| 15.4 | Slow the network (browser throttling) | Loading states show, no layout jumps | [ ] |
-| 15.5 | Search the whole app for fit numbers | None. Fit is always Strong, Potential or Limited in words | [ ] |
+| 16.1 | Repeat flows 10, 11, 13, 14 and 15 at phone width (about 390 px) | Usable, no sideways scrolling | [ ] |
+| 16.2 | Use the main flows with the keyboard only | Every control reachable; dialogs trap focus and close with Escape | [ ] |
+| 16.3 | Stop the API and visit each main page | Clear error with a retry, no blank screens | [ ] |
+| 16.4 | Slow the network (browser throttling) | Loading states show, no layout jumps | [ ] |
+| 16.5 | Search the whole app for fit numbers | None. Fit is always Strong, Potential or Limited in words | [ ] |
 
 ## Known gaps (not failures)
 
 - Exchanges, messages, the landing page and the dashboard's "Recommended for you" still use demo data until their phases.
 - Emails are printed, not sent, until an email provider is chosen ([DESIGN_SIGNOFFS.md](DESIGN_SIGNOFFS.md) row 37).
-- After both businesses accept a proposal, the agreement and signatures arrive in Phase 5.
+- Signing an agreement arrives with FE-5.2; until then the agreement page shows "Signing comes next."
 - Design and product items waiting on sign-off are in [DESIGN_SIGNOFFS.md](DESIGN_SIGNOFFS.md). A flow that passes here can still change there.
