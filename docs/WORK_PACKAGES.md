@@ -1,6 +1,6 @@
 # BFB Frontend Work Packages
 
-This file breaks the [development plan](DEVELOPMENT_PLAN.md#delivery-phases) into packages that one agent session can finish in one pull request. Phases 1 to 3 are broken down in detail. Later phases stay as outlines in the development plan and will be broken down when the phase before them is close to done.
+This file breaks the [development plan](DEVELOPMENT_PLAN.md#delivery-phases) into packages that one agent session can finish in one pull request. Phases 1 to 4 are broken down in detail. Later phases stay as outlines in the development plan and will be broken down when the phase before them is close to done.
 
 The API has a matching file: `bfb-api/docs/WORK_PACKAGES.md`. Frontend packages list the API packages they need.
 
@@ -40,6 +40,9 @@ A slice is a working piece of the product you can demo end to end. It is done wh
 | S10 Saved businesses | Save businesses from the marketplace or a public profile and see them on one page | API-3.2 | FE-3.2 |
 | S11 Concierge matches | As an operator, see suggested fits for a business and create a match between two businesses | API-3.3, API-3.4 | FE-3.5 |
 | S12 Respond to matches | As a business, see why you were matched, accept or decline, and leave feedback | API-3.5, API-3.6 | FE-3.3, FE-3.4 |
+| S13 Draft and send a proposal | From an accepted match, build a proposal (services, values, milestones, terms) and send it | API-4.1, API-4.2 | FE-4.1, FE-4.2 |
+| S14 Counter and compare | Review a proposal, decline it or send a counteroffer, and see what changed between versions | API-4.3 | FE-4.3, FE-4.4 |
+| S15 Accept the same version | Both businesses accept the current version, which locks it as the source for the agreement | API-4.4 | FE-4.5 |
 
 Recommended order is S0 through S8. The frontend S0 packages need no API work and can start now.
 
@@ -70,6 +73,11 @@ Recommended order is S0 through S8. The frontend S0 packages need no API work an
 | FE-3.3 | Match inbox and explainable match cards | FE-1.4, API-3.5 | done |
 | FE-3.4 | Accept, decline and feedback | FE-3.3, API-3.6 | done |
 | FE-3.5 | Admin match workspace | FE-2.7, API-3.4 | done |
+| FE-4.1 | Proposals page and starting a proposal | FE-3.4, API-4.2 | todo |
+| FE-4.2 | Proposal builder | FE-4.1, API-4.2 | todo |
+| FE-4.3 | Proposal review, decline and counteroffer | FE-4.2, API-4.3 | todo |
+| FE-4.4 | Version timeline and changes | FE-4.3, API-4.3 | todo |
+| FE-4.5 | Accept a proposal and party details | FE-4.3, API-4.4 | todo |
 
 ## Phase 0: Foundation
 
@@ -330,4 +338,64 @@ Scope:
 
 Done when:
 - Tests cover choosing pairs and creating a match, the `match_exists` error, withdraw, and the list filters.
+
+## Phase 4: Proposals and negotiation
+
+Phase goal: two businesses turn an accepted match into a precise, versioned proposal. The terms schema, statuses, send rules and error codes are in `bfb-api/docs/PROPOSALS.md` (and the Phase 4 section of `bfb-api/docs/WORK_PACKAGES.md`). Money is shown in dollars and stored in cents.
+
+**This phase has new screens the prototype does not have** (builder, review, timeline). Follow the app's existing look and components; keep each new screen simple and add it to [DESIGN_SIGNOFFS.md](DESIGN_SIGNOFFS.md) so Jamar can review it. Value comparisons show the amounts the businesses entered and the difference between them; never invent a "fairness" score.
+
+### FE-4.1 Proposals page and starting a proposal
+
+Scope:
+- A Proposals item in the sidebar with a count of proposals waiting on your business, and a Proposals page with tabs: Waiting on you, Waiting on them, Drafts, Accepted, Closed.
+- Each row: the other business, summary, current version number, status in words, who it is waiting on, and "Respond by" date.
+- On an accepted match, replace the "A proposal can be started in the next release" note with "Start a proposal" (owners and administrators), or a link to the open proposal (`409 proposal_exists`).
+
+Done when:
+- Tests cover each tab, starting a proposal, `proposal_exists` linking to the open one, and a member seeing no start button.
+
+### FE-4.2 Proposal builder
+
+Scope:
+- A builder at `/proposals/:id/edit` in sections: summary and dates; what each business provides (services pre-filled from the match, add from your or their active offers, or write one; deliverables, exclusions, value); milestones (add, reorder, assign to a business and service, due date, acceptance criteria); terms (review period, revision limit, IP terms, confidentiality, cancellation notice, notes); and an optional cash adjustment.
+- A value comparison panel: each business's total and the difference, with "Add a cash adjustment" pre-filled to the difference. Words and amounts only.
+- Autosave the whole draft in one `PUT` after edits pause (debounced), with a saved / saving / failed indicator; a `409 stale_draft` reloads and explains. No per-field requests.
+- A checklist of what is still missing before sending, from the API's `missing` keys, linking to each section. Send asks to confirm, with the expiry (default 14 days).
+- Discard draft (asks first).
+
+Done when:
+- Tests cover autosave sending one request per pause, a failed save keeping local edits, the missing checklist, the value comparison and cash pre-fill, reordering milestones, sending, and discarding.
+
+### FE-4.3 Proposal review, decline and counteroffer
+
+Scope:
+- A proposal page at `/proposals/:id` showing the current version as a readable document: who provides what, values side by side, milestones as a timeline by date, terms in plain words, and the cash adjustment if any.
+- For the business that did not send it: Counter (opens the builder with a copy), Decline (dialog with reasons and optional note; says the other business will not see why). The Accept button arrives in FE-4.5.
+- For the sender: Withdraw (asks first). Members see everything read-only.
+- Status and expiry in words; an expired or closed proposal says why and offers nothing to act on.
+
+Done when:
+- Tests cover the review layout for both sides, counter opening a pre-filled draft, decline, withdraw, `409 invalid_proposal_status` refreshing the page, and a member seeing no actions.
+
+### FE-4.4 Version timeline and changes
+
+Scope:
+- A timeline on the proposal page: every sent version with who sent it, when, and which businesses accepted it.
+- "What changed" for each version after the first, from the API's changes endpoint: added, removed and edited services, milestones and terms, with before and after values.
+- Open any older version read-only, clearly marked "Replaced by version N".
+
+Done when:
+- Tests cover the timeline, the changes list for each change type, and an older version showing as replaced with no actions.
+
+### FE-4.5 Accept a proposal and party details
+
+Scope:
+- Accept on the current version for the business that did not send it, with a confirmation that summarises what your business provides, what it receives, the cash adjustment and the end date.
+- A "Legal details for agreements" section on the profile page (owners and administrators): legal name, entity type and registered address, private. If they are missing, Accept explains and links there.
+- After both accept: an "Accepted" state on the proposal and the match, saying the agreement and signatures come next (Phase 5).
+
+Done when:
+- Tests cover accepting, `party_details_missing` linking to the profile section, accepting a replaced version being refused, and the accepted state on both businesses' views.
+- This meets the Phase 4 exit criteria in the development plan.
 

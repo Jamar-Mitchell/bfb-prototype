@@ -91,6 +91,21 @@ Decisions made to start Phase 3. Each can be changed later.
 | 69 | Feedback reasons offered | Useful shows the four positive reasons, Not useful the six negative ones, both plus "Something else". The API accepts any reason with either rating | |
 | 70 | Who leaves feedback | Any member, once per business per match: a teammate's save replaces the business's feedback | |
 
+## Phase 4 defaults
+
+Decisions made to start Phase 4. Each can be changed later.
+
+| # | Decision | Default built | Answer |
+|---|---|---|---|
+| 71 | Where proposals start | Only from a match both businesses accepted. One open proposal per match | |
+| 72 | Who negotiates | Owners and administrators draft, send, counter, accept, decline and withdraw. Members view | |
+| 73 | Sending counts as accepting | Sending a version records the sender's acceptance; the other business then accepts, declines or counters | |
+| 74 | Proposal expiry | 14 days after each version is sent; the sender can choose 1 to 30 days | |
+| 75 | Cash adjustment | Recorded as a term only. No money moves until Phase 9 | |
+| 76 | IP terms choices | Transfer on payment and completion, license to use, or each keeps their own. Wording needs legal review before launch | |
+| 77 | Party details for agreements | Legal name, entity type and registered address are required before accepting; private | |
+| 78 | Value comparison | Shows each side's total and the difference, and offers a cash adjustment for the difference. No fairness score | |
+
 ## Before staging
 
 | # | Item | Status |
