@@ -6,6 +6,7 @@ import {
   BriefcaseBusiness,
   Building2,
   Compass,
+  FileSignature,
   Handshake,
   LayoutDashboard,
   Link2,
@@ -27,6 +28,7 @@ import { BusinessSwitcher } from '../../features/businesses/BusinessSwitcher'
 import { ProfileProgressCard } from '../../features/businesses/ProfileProgressCard'
 import { ProfileStatusBanner } from '../../features/businesses/ProfileStatusBanner'
 import { useLoadWaitingMatches, useWaitingMatches } from '../../features/matching/waitingMatches'
+import { useLoadWaitingProposals, useWaitingProposals } from '../../features/proposals/waitingProposals'
 import { isPlatformStaff, useSessionStore } from '../../stores/session'
 import { Toaster } from '../feedback'
 import { Logo } from '../ui/Logo'
@@ -41,6 +43,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   const activeBusinessId = useSessionStore((state) => state.activeBusiness?.id ?? null)
   useLoadWaitingMatches(activeBusinessId)
   const { count: waitingMatches } = useWaitingMatches(activeBusinessId)
+  useLoadWaitingProposals(activeBusinessId)
+  const waitingProposals = useWaitingProposals(activeBusinessId)
   const navItems: Array<{ id: string; label: string; icon: typeof LayoutDashboard; count?: string; countLabel?: string; unread?: boolean; prefix?: string }> = [
     { id: paths.dashboard, label: 'Dashboard', icon: LayoutDashboard },
     { id: paths.marketplace, label: 'Marketplace', icon: Compass },
@@ -51,6 +55,14 @@ export function AppShell({ children }: { children: ReactNode }) {
       prefix: `${paths.matches}/`,
       count: waitingMatches ? String(waitingMatches) : undefined,
       countLabel: waitingMatches ? `${waitingMatches} waiting on you` : undefined,
+    },
+    {
+      id: paths.proposals,
+      label: 'Proposals',
+      icon: FileSignature,
+      prefix: `${paths.proposals}/`,
+      count: waitingProposals ? String(waitingProposals) : undefined,
+      countLabel: waitingProposals ? `${waitingProposals} waiting on you` : undefined,
     },
     { id: paths.saved, label: 'Saved businesses', icon: Bookmark },
     { id: paths.exchanges, label: 'Exchanges', icon: Handshake, count: '3' },

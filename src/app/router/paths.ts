@@ -14,6 +14,9 @@ export const paths = {
   /** The active business's matches, and one match with why it was made. */
   matches: '/matches',
   match: (id: string) => `/matches/${id}`,
+  /** The active business's proposals, and one proposal. */
+  proposals: '/proposals',
+  proposal: (id: string) => `/proposals/${id}`,
   exchanges: '/exchanges',
   messages: '/messages',
   profile: '/profile',
@@ -37,6 +40,8 @@ export const adminBusinessPattern = '/admin/businesses/:businessId'
 export const adminMatchPattern = '/admin/matches/:matchId'
 
 export const matchPattern = '/matches/:matchId'
+
+export const proposalPattern = '/proposals/:proposalId'
 
 export const publicBusinessPattern = '/b/:businessId'
 
