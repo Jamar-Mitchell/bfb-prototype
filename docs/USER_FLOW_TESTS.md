@@ -261,20 +261,37 @@ Use the proposal both businesses accepted in 14.33. Locally the legal documents 
 | 15.20 | Type your name in different capitals and press "Sign agreement" | Toast "Signed. Waiting for …'s signer."; the panel says you signed and who you are waiting for; the card shows "Signed on …" for you and "Confirmed" for the other business | [ ] |
 | 15.21 | As the other signer, reload and sign | Toast "Signed. Both businesses have signed the agreement."; the pill and Status read "Signed", "Where it stands" turns green, the card says "Both businesses signed." with both "Signed on …"; "Your signature" is gone | [ ] |
 | 15.22 | Repeat 15.14 and 15.19 at phone width | Name and title stack, the boxes and the sign field fit the screen, no sideways scrolling | [ ] |
+| 15.23 | After 15.21, reload the agreement as either business | A green "Signed documents" panel at the top with "Signed agreement", "Signature certificate", "Open the exchange" and both file fingerprints; "Where it stands" says when both signed and that the exchange is active; Status shows Signed (date) and Exchange: Active | [ ] |
+| 15.24 | Press "Signed agreement", then "Signature certificate" | Each opens in a new tab: the agreement with the signature certificate at the end, then the certificate alone (both signers' names, titles, emails, times, IP address and browser). Pressing again works after the first link has expired | [ ] |
+| 15.25 | Open the signed agreement as a member of either business | The same panel and downloads; no signing controls | [ ] |
 
-## 16. Across the app
+## 16. Exchanges
+
+Use the agreement both businesses signed in 15.21.
+
+| # | Steps | Expected | Pass |
+|---|---|---|---|
+| 16.1 | Press "Open the exchange" on the signed agreement | `/exchanges/<id>`: "EXCHANGE", the other business's name, "Active since …" with a link back to the signed agreement and a green Active pill. "Exchanges" is highlighted in the sidebar | [ ] |
+| 16.2 | Read the milestones | Every milestone from the accepted proposal, in order, each with "You deliver" or "You receive" and who delivers to whom, its due date, description and "Done when: …", and "Not started". No buttons; a note says milestones are read-only for now. Status shows the next due date and links to the agreement and proposal | [ ] |
+| 16.3 | Open `/exchanges` | The exchange in the prototype's card with the other business's logo or initials, "Business exchange with …", Active, milestones, next due date and start date, "Signed agreement" and "View details". No demo exchanges. Completed is empty | [ ] |
+| 16.4 | Open the dashboard | "Your active exchanges" lists the exchange with "View exchange"; the "Active exchanges" stat shows 1 and when the next milestone is due. No demo exchanges, and no "3" next to Exchanges in the sidebar | [ ] |
+| 16.5 | Open the exchange as the other business | The same milestones, with "You deliver" and "You receive" swapped | [ ] |
+| 16.6 | Log in as a third business: open the exchange's link, then `/exchanges` and the dashboard | "We couldn't find this exchange", naming the business you are acting for; "No active exchanges yet" linking to agreements; the dashboard says there are none yet | [ ] |
+| 16.7 | Repeat 16.1, 16.3 and 16.4 at phone width (about 390 px) | Cards and milestones stack, no sideways scrolling | [ ] |
+
+## 17. Across the app
 
 | # | Check | Expected | Pass |
 |---|---|---|---|
-| 16.1 | Repeat flows 10, 11, 13, 14 and 15 at phone width (about 390 px) | Usable, no sideways scrolling | [ ] |
-| 16.2 | Use the main flows with the keyboard only | Every control reachable; dialogs trap focus and close with Escape | [ ] |
-| 16.3 | Stop the API and visit each main page | Clear error with a retry, no blank screens | [ ] |
-| 16.4 | Slow the network (browser throttling) | Loading states show, no layout jumps | [ ] |
-| 16.5 | Search the whole app for fit numbers | None. Fit is always Strong, Potential or Limited in words | [ ] |
+| 17.1 | Repeat flows 10, 11, 13, 14, 15 and 16 at phone width (about 390 px) | Usable, no sideways scrolling | [ ] |
+| 17.2 | Use the main flows with the keyboard only | Every control reachable; dialogs trap focus and close with Escape | [ ] |
+| 17.3 | Stop the API and visit each main page | Clear error with a retry, no blank screens | [ ] |
+| 17.4 | Slow the network (browser throttling) | Loading states show, no layout jumps | [ ] |
+| 17.5 | Search the whole app for fit numbers | None. Fit is always Strong, Potential or Limited in words | [ ] |
 
 ## Known gaps (not failures)
 
-- Exchanges, messages, the landing page and the dashboard's "Recommended for you" still use demo data until their phases.
+- Messages, the landing page, the dashboard's "Recommended for you", activity and its other stats still use demo data until their phases. Exchanges are real but read-only until delivery (Phase 6).
 - Emails are printed, not sent, until an email provider is chosen ([DESIGN_SIGNOFFS.md](DESIGN_SIGNOFFS.md) row 37).
 - Signing uses the development provider (a typed name inside BFB) locally. Staging and production have no signature provider yet, so the second confirmation there says signing isn't switched on ([DESIGN_SIGNOFFS.md](DESIGN_SIGNOFFS.md) row 135).
 - Design and product items waiting on sign-off are in [DESIGN_SIGNOFFS.md](DESIGN_SIGNOFFS.md). A flow that passes here can still change there.

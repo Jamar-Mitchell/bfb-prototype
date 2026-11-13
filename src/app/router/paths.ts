@@ -27,7 +27,9 @@ export const paths = {
   /** The Exchange Terms, current or one version. Public: works logged out, outside the app shell. */
   exchangeTerms: '/legal/exchange-terms',
   exchangeTermsVersion: (version: string) => `/legal/exchange-terms/${encodeURIComponent(version)}`,
+  /** The active business's exchanges, and one exchange with its milestones. */
   exchanges: '/exchanges',
+  exchange: (id: string) => `/exchanges/${id}`,
   messages: '/messages',
   profile: '/profile',
   /** The profile's "Legal details for agreements" section, brought into view. */
@@ -81,3 +83,5 @@ export function isBusinessUuid(value: string | undefined): value is string {
 
 /** The id of the profile's legal details section, and its `?section=` value. */
 export const LEGAL_DETAILS_SECTION = 'legal-details'
+
+export const exchangePattern = '/exchanges/:exchangeId'

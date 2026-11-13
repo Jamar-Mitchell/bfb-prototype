@@ -19,6 +19,7 @@ import { CreateBusinessPage } from '../../features/businesses/CreateBusinessPage
 import { ProfileManagementPage } from '../../features/businesses/ProfileManagementPage'
 import { PublicBusinessProfilePage } from '../../features/businesses/PublicBusinessProfile'
 import { Dashboard } from '../../features/dashboard/Dashboard'
+import { ExchangePage } from '../../features/exchanges/ExchangePage'
 import { ExchangesPage } from '../../features/exchanges/ExchangesPage'
 import { LandingPage } from '../../features/landing/LandingPage'
 import { ListingsPage } from '../../features/listings/ListingsPage'
@@ -35,7 +36,7 @@ import { Onboarding } from '../../features/onboarding/Onboarding'
 import { AcceptInvitePage } from '../../features/team/AcceptInvitePage'
 import { TeamPage } from '../../features/team/TeamPage'
 import { businesses } from '../../mocks/businesses'
-import { adminBusinessPattern, adminMatchPattern, agreementPattern, exchangeTermsVersionPattern, getBusinessIdFromPath, isBusinessUuid, matchPattern, paths, proposalEditPattern, proposalPattern, proposalVersionPattern, publicBusinessPattern } from './paths'
+import { adminBusinessPattern, adminMatchPattern, agreementPattern, exchangePattern, exchangeTermsVersionPattern, getBusinessIdFromPath, isBusinessUuid, matchPattern, paths, proposalEditPattern, proposalPattern, proposalVersionPattern, publicBusinessPattern } from './paths'
 import { useActiveBusinessId, useMemberships } from '../../lib/businesses/useActiveBusiness'
 import { RequireAuth } from './RequireAuth'
 import { RequireBusiness } from './RequireBusiness'
@@ -88,6 +89,8 @@ function DashboardRoute() {
       goMarketplace={() => go(paths.marketplace)}
       goMatches={() => go(paths.matches)}
       openMatch={(id) => go(paths.match(id))}
+      openExchange={(id) => go(paths.exchange(id))}
+      goExchanges={() => go(paths.exchanges)}
       openBusiness={(id) => go(paths.business(id))}
       openOnboarding={() => go(paths.onboarding)}
       openProfile={() => go(paths.profile)}
@@ -164,6 +167,7 @@ export const routes: RouteObject[] = [
               { path: agreementPattern, element: <AgreementPage /> },
               { path: '/business/:id/*', element: <BusinessRoute /> },
               { path: paths.exchanges, element: <ExchangesPage /> },
+              { path: exchangePattern, element: <ExchangePage /> },
               { path: paths.messages, element: <MessagesPage /> },
               { path: paths.profile, element: <ProfileManagementPage /> },
               { path: paths.listings, element: <ListingsPage /> },

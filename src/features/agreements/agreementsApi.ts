@@ -118,3 +118,19 @@ export function signAgreement(businessId: string, agreementId: string, fullName:
 export function signerFor(agreement: Pick<Agreement, 'signers'>, side: Side): AgreementSigner | null {
   return agreement.signers.find((signer) => signer.side === side) ?? null
 }
+
+// Signed documents (API-5.5). Once signed, BFB stores the signed agreement (the document with
+// the signature certificate appended) and the certificate on its own. Each download is a
+// short-lived signed URL that works without login: fetch one when the user asks, open it, and
+// never keep it.
+
+export type SignedFile = Schemas['SignedFileResponse']
+export type SignedFileKind = 'signed-document' | 'certificate'
+
+/** A fresh short-lived link to the signed agreement or its certificate. `409 not_signed` before signing. */
+export function getSignedFile(businessId: string, agreementId: string, kind: SignedFileKind): Promise<SignedFile> {
+  const path = { business_id: businessId, agreement_id: agreementId }
+  return kind === 'signed-document'
+    ? apiGet('/businesses/{business_id}/agreements/{agreement_id}/signed-document', { path })
+    : apiGet('/businesses/{business_id}/agreements/{agreement_id}/certificate', { path })
+}

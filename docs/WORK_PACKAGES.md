@@ -83,7 +83,7 @@ Recommended order is S0 through S8. The frontend S0 packages need no API work an
 | FE-4.5 | Accept a proposal and party details | FE-4.3, API-4.4 | done |
 | FE-5.1 | Agreement page and Exchange Terms | FE-4.5, API-5.2 | done |
 | FE-5.2 | Signer setup and signing | FE-5.1, API-5.4 | done |
-| FE-5.3 | Signed agreement, downloads and active exchange | FE-5.2, API-5.5 | in progress |
+| FE-5.3 | Signed agreement, downloads and active exchange | FE-5.2, API-5.5 | done |
 
 ## Phase 0: Foundation
 

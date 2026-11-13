@@ -368,7 +368,7 @@ describe('signing', () => {
     expect(screen.getAllByText('Signed').length).toBeGreaterThan(1)
     expect(card).toHaveTextContent('Both businesses signed.')
     expect(signerRow(card, 'Northstar Digital')).toHaveTextContent('Signed on 20 Nov.')
-    expect(screen.getByRole('region', { name: 'Where it stands' })).toHaveTextContent('Both businesses signed this agreement.')
+    expect(screen.getByRole('region', { name: 'Where it stands' })).toHaveTextContent('Both businesses signed this agreement on 20 Nov.')
     expect(screen.getByText('Signed. Both businesses have signed the agreement.')).toBeInTheDocument()
   })
 
