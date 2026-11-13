@@ -944,7 +944,7 @@ export interface paths {
         patch: operations["update_portfolio_item_api_v1_businesses__business_id__portfolio__item_id__patch"];
         trace?: never;
     };
-    "/api/v1/public/businesses/{business_id}": {
+    "/api/v1/public/businesses/{target_id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -955,11 +955,101 @@ export interface paths {
          * Get Public Business Profile
          * @description The public profile of an approved business. No login required. Drafts,
          *     businesses in review and suspended businesses answer ``404 not_found``.
+         *
+         *     With ``?business_id=`` (logged in, a member of that business) the response says
+         *     whether that business has saved this one.
          */
-        get: operations["get_public_business_profile_api_v1_public_businesses__business_id__get"];
+        get: operations["get_public_business_profile_api_v1_public_businesses__target_id__get"];
         put?: never;
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/marketplace/listings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Search Listings
+         * @description Active offers and needs of approved businesses, newest first, or most relevant
+         *     first with ``q``. Pass ``next_cursor`` back as ``cursor`` with the same filters for
+         *     the next page.
+         */
+        get: operations["search_listings_api_v1_marketplace_listings_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/marketplace/facets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Search Facets
+         * @description Listing counts per category for the current filters, ignoring ``category_id``.
+         */
+        get: operations["search_facets_api_v1_marketplace_facets_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{business_id}/saved": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Saved
+         * @description The business's saved businesses, most recently saved first. Businesses that are
+         *     no longer approved are hidden.
+         */
+        get: operations["list_saved_api_v1_businesses__business_id__saved_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{business_id}/saved/{target_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Save Business
+         * @description Save an approved business. Idempotent: saving it again changes nothing.
+         */
+        put: operations["save_business_api_v1_businesses__business_id__saved__target_id__put"];
+        post?: never;
+        /**
+         * Unsave Business
+         * @description Remove a business from the list. Idempotent: ``204`` even if it was not saved.
+         */
+        delete: operations["unsave_business_api_v1_businesses__business_id__saved__target_id__delete"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1215,6 +1305,36 @@ export interface components {
          */
         BusinessStage: "idea" | "startup" | "growing" | "established";
         /**
+         * BusinessSummary
+         * @description An approved business, as shown on marketplace cards and saved businesses.
+         *     ``logo_url`` is a short-lived signed URL, as on the public profile; null without a
+         *     logo.
+         */
+        BusinessSummary: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Display Name */
+            display_name: string;
+            /** Logo Url */
+            logo_url: string | null;
+            /** Location City */
+            location_city: string | null;
+            /** Location Region */
+            location_region: string | null;
+            /** Location Country */
+            location_country: string | null;
+            service_area: components["schemas"]["ServiceArea"] | null;
+        };
+        /** CategoryFacet */
+        CategoryFacet: {
+            category: components["schemas"]["CategorySummary"];
+            /** Count */
+            count: number;
+        };
+        /**
          * CategoryResponse
          * @description A public service category.
          */
@@ -1265,6 +1385,13 @@ export interface components {
             /** Missing */
             missing: string[];
         };
+        /**
+         * Delivery
+         * @description Offer delivery formats and need location preferences in one filter. Offer
+         *     values only match offers and need values only match needs.
+         * @enum {string}
+         */
+        Delivery: "remote" | "in_person" | "hybrid" | "local" | "either";
         /**
          * DeliveryFormat
          * @enum {string}
@@ -1417,6 +1544,100 @@ export interface components {
              * Format: password
              */
             password: string;
+        };
+        /** MarketplaceFacetsResponse */
+        MarketplaceFacetsResponse: {
+            /** Categories */
+            categories: components["schemas"]["CategoryFacet"][];
+        };
+        /**
+         * MarketplaceKind
+         * @enum {string}
+         */
+        MarketplaceKind: "offer" | "need";
+        /** MarketplaceNeed */
+        MarketplaceNeed: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            business: components["schemas"]["BusinessSummary"];
+            category: components["schemas"]["CategorySummary"];
+            /** Title */
+            title: string;
+            /** Deliverables */
+            deliverables: string[];
+            /** Value Min Minor */
+            value_min_minor: number | null;
+            /** Value Max Minor */
+            value_max_minor: number | null;
+            /** Currency */
+            currency: string;
+            /** Published At */
+            published_at: string | null;
+            /** Saved */
+            saved?: boolean | null;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            kind: "need";
+            /** Desired Outcome */
+            desired_outcome: string | null;
+            /** Desired Start Date */
+            desired_start_date: string | null;
+            /** Desired End Date */
+            desired_end_date: string | null;
+            location_preference: components["schemas"]["LocationPreference"] | null;
+            /** Location Notes */
+            location_notes: string | null;
+            urgency: components["schemas"]["Urgency"] | null;
+        };
+        /** MarketplaceOffer */
+        MarketplaceOffer: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            business: components["schemas"]["BusinessSummary"];
+            category: components["schemas"]["CategorySummary"];
+            /** Title */
+            title: string;
+            /** Deliverables */
+            deliverables: string[];
+            /** Value Min Minor */
+            value_min_minor: number | null;
+            /** Value Max Minor */
+            value_max_minor: number | null;
+            /** Currency */
+            currency: string;
+            /** Published At */
+            published_at: string | null;
+            /** Saved */
+            saved?: boolean | null;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            kind: "offer";
+            /** Description */
+            description: string | null;
+            /** Capacity */
+            capacity: number | null;
+            /** Availability */
+            availability: string | null;
+            delivery_format: components["schemas"]["DeliveryFormat"] | null;
+            /** Location Restrictions */
+            location_restrictions: string | null;
+        };
+        /** MarketplacePageResponse */
+        MarketplacePageResponse: {
+            /** Items */
+            items: (components["schemas"]["MarketplaceOffer"] | components["schemas"]["MarketplaceNeed"])[];
+            /** Next Cursor */
+            next_cursor: string | null;
         };
         /** MemberRoleUpdateRequest */
         MemberRoleUpdateRequest: {
@@ -1875,6 +2096,8 @@ export interface components {
              * Format: date-time
              */
             created_at: string;
+            /** Saved */
+            saved?: boolean | null;
         };
         /**
          * PublicPortfolioItemResponse
@@ -1997,6 +2220,19 @@ export interface components {
              * Format: date-time
              */
             created_at: string;
+        };
+        /**
+         * SavedBusinessResponse
+         * @description A saved business: the same summary as marketplace results, and when it was
+         *     saved.
+         */
+        SavedBusinessResponse: {
+            business: components["schemas"]["BusinessSummary"];
+            /**
+             * Saved At
+             * Format: date-time
+             */
+            saved_at: string;
         };
         /**
          * ServiceArea
@@ -5210,7 +5446,205 @@ export interface operations {
             };
         };
     };
-    get_public_business_profile_api_v1_public_businesses__business_id__get: {
+    get_public_business_profile_api_v1_public_businesses__target_id__get: {
+        parameters: {
+            query?: {
+                /** @description The viewer's business, to mark results it has saved (API-3.2) */
+                business_id?: string | null;
+            };
+            header?: never;
+            path: {
+                target_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicBusinessResponse"];
+                };
+            };
+            /** @description `unauthorized`, `access_token_expired`: only with `business_id` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business, or it is not approved; or the caller is not a member of `business_id` */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    search_listings_api_v1_marketplace_listings_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                cursor?: string | null;
+                /** @description Both kinds if left out */
+                kind?: components["schemas"]["MarketplaceKind"] | null;
+                /** @description Repeatable; any of these categories */
+                category_id?: string[] | null;
+                /** @description Text search */
+                q?: string | null;
+                /** @description Repeatable. Offer delivery formats (remote, in_person, hybrid) match offers; need location preferences (remote, local, either) match needs */
+                delivery?: components["schemas"]["Delivery"][] | null;
+                /** @description ISO 3166-1 alpha-2 */
+                country?: string | null;
+                region?: string | null;
+                value_min_minor?: number | null;
+                value_max_minor?: number | null;
+                exclude_business_id?: string | null;
+                /** @description The viewer's business, to mark results it has saved (API-3.2) */
+                business_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MarketplacePageResponse"];
+                };
+            };
+            /** @description `invalid_cursor` */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `unauthorized`, `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `email_not_verified` */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: the caller is not a member of `business_id` */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `validation_error`, `invalid_range` (`value_max_minor` below `value_min_minor`) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    search_facets_api_v1_marketplace_facets_get: {
+        parameters: {
+            query?: {
+                /** @description Both kinds if left out */
+                kind?: components["schemas"]["MarketplaceKind"] | null;
+                /** @description Repeatable; any of these categories */
+                category_id?: string[] | null;
+                /** @description Text search */
+                q?: string | null;
+                /** @description Repeatable. Offer delivery formats (remote, in_person, hybrid) match offers; need location preferences (remote, local, either) match needs */
+                delivery?: components["schemas"]["Delivery"][] | null;
+                /** @description ISO 3166-1 alpha-2 */
+                country?: string | null;
+                region?: string | null;
+                value_min_minor?: number | null;
+                value_max_minor?: number | null;
+                exclude_business_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MarketplaceFacetsResponse"];
+                };
+            };
+            /** @description `unauthorized`, `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `email_not_verified` */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `validation_error`, `invalid_range` (`value_max_minor` below `value_min_minor`) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    list_saved_api_v1_businesses__business_id__saved_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -5227,10 +5661,117 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PublicBusinessResponse"];
+                    "application/json": components["schemas"]["SavedBusinessResponse"][];
                 };
             };
-            /** @description `not_found`: no such business, or it is not approved */
+            /** @description `unauthorized`, `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business, or the caller is not a member */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    save_business_api_v1_businesses__business_id__saved__target_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                target_id: string;
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SavedBusinessResponse"];
+                };
+            };
+            /** @description `unauthorized`, `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: the caller is not a member of `business_id`, or `target_id` is not an approved business */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `validation_error`: saving your own business */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    unsave_business_api_v1_businesses__business_id__saved__target_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                target_id: string;
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description `unauthorized`, `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business, or the caller is not a member */
             404: {
                 headers: {
                     [name: string]: unknown;

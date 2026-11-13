@@ -9,5 +9,5 @@ export type PublicBusiness = components['schemas']['PublicBusinessResponse']
  * 15 minutes: refetch rather than keep them.
  */
 export function getPublicBusiness(businessId: string) {
-  return apiGet('/public/businesses/{business_id}', { path: { business_id: businessId } })
+  return apiGet('/public/businesses/{target_id}', { path: { target_id: businessId } })
 }

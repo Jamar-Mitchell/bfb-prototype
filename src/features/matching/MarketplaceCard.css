@@ -29,3 +29,16 @@
 .service-block > span, .business-card-footer small { font-size: var(--text-xs); }
 .service-block em { font-size: var(--text-xs); }
 .business-card-footer strong { font-size: var(--text-md); }
+
+/* Marketplace listings (FE-3.1): no cover photo, so the banner is the brand gradient. */
+.business-image-plain { background: linear-gradient(120deg, #082443, #0b5b99); }
+.business-image-plain::after { display: none; }
+.business-card-actions { display: flex; align-items: center; gap: 7px; }
+.listing-kind-pill { border-radius: 20px; padding: 4px 9px; font-size: var(--text-xs); font-weight: 700; color: #31516e; background: #f0f5f9; }
+.listing-kind-pill.listing-kind-need { color: #695423; background: var(--amber-pale); }
+.business-title-row h3 { overflow-wrap: anywhere; }
+.listing-business-name { color: var(--navy); font-size: var(--text-sm); font-weight: 700; margin: 9px 0 0; }
+.listing-business-name + .location { margin-top: 4px; }
+.business-card-footer { margin-top: auto; }
+.business-card > .service-block { margin-bottom: 16px; }
+.business-description { margin-bottom: 14px; }

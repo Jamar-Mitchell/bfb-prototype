@@ -8,7 +8,7 @@ import { EmptyState, ErrorState, LoadingState } from '../../components/feedback'
 import { Logo } from '../../components/ui/Logo'
 import { toApiError } from '../../lib/api/errors'
 import { useSessionStore } from '../../stores/session'
-import { businessInitials } from './businessDisplay'
+import { BusinessLogo } from './BusinessLogo'
 import { PortfolioGallery } from './PortfolioGallery'
 import {
   BUSINESS_STAGE_LABELS,
@@ -112,13 +112,6 @@ function ProfileNotFound() {
   )
 }
 
-function ProfileLogo({ business }: { business: PublicBusiness }) {
-  if (business.logo_url) {
-    return <img className="avatar avatar-large public-profile-logo" src={business.logo_url} alt={`${business.display_name} logo`} />
-  }
-  return <div className="avatar avatar-large public-profile-initials" aria-hidden="true">{businessInitials(business.display_name)}</div>
-}
-
 export function PublicProfileView({ business }: { business: PublicBusiness }) {
   const location = formatLocation(business)
   const subtitle = business.industry ?? business.categories[0]?.name
@@ -136,7 +129,7 @@ export function PublicProfileView({ business }: { business: PublicBusiness }) {
         {business.cover_url && <img className="profile-cover" src={business.cover_url} alt="" />}
         <div className="profile-cover-shade" />
         <div className="profile-identity">
-          <ProfileLogo business={business} />
+          <BusinessLogo business={business} size="large" />
           <div>
             <div className="profile-title">
               <h1 id="public-profile-name">{business.display_name}</h1>

@@ -20,8 +20,11 @@ Last updated: 12 November 2026 (end of Phase 2, start of Phase 3).
 | 10 | Portfolio tiles, PDF and link tiles, drag styling, the sticky "unsaved changes" bar, the portfolio dialog | `/profile`, Portfolio section | FE-2.5 | [ ] |
 | 11 | Admin review queue, business detail page and decision dialog | `/admin` (administrator account) | FE-2.7 | [ ] |
 | 12 | Public profile frame and the "Verified business" badge | `/b/<business id>` logged out | FE-2.8 | [ ] |
+| 41 | Marketplace listing cards: brand-gradient banner instead of a photo (listings have none), logo or initials, Offer/Need pill, listing title, category, business name and location, "They offer" or "They're looking for" deliverables, value or budget, "View business" to the public profile. No ratings or match claims | `/marketplace` | FE-3.1 | [ ] |
+| 42 | Marketplace filters: category chips with counts (multi-select), the All / Offers / Needs toggle, the "Location" and "Value" buttons opening an inline panel with Apply and Clear, "Newest first" / "Most relevant first" in place of the "Best match" sort, "Load more" | `/marketplace` | FE-3.1 | [ ] |
+| 43 | Marketplace banner line "Every business here was reviewed by BFB" (replaces "Personalized using your onboarding preferences", which was not true) | `/marketplace` | FE-3.1 | [ ] |
 
-Phase 3 will add rows here for the marketplace cards, fit-band wording, match cards and detail, and the admin match workspace.
+Phase 3 adds rows below 12, numbered from 41. Still to come: fit-band wording, match cards and detail, and the admin match workspace.
 
 ## Product decisions
 
@@ -60,6 +63,8 @@ Decisions made to start Phase 3. Each can be changed later.
 | 34 | Decline reasons and feedback | Seen by staff only, never by the other business | |
 | 35 | Saved businesses | Shared by the whole team, not per person | |
 | 36 | Fit display | Words only (Strong, Potential, Limited fit) plus reasons. No percentages or scores anywhere | |
+| 44 | Marketplace category chips | Every active category is a chip, including those with 0 listings for the current search. Hide the empty ones? | |
+| 45 | Marketplace banner photos | Still the prototype's three demo photos, as decoration. Replace with BFB brand imagery? | |
 
 ## Before staging
 

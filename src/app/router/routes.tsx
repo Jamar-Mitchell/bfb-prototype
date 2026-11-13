@@ -80,11 +80,6 @@ function DashboardRoute() {
   )
 }
 
-function MarketplaceRoute() {
-  const go = useAppNavigate()
-  return <Marketplace openBusiness={(id) => go(paths.business(id))} />
-}
-
 /** Demo profile for the marketplace's numeric IDs. A real business ID goes to its public profile. */
 function BusinessRoute() {
   const go = useAppNavigate()
@@ -136,7 +131,7 @@ export const routes: RouteObject[] = [
             element: <ShellLayout />,
             children: [
               { path: paths.dashboard, element: <DashboardRoute /> },
-              { path: paths.marketplace, element: <MarketplaceRoute /> },
+              { path: paths.marketplace, element: <Marketplace /> },
               { path: '/business/:id/*', element: <BusinessRoute /> },
               { path: paths.exchanges, element: <ExchangesPage /> },
               { path: paths.messages, element: <MessagesPage /> },
