@@ -152,7 +152,7 @@ function MilestoneRow({ milestone, businessId, names }: { milestone: ExchangeMil
           <span className="match-pill">{MILESTONE_STATUS_LABELS[milestone.status]}</span>
         </div>
         <p className="exchange-milestone-meta">
-          <span><PackageCheck size={14} aria-hidden="true" /> <strong>{delivery.mine ? 'You deliver' : 'You receive'}</strong> · {delivery.text}</span>
+          <span><PackageCheck size={14} aria-hidden="true" /> <span><strong>{delivery.mine ? 'You deliver' : 'You receive'}</strong> · {delivery.text}</span></span>
           <span><CalendarDays size={14} aria-hidden="true" /> {milestone.due_date ? `Due ${formatFullDate(milestone.due_date)}` : 'No due date'}</span>
         </p>
         {milestone.description && <p>{milestone.description}</p>}
