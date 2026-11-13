@@ -64,6 +64,8 @@ export type ApiErrorCode =
   | 'portfolio_version_conflict'
   | 'invalid_portfolio_batch'
   | 'portfolio_item_incomplete'
+  // Marketplace (API-3.1)
+  | 'invalid_cursor'
   // Feature codes are added by later packages; keep the type open for them.
   | (string & {})
 
@@ -125,6 +127,7 @@ export const API_ERROR_MESSAGES: Record<string, string> = {
   portfolio_version_conflict: 'Someone else changed this portfolio. Reload it and try again.',
   invalid_portfolio_batch: 'The portfolio changed since you loaded it. Reload it and try again.',
   portfolio_item_incomplete: 'Each work sample needs a file, a link, or both.',
+  invalid_cursor: 'These results changed since you loaded them. Start again from the top.',
 }
 
 /** User-facing copy for an error code. Unknown codes fall back to the generic message. */

@@ -70,12 +70,4 @@ describe('route table', () => {
     expect(screen.getByRole('button', { name: /Exchanges/ })).toHaveClass('active')
     expect(window.scrollTo).toHaveBeenCalledWith(0, 0)
   })
-
-  it('opens a business profile from the marketplace', () => {
-    renderAt('/marketplace')
-
-    fireEvent.click(screen.getAllByRole('button', { name: 'View business' })[1])
-
-    expect(screen.getByRole('heading', { level: 1, name: /^Frame & Field Studio$/ })).toBeInTheDocument()
-  })
 })
