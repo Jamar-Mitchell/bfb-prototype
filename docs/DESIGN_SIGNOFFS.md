@@ -34,6 +34,10 @@ Last updated: 12 November 2026 (end of Phase 2, start of Phase 3).
 | 58 | Match inbox: Open / Accepted / Closed tabs (kept in the URL, Open shows the waiting count), a card grid with logo or initials, name, location, a blue "Reviewed by BFB" badge, the fit band pill, the top three reasons with tick, dash or question icons, a timing line ("Respond by 4 Dec" in amber, "You both accepted on …" in green, "Expired on …" grey) and "View match"; a status pill on accepted and closed cards; an empty state per tab | `/matches` | FE-3.3 | [ ] |
 | 59 | Match detail: "A note from BFB" in a pale-blue panel, "Why you were matched" with each pair as two cards ("Your offer" / "Corner Bakery's need", value or budget, delivery, timing) joined by an arrow, the pair's band and every factor; side cards for the other business with "View public profile", both responses, and the status with "Respond by" or "Closed" | `/matches/<id>` | FE-3.3 | [ ] |
 | 60 | Dashboard hero: the "12 strong matches" pill becomes "N matches waiting on you" (or "No matches waiting") and opens the inbox; the "Top fit today" card becomes the newest match waiting on you ("RESPOND BY 26 NOV", band in words) and is hidden when there is none; the button reads "See your matches" | `/dashboard` | FE-3.3 | [ ] |
+| 64 | "Your answer" card at the top of the match detail's side column: the blue-edged card with "Accept match" (primary) and "Decline" (secondary), full width, and a line when the other business already accepted; after answering, "You accepted on … Waiting for …"; for members, the waiting line and a lock note saying only owners and administrators can answer | `/matches/<id>` on an open match, as owner and as member | FE-3.4 | [ ] |
+| 65 | Decline dialog: "Decline the match with …?", the reasons as selectable rows (optional), an optional note, the lock line "seen by BFB only, never by …", and a red "Decline match" button. Your own reason then shows under your response, marked as seen by BFB only | `/matches/<id>`, Decline | FE-3.4 | [ ] |
+| 66 | Both-accepted next step: a pale-green "You both accepted" panel above the pairs saying a proposal can be started in the next release and BFB will help you connect | `/matches/<id>` on an accepted match | FE-3.4 | [ ] |
+| 67 | "Was this match useful?" card under the pairs: Useful / Not useful chips, then reason chips for that rating plus "Something else", a comment box and "Save feedback"; once saved, the rating pill, reasons and comment with "Edit feedback". Hidden on withdrawn matches | `/matches/<id>` | FE-3.4 | [ ] |
 
 Phase 3 adds rows below 12, numbered from 41.
 
@@ -83,6 +87,9 @@ Decisions made to start Phase 3. Each can be changed later.
 | 61 | "Reviewed by BFB" on match cards | The match's business summary has no verification flag, so the badge shows for an approved profile, not the public profile's "Verified business". Add verification to the match summary? | |
 | 62 | Reasons on a match card | The top three: what fits, then what partly fits, then what needs confirming. Conflicts only on the detail. The match list has no factors, so each card loads its match's detail (one request per card). Add the top reasons to the list API? | |
 | 63 | Closed matches tab | The API filters on one status at a time, so Closed reads the unfiltered list and keeps declined, expired and withdrawn matches in the browser. Add a "closed" filter to the API? | |
+| 68 | Accepting a match | One click, no confirmation step (declining asks first). Add a confirmation? | |
+| 69 | Feedback reasons offered | Useful shows the four positive reasons, Not useful the six negative ones, both plus "Something else". The API accepts any reason with either rating | |
+| 70 | Who leaves feedback | Any member, once per business per match: a teammate's save replaces the business's feedback | |
 
 ## Before staging
 

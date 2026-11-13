@@ -14,6 +14,8 @@ export type FactorResult = Schemas['FactorResultResponse']
 export type MatchStatus = Schemas['MatchStatus']
 export type MatchResponse = Schemas['MatchResponse']
 export type DeclineReason = Schemas['DeclineReason']
+export type FeedbackRating = Schemas['FeedbackRating']
+export type FeedbackReason = Schemas['FeedbackReason']
 
 /** A factor's outcome. The API types it as a string; these are the documented values. */
 export type FactorOutcome = 'fits' | 'partial' | 'conflict' | 'unknown'
@@ -172,6 +174,32 @@ export const DECLINE_REASON_LABELS: Record<DeclineReason, string> = {
   location: 'The location or delivery does not work',
   already_connected: 'We already work with this business',
   other: 'Something else',
+}
+
+export const FEEDBACK_RATING_LABELS: Record<FeedbackRating, string> = {
+  useful: 'Useful',
+  not_useful: 'Not useful',
+}
+
+/** Feedback reasons, seen by staff only. Any reason goes with either rating. */
+export const FEEDBACK_REASON_LABELS: Record<FeedbackReason, string> = {
+  good_fit: 'They’re a good fit',
+  clear_explanation: 'The reasons were clear',
+  led_to_conversation: 'We’ve started talking',
+  new_opportunity: 'We wouldn’t have found them ourselves',
+  wrong_category: 'Their work isn’t what we need or offer',
+  budget_mismatch: 'Value or budget doesn’t line up',
+  timing_mismatch: 'Timing doesn’t line up',
+  location_mismatch: 'Location or delivery doesn’t work',
+  not_enough_info: 'Not enough information to judge',
+  already_known: 'We already know them',
+  other: 'Something else',
+}
+
+/** The reasons offered with each rating, plus "Something else" and any already chosen. */
+export const FEEDBACK_REASONS_FOR: Record<FeedbackRating, FeedbackReason[]> = {
+  useful: ['good_fit', 'clear_explanation', 'led_to_conversation', 'new_opportunity'],
+  not_useful: ['wrong_category', 'budget_mismatch', 'timing_mismatch', 'location_mismatch', 'not_enough_info', 'already_known'],
 }
 
 function capitalise(text: string): string {

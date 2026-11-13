@@ -1,4 +1,4 @@
-import { apiGet } from '../../lib/api/requests'
+import { apiGet, apiPost, apiPut } from '../../lib/api/requests'
 import type { components } from '../../lib/api/schema'
 
 type Schemas = components['schemas']
@@ -12,6 +12,9 @@ export type BusinessMatchSummary = Schemas['BusinessMatchSummaryResponse']
 export type BusinessMatchComponent = Schemas['BusinessMatchComponentResponse']
 export type MatchBusiness = Schemas['MatchBusinessSummary']
 type MatchStatus = Schemas['MatchStatus']
+export type DeclineBody = Schemas['DeclineMatchRequest']
+export type FeedbackBody = Schemas['MatchFeedbackRequest']
+export type MyFeedback = Schemas['MyFeedbackResponse']
 
 export const INBOX_PAGE_SIZE = 20
 
@@ -96,4 +99,19 @@ export async function countWaitingMatches(businessId: string): Promise<{ count: 
     if (!cursor) break
   }
   return { count, first }
+}
+
+/** Owners and administrators only (`403 business_role_required` for a member). */
+export function acceptMatch(businessId: string, matchId: string): Promise<BusinessMatch> {
+  return apiPost('/businesses/{business_id}/matches/{match_id}/accept', undefined, { path: { business_id: businessId, match_id: matchId } })
+}
+
+/** Owners and administrators only. The reason and text are seen by staff, never by the other business. */
+export function declineMatch(businessId: string, matchId: string, body: DeclineBody): Promise<BusinessMatch> {
+  return apiPost('/businesses/{business_id}/matches/{match_id}/decline', body, { path: { business_id: businessId, match_id: matchId } })
+}
+
+/** Any member. Replaces the business's whole feedback on the match. */
+export function saveMatchFeedback(businessId: string, matchId: string, body: FeedbackBody): Promise<MyFeedback> {
+  return apiPut('/businesses/{business_id}/matches/{match_id}/feedback', body, { path: { business_id: businessId, match_id: matchId } })
 }

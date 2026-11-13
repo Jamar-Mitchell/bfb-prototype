@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -93,16 +93,17 @@ interface ServerOptions {
   matches?: BusinessMatchSummary[]
   match?: BusinessMatch
   reply?: (request: MockRequest) => MockReply | undefined
+  role?: 'owner' | 'administrator' | 'member'
 }
 
-function server({ matches = [summary()], match = detail(), reply }: ServerOptions = {}): MockHandler {
+function server({ matches = [summary()], match = detail(), reply, role = 'owner' }: ServerOptions = {}): MockHandler {
   return (request) => {
     const custom = reply?.(request)
     if (custom) return custom
     const { method, url, config } = request
     if (method === 'post' && url === '/auth/refresh') return { status: 200, data: tokenBody('access-2', 'refresh-2') }
-    if (method === 'get' && url === '/account') return { status: 200, data: { user: apiUser({ email_verified: true }), memberships: [apiMembership()] } }
-    if (method === 'get' && url === '/businesses/business-1') return { status: 200, data: apiBusiness({ profile_status: 'approved' }) }
+    if (method === 'get' && url === '/account') return { status: 200, data: { user: apiUser({ email_verified: true }), memberships: [apiMembership({ role })] } }
+    if (method === 'get' && url === '/businesses/business-1') return { status: 200, data: apiBusiness({ profile_status: 'approved', role }) }
     if (method === 'get' && url === MATCHES) {
       const status = (config.params as { status?: string } | undefined)?.status
       return { status: 200, data: { items: matches.filter((item) => !status || item.status === status), next_cursor: null } }
@@ -296,5 +297,133 @@ describe('match copy', () => {
     expect(matchTiming(summary({ can_respond: false, my_response: 'accepted' }), now).text).toBe('You accepted. Waiting for Northside Studio until 4 Dec')
     expect(matchTiming(summary({ status: 'declined', can_respond: false, other_response: 'declined', closed_at: '2026-11-15T12:00:00Z' }), now).text).toBe('Northside Studio declined on 15 Nov')
     expect(matchTiming(summary({ status: 'withdrawn', can_respond: false, closed_at: '2027-01-02T12:00:00Z' }), now).text).toBe('Withdrawn by BFB on 2 Jan 2027')
+  })
+})
+
+describe('answering a match', () => {
+  const DETAIL = `${MATCHES}/${MATCH_ID}`
+
+  it('accepts, and says what happens next once both have accepted', async () => {
+    const accepted = detail({
+      status: 'accepted',
+      can_respond: false,
+      me: { ...detail().me, response: 'accepted', responded_at: '2026-11-14T10:00:00Z' },
+      closed_at: '2026-11-14T10:00:00Z',
+    })
+    api = mockApi(server({ reply: ({ method, url }) => (method === 'post' && url === `${DETAIL}/accept` ? { status: 200, data: accepted } : undefined) }))
+    renderAt(`/matches/${MATCH_ID}`)
+
+    const panel = await screen.findByRole('region', { name: 'Your answer' })
+    expect(within(panel).getByText(/Northside Studio has accepted/)).toBeInTheDocument()
+    fireEvent.click(within(panel).getByRole('button', { name: 'Accept match' }))
+
+    expect(await screen.findByRole('heading', { name: 'You both accepted' })).toBeInTheDocument()
+    expect(screen.getByText(/A proposal can be started in the next release/)).toBeInTheDocument()
+    expect(screen.queryByRole('region', { name: 'Your answer' })).not.toBeInTheDocument()
+    expect(api.calls('post', `${DETAIL}/accept`)).toHaveLength(1)
+    expect(useToastStore.getState().toasts.at(-1)?.message).toBe('You and Northside Studio both accepted.')
+  })
+
+  it('declines with a reason and a note, saying the other business will not see them', async () => {
+    const declined = detail({
+      status: 'declined',
+      can_respond: false,
+      me: { ...detail().me, response: 'declined', responded_at: '2026-11-14T10:00:00Z', decline_reason: 'timing', decline_text: 'Booked until spring.' },
+      closed_at: '2026-11-14T10:00:00Z',
+    })
+    api = mockApi(server({ reply: ({ method, url }) => (method === 'post' && url === `${DETAIL}/decline` ? { status: 200, data: declined } : undefined) }))
+    renderAt(`/matches/${MATCH_ID}`)
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Decline' }))
+    const dialog = screen.getByRole('dialog', { name: 'Decline the match with Northside Studio?' })
+    expect(within(dialog).getByText(/Northside Studio will see that you declined, but not why/)).toBeInTheDocument()
+    fireEvent.click(within(dialog).getByRole('radio', { name: 'The timing does not work' }))
+    fireEvent.change(within(dialog).getByRole('textbox', { name: /Anything else BFB should know/ }), { target: { value: '  Booked until spring. ' } })
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Decline match' }))
+
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+    expect(api.calls('post', `${DETAIL}/decline`)[0][0].data).toBe(JSON.stringify({ reason: 'timing', text: 'Booked until spring.' }))
+    const responses = screen.getByRole('list', { name: 'Responses' })
+    expect(within(responses).getByText('Your reason, seen by BFB only')).toBeInTheDocument()
+    expect(within(responses).getByText('The timing does not work')).toBeInTheDocument()
+    expect(screen.getAllByText('Declined').length).toBeGreaterThan(0)
+  })
+
+  it('refreshes the match and explains when it is no longer open', async () => {
+    let expired = false
+    api = mockApi(
+      server({
+        reply: ({ method, url }) => {
+          if (method === 'post' && url === `${DETAIL}/accept`) {
+            expired = true
+            return { status: 409, data: apiErrorBody('invalid_match_status', { status: 'expired' }) }
+          }
+          if (expired && method === 'get' && url === DETAIL) return { status: 200, data: detail({ status: 'expired', can_respond: false, closed_at: '2026-12-04T12:00:00Z' }) }
+          return undefined
+        },
+      }),
+    )
+    renderAt(`/matches/${MATCH_ID}`)
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Accept match' }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('This match expired before your answer was saved.')
+    await waitFor(() => expect(screen.queryByRole('button', { name: 'Accept match' })).not.toBeInTheDocument())
+    expect(api.calls('get', DETAIL).length).toBeGreaterThanOrEqual(2)
+  })
+
+  it('shows a member the status read-only, with who can answer', async () => {
+    api = mockApi(server({ role: 'member' }))
+    renderAt(`/matches/${MATCH_ID}`)
+
+    const panel = await screen.findByRole('region', { name: 'Your answer' })
+    expect(within(panel).getByText(/Only owners and administrators of Northstar Digital can accept or decline/)).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Accept match' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Decline' })).not.toBeInTheDocument()
+  })
+})
+
+describe('match feedback', () => {
+  const FEEDBACK = `${MATCHES}/${MATCH_ID}/feedback`
+
+  it('saves a rating with reasons and a comment, and can be edited later', async () => {
+    api = mockApi(
+      server({
+        role: 'member',
+        reply: ({ method, url, body }) =>
+          method === 'put' && url === FEEDBACK
+            ? { status: 200, data: { ...(body as object), created_at: '2026-11-14T10:00:00Z', updated_at: '2026-11-14T10:00:00Z' } }
+            : undefined,
+      }),
+    )
+    renderAt(`/matches/${MATCH_ID}`)
+
+    const section = await screen.findByRole('region', { name: 'Was this match useful?' })
+    fireEvent.click(within(section).getByRole('button', { name: 'Not useful' }))
+    fireEvent.click(within(section).getByRole('button', { name: 'Timing doesn’t line up' }))
+    fireEvent.click(within(section).getByRole('button', { name: 'Value or budget doesn’t line up' }))
+    fireEvent.change(within(section).getByRole('textbox', { name: /Comment/ }), { target: { value: 'Out of range this year.' } })
+    fireEvent.click(within(section).getByRole('button', { name: 'Save feedback' }))
+
+    await within(section).findByRole('button', { name: /Edit feedback/ })
+    expect(api.calls('put', FEEDBACK)[0][0].data).toBe(JSON.stringify({ rating: 'not_useful', reason_codes: ['timing_mismatch', 'budget_mismatch'], comment: 'Out of range this year.' }))
+    expect(within(section).getByText('Not useful')).toBeInTheDocument()
+    expect(within(within(section).getByRole('list', { name: 'Your reasons' })).getAllByRole('listitem')).toHaveLength(2)
+
+    fireEvent.click(within(section).getByRole('button', { name: /Edit feedback/ }))
+    fireEvent.click(within(section).getByRole('button', { name: 'Useful' }))
+    fireEvent.click(within(section).getByRole('button', { name: 'Timing doesn’t line up' }))
+    fireEvent.click(within(section).getByRole('button', { name: 'Value or budget doesn’t line up' }))
+    fireEvent.click(within(section).getByRole('button', { name: 'Save feedback' }))
+    await waitFor(() => expect(api!.calls('put', FEEDBACK)).toHaveLength(2))
+    expect(JSON.parse(api.calls('put', FEEDBACK)[1][0].data as string)).toEqual({ rating: 'useful', reason_codes: [], comment: 'Out of range this year.' })
+  })
+
+  it('is not offered on a withdrawn match', async () => {
+    api = mockApi(server({ match: detail({ status: 'withdrawn', can_respond: false, closed_at: '2026-11-20T12:00:00Z' }) }))
+    renderAt(`/matches/${MATCH_ID}`)
+
+    await screen.findByRole('heading', { level: 1, name: 'Northside Studio' })
+    expect(screen.queryByRole('region', { name: 'Was this match useful?' })).not.toBeInTheDocument()
   })
 })

@@ -1,16 +1,21 @@
 import { useCallback, useEffect, useState } from 'react'
-import { ArrowLeft, ArrowRight, Quote } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, Handshake, Lock, Quote, X } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 
 import { paths } from '../../app/router/paths'
-import { ErrorState, LoadingState } from '../../components/feedback'
-import { toApiError } from '../../lib/api/errors'
+import { ErrorState, LoadingState, showErrorToast, showToast } from '../../components/feedback'
+import { toApiError, type ApiError } from '../../lib/api/errors'
+import { updateBusinessRole } from '../../lib/businesses/activeBusiness'
 import { useActiveBusiness } from '../../lib/businesses/useActiveBusiness'
 import { PublicProfileLink } from '../businesses/PublicProfileLink'
 import { FactorList, FitBandBadge } from './FitDisplay'
-import { MATCH_RESPONSE_LABELS, MATCH_STATUS_LABELS, type MatchResponse, type MatchStatus } from './fitCopy'
+import { DeclineMatchDialog } from './DeclineMatchDialog'
+import { DECLINE_REASON_LABELS, MATCH_RESPONSE_LABELS, MATCH_STATUS_LABELS, type MatchResponse, type MatchStatus } from './fitCopy'
 import { MatchBusinessHeader } from './MatchCard'
-import { getBusinessMatch, type BusinessMatch, type BusinessMatchComponent } from './matchInboxApi'
+import { MatchFeedback } from './MatchFeedback'
+import { acceptMatch, declineMatch, getBusinessMatch, saveMatchFeedback, type BusinessMatch, type BusinessMatchComponent, type DeclineBody } from './matchInboxApi'
+import { answerConflictMessage, canAnswerMatches } from './matchResponses'
+import { refreshWaitingMatches } from './waitingMatches'
 import { formatMatchDate, snapshotFacts, snapshotText } from './matchInboxDisplay'
 import './MatchInbox.css'
 
@@ -21,6 +26,9 @@ export function BusinessMatchPage() {
   const [match, setMatch] = useState<BusinessMatch | null>(null)
   const [loadError, setLoadError] = useState<unknown>(null)
   const [reloadKey, setReloadKey] = useState(0)
+  const [notice, setNotice] = useState<string | null>(null)
+  const [accepting, setAccepting] = useState(false)
+  const [declining, setDeclining] = useState(false)
   const reload = useCallback(() => setReloadKey((key) => key + 1), [])
 
   useEffect(() => {
@@ -55,6 +63,54 @@ export function BusinessMatchPage() {
   }
 
   const other = match.other.business
+  const canAnswer = canAnswerMatches(business.role)
+
+  /** An answer was refused: explain it and show the match as it is now. Returns false for other errors. */
+  const refused = (error: ApiError): boolean => {
+    if (error.code === 'invalid_match_status') {
+      setNotice(answerConflictMessage(error, other.display_name))
+    } else if (error.code === 'business_role_required') {
+      setNotice('Only owners and administrators can accept or decline matches. Your role may have changed.')
+      updateBusinessRole(business.id, 'member')
+    } else {
+      return false
+    }
+    setDeclining(false)
+    reload()
+    void refreshWaitingMatches(business.id)
+    return true
+  }
+
+  const answered = (updated: BusinessMatch, message: string) => {
+    setMatch(updated)
+    setNotice(null)
+    showToast(message)
+    void refreshWaitingMatches(business.id)
+  }
+
+  const accept = async () => {
+    setAccepting(true)
+    try {
+      const updated = await acceptMatch(business.id, match.id)
+      answered(updated, updated.status === 'accepted' ? `You and ${other.display_name} both accepted.` : `Accepted. We’ll let you know when ${other.display_name} answers.`)
+    } catch (caught) {
+      const error = toApiError(caught)
+      if (!refused(error)) showErrorToast(`We couldn’t accept this match. ${error.userMessage}`)
+    } finally {
+      setAccepting(false)
+    }
+  }
+
+  const decline = async (body: DeclineBody) => {
+    try {
+      const updated = await declineMatch(business.id, match.id, body)
+      setDeclining(false)
+      answered(updated, 'Match declined.')
+    } catch (caught) {
+      // Shown in the dialog unless the match changed underneath it.
+      if (!refused(toApiError(caught))) throw caught
+    }
+  }
 
   return (
     <>
@@ -73,8 +129,18 @@ export function BusinessMatchPage() {
           </div>
         </div>
       </div>
+      {notice && <p className="match-notice match-notice-error" role="alert">{notice}</p>}
       <div className="match-layout">
         <div className="match-main">
+          {match.status === 'accepted' && (
+            <section className="match-panel match-next" aria-labelledby="match-next-title">
+              <Handshake size={22} aria-hidden="true" />
+              <div>
+                <h2 id="match-next-title">You both accepted</h2>
+                <p>{other.display_name} is expecting to hear from you. A proposal can be started in the next release; until then, BFB will help you connect.</p>
+              </div>
+            </section>
+          )}
           {match.operator_note && (
             <section className="match-panel match-note" aria-labelledby="match-note-title">
               <h2 id="match-note-title"><Quote size={15} aria-hidden="true" /> A note from BFB</h2>
@@ -90,8 +156,29 @@ export function BusinessMatchPage() {
               {match.components.map((component) => <PairItem key={component.id} component={component} otherName={other.display_name} />)}
             </ol>
           </section>
+          {match.status !== 'withdrawn' && (
+            <MatchFeedback
+              key={`${match.id}-${match.my_feedback?.updated_at ?? 'none'}`}
+              feedback={match.my_feedback}
+              onSave={(body) => saveMatchFeedback(business.id, match.id, body)}
+              onConflict={(message) => {
+                setNotice(message)
+                reload()
+              }}
+            />
+          )}
         </div>
         <aside className="match-side">
+          {match.status === 'proposed' && (
+            <AnswerPanel
+              match={match}
+              canAnswer={canAnswer}
+              businessName={business.name}
+              accepting={accepting}
+              onAccept={() => void accept()}
+              onDecline={() => setDeclining(true)}
+            />
+          )}
           <section className="match-panel match-panel-body" aria-labelledby="match-other-title">
             <h2 id="match-other-title" className="match-side-title">The other business</h2>
             <MatchBusinessHeader business={other} as="h3" />
@@ -102,7 +189,15 @@ export function BusinessMatchPage() {
               <h2 id="match-responses-title">Responses</h2>
             </div>
             <ul className="match-responses" aria-label="Responses">
-              <ResponseItem who={`${match.me.business.display_name} (you)`} response={match.me.response} at={match.me.responded_at} status={match.status} />
+              <ResponseItem who={`${match.me.business.display_name} (you)`} response={match.me.response} at={match.me.responded_at} status={match.status}>
+                {match.me.decline_reason || match.me.decline_text ? (
+                  <div className="match-own-reason">
+                    <small><Lock size={11} aria-hidden="true" /> Your reason, seen by BFB only</small>
+                    {match.me.decline_reason && <strong>{DECLINE_REASON_LABELS[match.me.decline_reason]}</strong>}
+                    {match.me.decline_text && <p>{match.me.decline_text}</p>}
+                  </div>
+                ) : null}
+              </ResponseItem>
               <ResponseItem who={other.display_name} response={match.other.response} at={match.other.responded_at} status={match.status} />
             </ul>
           </section>
@@ -119,18 +214,69 @@ export function BusinessMatchPage() {
           </section>
         </aside>
       </div>
+      {declining && <DeclineMatchDialog otherName={other.display_name} onSubmit={decline} onCancel={() => setDeclining(false)} />}
     </>
   )
 }
 
+/** Accept and Decline for owners and administrators; for members, where things stand and who can answer. */
+function AnswerPanel({ match, canAnswer, businessName, accepting, onAccept, onDecline }: {
+  match: BusinessMatch
+  canAnswer: boolean
+  businessName: string
+  accepting: boolean
+  onAccept: () => void
+  onDecline: () => void
+}) {
+  const otherName = match.other.business.display_name
+  const otherAccepted = match.other.response === 'accepted'
+  let body
+  if (!match.can_respond) {
+    body = match.me.response === 'accepted'
+      ? <p>You accepted{match.me.responded_at ? ` on ${formatMatchDate(match.me.responded_at)}` : ''}. Waiting for {otherName} until {formatMatchDate(match.expires_at)}.</p>
+      : <p>Your business has answered this match.</p>
+  } else if (!canAnswer) {
+    body = (
+      <>
+        <p>Waiting for {businessName} to answer by {formatMatchDate(match.expires_at)}.</p>
+        <p className="match-answer-who"><Lock size={13} aria-hidden="true" /> Only owners and administrators of {businessName} can accept or decline. You can view the match and leave feedback.</p>
+      </>
+    )
+  } else {
+    body = (
+      <>
+        <p>
+          {otherAccepted ? `${otherName} has accepted. ` : ''}
+          If you both accept, you can start working together. Answer by {formatMatchDate(match.expires_at)}.
+        </p>
+        <div className="match-answer-actions">
+          <button type="button" className="button button-primary" onClick={onAccept} disabled={accepting}>
+            <Check size={16} aria-hidden="true" /> {accepting ? 'Accepting…' : 'Accept match'}
+          </button>
+          <button type="button" className="button button-secondary" onClick={onDecline} disabled={accepting}>
+            <X size={16} aria-hidden="true" /> Decline
+          </button>
+        </div>
+      </>
+    )
+  }
+  return (
+    <section className="match-panel match-panel-body match-answer" aria-labelledby="match-answer-title">
+      <h2 id="match-answer-title" className="match-side-title">Your answer</h2>
+      {body}
+    </section>
+  )
+}
+
 /** A response, or "No response" once the match closed without one. */
-function ResponseItem({ who, response, at, status }: { who: string; response: MatchResponse; at: string | null; status: MatchStatus }) {
+function ResponseItem({ who, response, at, status, children }: { who: string; response: MatchResponse; at: string | null; status: MatchStatus; children?: React.ReactNode }) {
   const label = response === 'pending' && status !== 'proposed' ? 'No response' : MATCH_RESPONSE_LABELS[response]
   return (
     <li>
       <strong>{who}</strong>
       <span className={`match-pill match-pill-response-${response}`}>{label}</span>
       {at && <small>{formatMatchDate(at)}</small>}
+      {children}
     </li>
   )
 }
