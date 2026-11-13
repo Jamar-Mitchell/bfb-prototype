@@ -1,6 +1,6 @@
 # BFB Frontend Work Packages
 
-This file breaks the [development plan](DEVELOPMENT_PLAN.md#delivery-phases) into packages that one agent session can finish in one pull request. Phases 1 to 4 are broken down in detail. Later phases stay as outlines in the development plan and will be broken down when the phase before them is close to done.
+This file breaks the [development plan](DEVELOPMENT_PLAN.md#delivery-phases) into packages that one agent session can finish in one pull request. Phases 1 to 5 are broken down in detail. Later phases stay as outlines in the development plan and will be broken down when the phase before them is close to done.
 
 The API has a matching file: `bfb-api/docs/WORK_PACKAGES.md`. Frontend packages list the API packages they need.
 
@@ -43,6 +43,9 @@ A slice is a working piece of the product you can demo end to end. It is done wh
 | S13 Draft and send a proposal | From an accepted match, build a proposal (services, values, milestones, terms) and send it | API-4.1, API-4.2 | FE-4.1, FE-4.2 |
 | S14 Counter and compare | Review a proposal, decline it or send a counteroffer, and see what changed between versions | API-4.3 | FE-4.3, FE-4.4 |
 | S15 Accept the same version | Both businesses accept the current version, which locks it as the source for the agreement | API-4.4 | FE-4.5 |
+| S16 Agreement generated | An accepted proposal produces an agreement both businesses can read, under a versioned set of Exchange Terms | API-5.1, API-5.2 | FE-5.1 |
+| S17 Sign | Each business names its signer, who confirms authority and consent and signs (development signing provider) | API-5.3, API-5.4 | FE-5.2 |
+| S18 Signed and active | Once both sign, the signed document and evidence are downloadable and the exchange becomes active | API-5.5 | FE-5.3 |
 
 Recommended order is S0 through S8. The frontend S0 packages need no API work and can start now.
 
@@ -78,6 +81,9 @@ Recommended order is S0 through S8. The frontend S0 packages need no API work an
 | FE-4.3 | Proposal review, decline and counteroffer | FE-4.2, API-4.3 | todo |
 | FE-4.4 | Version timeline and changes | FE-4.3, API-4.3 | todo |
 | FE-4.5 | Accept a proposal and party details | FE-4.3, API-4.4 | todo |
+| FE-5.1 | Agreement page and Exchange Terms | FE-4.5, API-5.2 | todo |
+| FE-5.2 | Signer setup and signing | FE-5.1, API-5.4 | todo |
+| FE-5.3 | Signed agreement, downloads and active exchange | FE-5.2, API-5.5 | todo |
 
 ## Phase 0: Foundation
 
@@ -398,4 +404,41 @@ Scope:
 Done when:
 - Tests cover accepting, `party_details_missing` linking to the profile section, accepting a replaced version being refused, and the accepted state on both businesses' views.
 - This meets the Phase 4 exit criteria in the development plan.
+
+## Phase 5: Agreements and signatures
+
+Phase goal: turn an accepted proposal into a signed agreement and an active exchange. The document structure (standard Exchange Terms plus a per-deal Exchange Agreement), statuses and endpoints are in `bfb-api/docs/AGREEMENTS.md` and the Phase 5 section of `bfb-api/docs/WORK_PACKAGES.md`.
+
+While the legal documents are drafts, every agreement screen shows a clear banner: "Draft terms, not reviewed by counsel. Not for real exchanges." Do not hide or soften it.
+
+### FE-5.1 Agreement page and Exchange Terms
+
+Scope:
+- An agreement page at `/agreements/:id`, reached from the accepted proposal and the match: the rendered agreement in a readable document frame, its status, the Exchange Terms version it uses (linking to a public `/legal/exchange-terms` page), and the document hash in small print.
+- An Agreements section (or tab in Proposals) listing agreements by status.
+- Replace the "agreement and signatures come next" note on accepted proposals with a link to the agreement.
+
+Done when:
+- Tests cover the agreement page, the draft banner, the Exchange Terms page, and a non-participant getting not found.
+
+### FE-5.2 Signer setup and signing
+
+Scope:
+- On the agreement page, owners and administrators name their business's signer from its owners and administrators (or themselves), and can replace them before signing starts.
+- The named signer confirms full name, title, authority to sign for the business and consent to electronic records and signatures, each as an explicit checkbox with the exact consent wording, then signs by typing their full name (development provider).
+- Status for both businesses: who signs for each, confirmed or not, signed or not, and the signing deadline.
+
+Done when:
+- Tests cover naming and replacing a signer, confirm blocked until every box is ticked, only the named signer seeing the sign step, and both signatures updating the status.
+
+### FE-5.3 Signed agreement, downloads and active exchange
+
+Scope:
+- Signed state on the agreement: download the signed document and the signature certificate (short-lived links from the API).
+- Replace the prototype Exchanges page's demo data with the business's real exchanges: the other business, status Active, milestones with due dates and who delivers each (read-only until Phase 6).
+- The dashboard shows active exchanges instead of demo ones.
+
+Done when:
+- Tests cover downloads, the exchanges list and detail, and the dashboard change.
+- This meets the Phase 5 exit criteria in the development plan, apart from the real provider.
 
