@@ -222,6 +222,9 @@ Use the match from flow 13 once both businesses accepted it. Log in as each owne
 | 14.23 | On another proposal, press Decline and then "Decline proposal" without choosing a reason | "Choose a reason."; choose one, add a note and decline: the page says your business declined it, and nothing can be done with it. The other business sees it declined, with no reason | [ ] |
 | 14.24 | As the sender of another proposal, press Withdraw, choose a reason and withdraw | The page says your business withdrew it; the other business sees it withdrawn, with no reason | [ ] |
 | 14.25 | Open a proposal in two windows; decline it in one, then press Counter in the other | A red notice says the proposal closed since you opened it, and the page shows it closed | [ ] |
+| 14.26 | After the counteroffer in 14.21, open the proposal as either business | "Versions" lists version 2 (Current) and version 1 (Replaced), each with who sent it, when, and who accepted it | [ ] |
+| 14.27 | Read "What changed from version 1" | One row per change you made: the value and the end date, each with the old value struck through and the new one; an added or removed service or milestone shows as Added or Removed | [ ] |
+| 14.28 | Press "Open version 1" | The version as it was sent, marked "Replaced by version 2", with a link to the current one and no buttons to act on it | [ ] |
 
 ## 15. Across the app
 
@@ -237,5 +240,5 @@ Use the match from flow 13 once both businesses accepted it. Log in as each owne
 
 - Exchanges, messages, the landing page and the dashboard's "Recommended for you" still use demo data until their phases.
 - Emails are printed, not sent, until an email provider is chosen ([DESIGN_SIGNOFFS.md](DESIGN_SIGNOFFS.md) row 37).
-- Accepting a proposal and the version timeline arrive with the rest of Phase 4.
+- Accepting a proposal arrives with the rest of Phase 4.
 - Design and product items waiting on sign-off are in [DESIGN_SIGNOFFS.md](DESIGN_SIGNOFFS.md). A flow that passes here can still change there.

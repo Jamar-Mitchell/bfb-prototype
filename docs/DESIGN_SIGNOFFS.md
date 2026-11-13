@@ -51,6 +51,9 @@ Last updated: 13 November 2026 (start of Phase 4).
 | 97 | Action card: "Your answer" with Counter (primary) and Decline for the business that did not send the version; "Continue your counteroffer" once a counter draft exists; "Your proposal" with Withdraw for the sender; a lock line for members; nothing on a closed proposal | `/proposals/<id>` as each business and as a member | FE-4.3 | [ ] |
 | 98 | Decline and withdraw dialogs: like the match decline dialog, but a reason is required (red "Choose a reason." if none), with an optional note, the lock line "seen by BFB only, never by …" and a red "Decline proposal" / "Withdraw proposal" button | `/proposals/<id>`, Decline or Withdraw | FE-4.3 | [ ] |
 | 99 | Counteroffer builder: the same builder headed "Counteroffer to …" with "A copy of version N to change as you need." | `/proposals/<id>/edit` after Counter | FE-4.3 | [ ] |
+| 104 | "Versions" panel under the document: newest first, each "Version N" with a Current / Replaced / Accepted pill, "Sent by … on …. Accepted by …", "Open version N" for older ones, and "What changed from version N-1" (open by default on the current version) | `/proposals/<id>` after a counteroffer | FE-4.4 | [ ] |
+| 105 | Change rows: an Added (green), Removed (red) or Changed (blue) tag, what changed in words ("Brand identity sprint (Northstar Digital): value", "Service: Quarterly tax filing (…)") and the old value struck through → the new value in bold; added and removed items in one line (value and deliverables, or due date and who delivers it) | `/proposals/<id>`, Versions | FE-4.4 | [ ] |
+| 106 | Older version page: "PROPOSAL · VERSION N", a grey "Replaced" pill, an amber "Replaced by version N" panel saying it can't be accepted or changed with a link to the current version, the same document, and what changed from the version before. No actions | `/proposals/<id>/versions/<n>` | FE-4.4 | [ ] |
 
 Phase 3 adds rows below 12, numbered from 41. Phase 4 continues from 79.
 
@@ -130,6 +133,7 @@ Decisions made to start Phase 4. Each can be changed later.
 | 101 | Withdraw reasons | Our plans changed, We don't have capacity right now, The timing no longer works, Something else. Required and seen by BFB only. Withdrawing asks through this dialog; there is no separate "are you sure" | |
 | 102 | Counter when a counter draft already exists | "Counter" becomes "Continue your counteroffer"; if the API still answers `draft_exists`, the builder opens on that draft | |
 | 103 | An action refused because the proposal changed (`invalid_proposal_status`) | The page loads the proposal again and says why in a red notice ("This proposal closed since you opened it…", "…it's no longer your turn…") | |
+| 107 | Order of the version list and changes | Versions newest first; changes in the API's order (dates, then services, milestones, terms, cash). Only the change from the previous version is shown; comparing any two versions (the API allows it) is not offered | |
 
 ## Phase 5 defaults
 
