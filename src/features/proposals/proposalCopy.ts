@@ -1,6 +1,6 @@
 import { formatMatchDate } from '../matching/matchInboxDisplay'
 import { findService, type CashTiming, type DraftTerms, type IpTerms } from './proposalDraft'
-import type { ProposalStatus, ProposalSummary, Side } from './proposalsApi'
+import type { Proposal, ProposalDeclineReason, ProposalStatus, ProposalSummary, ProposalWithdrawReason, Side } from './proposalsApi'
 
 // Copy for proposals (bfb-api docs/PROPOSALS.md): statuses, whose turn it is and when.
 // The one place that turns proposal codes into words, as fitCopy.ts does for matches.
@@ -180,4 +180,92 @@ export function describeMissing(key: string, terms: DraftTerms, names: Record<Si
   }
 
   return { key, text: 'Something else needs finishing', section: 'summary', anchor: sectionAnchor('summary') }
+}
+
+// ---- Review copy (FE-4.3) ----
+
+export const PROPOSAL_DECLINE_REASON_LABELS: Record<ProposalDeclineReason, string> = {
+  value: 'The values don’t work for us',
+  scope: 'The scope isn’t right',
+  timing: 'The dates don’t work',
+  terms: 'We can’t agree to the terms',
+  no_capacity: 'We don’t have capacity right now',
+  other: 'Something else',
+}
+
+export const PROPOSAL_WITHDRAW_REASON_LABELS: Record<ProposalWithdrawReason, string> = {
+  changed_plans: 'Our plans changed',
+  no_capacity: 'We don’t have capacity right now',
+  timing: 'The timing no longer works',
+  other: 'Something else',
+}
+
+/** "4 Jan 2027", always with the year: proposal dates are often next year. */
+const fullDate = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+
+/** A `YYYY-MM-DD` date or a timestamp as "4 Jan 2027". */
+export function formatFullDate(value: string): string {
+  return fullDate.format(/^\d{4}-\d{2}-\d{2}$/.test(value) ? new Date(`${value}T00:00:00`) : new Date(value))
+}
+
+/** "5 days", "1 day". */
+export function days(count: number): string {
+  return count === 1 ? '1 day' : `${count} days`
+}
+
+/** The terms of a version, each in one plain sentence. */
+export function reviewPeriodText(value: number | null): string {
+  return value === null ? 'No review period set.' : `Each business has ${days(value)} to review a delivery and ask for changes.`
+}
+
+export function revisionLimitText(value: number | null): string {
+  if (value === null) return 'No revision limit set.'
+  if (value === 0) return 'No rounds of changes are included.'
+  return value === 1 ? 'One round of changes is included.' : `Up to ${value} rounds of changes are included.`
+}
+
+export function confidentialityText(value: boolean | null): string {
+  return value ? 'Both businesses keep each other’s information confidential.' : 'There is no confidentiality clause.'
+}
+
+export function cancellationText(value: number | null): string {
+  if (value === null) return 'No cancellation notice set.'
+  return value === 0 ? 'Either business can cancel without notice.' : `Either business can cancel with ${days(value)}’ notice.`
+}
+
+/**
+ * Where a proposal stands, in one or two sentences: whose turn it is and until when, or why it
+ * closed. Closed proposals say nothing can be done with them.
+ */
+export function proposalStandingText(proposal: Proposal, now = new Date()): string {
+  const other = proposal.other.business.display_name
+  const version = proposal.current_version?.version_number ?? null
+  const expires = proposal.expires_at ? formatMatchDate(proposal.expires_at, now) : null
+  const closedOn = formatMatchDate(proposal.closed_at ?? proposal.updated_at, now)
+  const byUs = proposal.closed_by_side === proposal.me.side
+  switch (proposal.status) {
+    case 'draft':
+      return proposal.waiting_on === 'us'
+        ? `Your business is writing version 1. ${other} sees it once you send it.`
+        : `${other} is writing the first version. You’ll see the terms here once they send it.`
+    case 'sent':
+    case 'countered':
+      if (proposal.waiting_on === 'us') {
+        return `${other} sent version ${version}. It’s your turn to answer${expires ? ` by ${expires}` : ''}; after that it expires.`
+      }
+      return `You sent version ${version}. ${other} has${expires ? ` until ${expires}` : ' time'} to accept, decline or send a counteroffer.`
+    case 'accepted':
+      return `Both businesses accepted version ${proposal.accepted_version_number ?? version} on ${closedOn}.`
+    case 'declined':
+      return byUs
+        ? `Your business declined version ${version} on ${closedOn}. This proposal is closed; you can start a new one from the match.`
+        : `${other} declined version ${version} on ${closedOn}. This proposal is closed; you can start a new one from the match.`
+    case 'withdrawn':
+      if (!version) return `The first version was discarded before it was sent, on ${closedOn}. This proposal is closed.`
+      return byUs
+        ? `Your business withdrew version ${version} on ${closedOn}. This proposal is closed; you can start a new one from the match.`
+        : `${other} withdrew version ${version} on ${closedOn}. This proposal is closed; you can start a new one from the match.`
+    case 'expired':
+      return `Version ${version} expired on ${closedOn} without an answer. This proposal is closed; you can start a new one from the match.`
+  }
 }

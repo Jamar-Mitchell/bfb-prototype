@@ -15,6 +15,9 @@ export type ProposalTerms = Schemas['ProposalTerms']
 export type ProposalDraft = Schemas['DraftResponse']
 export type Side = Schemas['Side']
 export type WaitingOn = Schemas['WaitingOn']
+export type SentVersion = Schemas['SentVersionResponse']
+export type ProposalDeclineReason = Schemas['ProposalDeclineReason']
+export type ProposalWithdrawReason = Schemas['WithdrawRequest']['reason']
 
 /** Statuses a proposal can still move from. The rest are final. */
 export const OPEN_STATUSES: readonly ProposalStatus[] = ['draft', 'sent', 'countered']
@@ -208,4 +211,29 @@ export async function listOtherActiveOffers(viewerBusinessId: string, otherBusin
     if (!cursor) break
   }
   return found
+}
+
+/**
+ * Starts a counteroffer: a draft copied from the current version, with the next version number.
+ * Only the business that did not send the current version. `409 invalid_proposal_status` with
+ * `details.reason` `not_your_turn`, `draft_exists` (this business already has a draft) or `closed`.
+ */
+export function counterProposal(businessId: string, proposalId: string): Promise<Proposal> {
+  return apiPost('/businesses/{business_id}/proposals/{proposal_id}/counter', undefined, { path: { business_id: businessId, proposal_id: proposalId } })
+}
+
+/** Why a business closes a proposal, and an optional note. Seen by BFB staff only. */
+export interface CloseBody<Reason extends string> {
+  reason: Reason
+  text: string | null
+}
+
+/** Declines the current version. Only the business that did not send it; discards its counter draft. */
+export function declineProposal(businessId: string, proposalId: string, body: CloseBody<ProposalDeclineReason>): Promise<Proposal> {
+  return apiPost('/businesses/{business_id}/proposals/{proposal_id}/decline', body, { path: { business_id: businessId, proposal_id: proposalId } })
+}
+
+/** Withdraws the current version. Only the business that sent it; discards any open draft. */
+export function withdrawProposal(businessId: string, proposalId: string, body: CloseBody<ProposalWithdrawReason>): Promise<Proposal> {
+  return apiPost('/businesses/{business_id}/proposals/{proposal_id}/withdraw', body, { path: { business_id: businessId, proposal_id: proposalId } })
 }
