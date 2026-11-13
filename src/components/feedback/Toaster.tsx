@@ -1,4 +1,4 @@
-import { CircleCheck, X } from 'lucide-react'
+import { CircleCheck, TriangleAlert, X } from 'lucide-react'
 
 import { useToastStore } from './toastStore'
 import './feedback.css'
@@ -11,8 +11,12 @@ export function Toaster() {
   return (
     <div className="toast-region" role="status" aria-live="polite">
       {toasts.map((toast) => (
-        <div className="toast" key={toast.id}>
-          <CircleCheck className="toast-icon" size={18} aria-hidden="true" />
+        <div className={toast.tone === 'error' ? 'toast toast-error' : 'toast'} key={toast.id}>
+          {toast.tone === 'error' ? (
+            <TriangleAlert className="toast-icon" size={18} aria-hidden="true" />
+          ) : (
+            <CircleCheck className="toast-icon" size={18} aria-hidden="true" />
+          )}
           <span>{toast.message}</span>
           <button type="button" className="toast-close" aria-label="Dismiss" onClick={() => dismissToast(toast.id)}>
             <X size={15} aria-hidden="true" />

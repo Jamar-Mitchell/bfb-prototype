@@ -34,3 +34,4 @@
   .public-profile-header .brand-copy { display: none; }
   .public-profile-main { width: calc(100% - 28px); padding-top: 28px; }
 }
+.public-profile-action { margin-left: 6px; }

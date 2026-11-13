@@ -1,0 +1,15 @@
+.saved-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.saved-card { display: flex; align-items: center; gap: 15px; background: white; border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 15px 18px; transition: .2s ease; }
+.saved-card:hover { box-shadow: 0 10px 25px rgba(var(--navy-rgb), .06); }
+.saved-card-removed { opacity: .6; }
+.saved-card-body { flex: 1; min-width: 0; }
+.saved-card-body h3 { font-size: 15px; margin: 0 0 4px; }
+.saved-card-body p { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 0 0 4px; color: var(--muted); font-size: var(--text-sm); }
+.saved-card-body p span { display: inline-flex; align-items: center; gap: 4px; }
+.saved-card-body small { color: var(--text-subtle); font-size: var(--text-xs); }
+.saved-card-actions { display: flex; align-items: center; gap: 8px; }
+
+@media (max-width: 620px) {
+  .saved-card { flex-wrap: wrap; }
+  .saved-card-actions { width: 100%; justify-content: flex-end; }
+}

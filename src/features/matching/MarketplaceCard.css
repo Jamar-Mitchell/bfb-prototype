@@ -1,7 +1,6 @@
 .business-card { background: white; border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 19px; display: flex; flex-direction: column; transition: .2s ease; }
 .business-card:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(var(--navy-rgb), .07); }
 .business-card-top { display: flex; justify-content: space-between; align-items: flex-start; }
-.save-button { width: 33px; height: 33px; border-radius: var(--radius-md); border: 1px solid var(--border); background: white; display: grid; place-items: center; color: #8290a0; }
 .business-title-row { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 14px; }
 .business-title-row h3 { font-size: var(--text-xl); margin: 0 0 3px; }
 .business-title-row > div:first-child span { color: var(--muted); font-size: var(--text-xs); }

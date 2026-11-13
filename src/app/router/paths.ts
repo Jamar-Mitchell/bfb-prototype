@@ -10,6 +10,7 @@ export const paths = {
   acceptInvite: '/accept-invite',
   dashboard: '/dashboard',
   marketplace: '/marketplace',
+  saved: '/saved',
   exchanges: '/exchanges',
   messages: '/messages',
   profile: '/profile',

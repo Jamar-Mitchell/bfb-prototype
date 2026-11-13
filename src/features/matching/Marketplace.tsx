@@ -8,6 +8,8 @@ import { businesses as bannerImages } from '../../mocks/businesses'
 import { useSessionStore } from '../../stores/session'
 import { ResendVerificationButton } from '../auth/ResendVerificationButton'
 import { listCategories, type Category } from '../businesses/profileApi'
+import { SaveButton } from '../saved/SaveButton'
+import { useSaveToggle } from '../saved/useSaveToggle'
 import { LocationPanel, ValuePanel } from './MarketplaceFilterPanels'
 import { MarketplaceCard } from './MarketplaceCard'
 import {
@@ -61,6 +63,7 @@ export function Marketplace() {
   const { state, loadMore, retry } = useMarketplaceSearch(query, viewerBusinessId)
   const { counts, total } = useCategoryCounts(query, viewerBusinessId)
   const categories = useCategories()
+  const { isSaved, isPending, toggle } = useSaveToggle(viewerBusinessId)
   const [openPanel, setOpenPanel] = useState<'location' | 'value' | null>(null)
 
   // The search box follows the URL (back button, reset) but is edited freely until submitted.
@@ -180,7 +183,17 @@ export function Marketplace() {
           {state.items.length ? (
             <>
               <div className="business-grid">
-                {state.items.map((listing) => <MarketplaceCard key={`${listing.kind}:${listing.id}`} listing={listing} />)}
+                {state.items.map((listing) => {
+                  const { business } = listing
+                  const saved = isSaved(business.id, listing.saved)
+                  return (
+                    <MarketplaceCard
+                      key={`${listing.kind}:${listing.id}`}
+                      listing={listing}
+                      action={<SaveButton name={business.display_name} saved={saved} pending={isPending(business.id)} onToggle={() => void toggle(business.id, business.display_name, saved)} />}
+                    />
+                  )
+                })}
               </div>
               {state.nextCursor && (
                 <div className="market-load-more">
