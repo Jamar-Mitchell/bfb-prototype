@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Check, CircleCheck, ImagePlus, Lock, Pencil, Plus, Send, X } from 'lucide-react'
-import { useEffect, useId, useRef, useState, type ComponentPropsWithRef, type ReactNode } from 'react'
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { useForm } from 'react-hook-form'
 
 import { ErrorState, LoadingState, showToast } from '../../components/feedback'
@@ -21,7 +21,9 @@ import {
 } from './profileFields'
 import { profileSchema, profileUpdate, profileValues, type ProfileValues } from './profileForm'
 import { BUSINESS_STAGE_LABELS } from './profileLabels'
+import { LegalDetailsSection } from './LegalDetailsSection'
 import { PortfolioEditor } from './PortfolioEditor'
+import { Field, Select, TextArea } from './profileControls'
 import { PublicProfileLink } from './PublicProfileLink'
 import { UPLOAD_LIMITS, type ImageCategory } from './uploadsApi'
 import { loadBusinessProfile, setBusinessProfile, useBusinessProfile } from './useBusinessProfile'
@@ -68,7 +70,7 @@ function ProfileHeading({ children }: { children?: ReactNode }) {
  * Why the profile is read-only for this user right now, or `null` if they can edit it. In review
  * and suspended are explained by the shell's status banner; the notice only adds that editing is off.
  */
-function lockReason(business: Business): string | null {
+export function lockReason(business: Business): string | null {
   if (!canEditProfile(business.role)) return 'Only owners and administrators can edit the business profile.'
   if (business.profile_status === 'in_review') return 'Editing is paused while your profile is in review.'
   if (business.profile_status === 'suspended') return 'Editing is off while this business is suspended.'
@@ -174,7 +176,6 @@ function ProfileEditor({ business }: { business: Business }) {
               <LogoImage business={business} editable={editable} />
               <div className="form-grid">
                 <Field label="Business name" error={errors.display_name?.message} disabled={!fieldsEnabled} {...register('display_name')} />
-                <Field label="Legal name" hint="Private: only BFB sees it." error={errors.legal_name?.message} disabled={!fieldsEnabled} {...register('legal_name')} />
                 <Field label="Industry" error={errors.industry?.message} disabled={!fieldsEnabled} {...register('industry')} />
                 <Field label="Website" placeholder="https://" error={errors.website_url?.message} disabled={!fieldsEnabled} {...register('website_url')} />
                 <Select label="Business stage" placeholder="Choose a stage" options={STAGE_OPTIONS} disabled={!fieldsEnabled} {...register('business_stage')} />
@@ -203,6 +204,7 @@ function ProfileEditor({ business }: { business: Business }) {
               </div>
             </form>
           </section>
+          <LegalDetailsSection business={business} />
           <PortfolioEditor business={business} onDirtyChange={setPortfolioDirty} />
         </div>
         <CompletenessMeter business={business}>
@@ -459,56 +461,5 @@ function SubmitForReview({ business, unsavedChanges }: { business: Business; uns
       {unsavedChanges ? <small>Save or cancel your changes first.</small> : null}
       {problem ? <p className="profile-notice profile-notice-error submit-review-error" role="alert">{problem}</p> : null}
     </div>
-  )
-}
-
-// Inputs in the prototype's profile look: the label wraps its control and names it.
-
-type FieldProps = { label: string; hint?: string; error?: string; className?: string }
-
-function useControlIds(hint?: string, error?: string) {
-  const id = useId()
-  const hintId = hint ? `${id}-hint` : undefined
-  const errorId = error ? `${id}-error` : undefined
-  return { labelId: `${id}-label`, hintId, errorId, describedBy: [hintId, errorId].filter(Boolean).join(' ') || undefined }
-}
-
-function Field({ label, hint, error, className, ...props }: FieldProps & ComponentPropsWithRef<'input'>) {
-  const { labelId, hintId, errorId, describedBy } = useControlIds(hint, error)
-  return (
-    <label className={className}>
-      <span id={labelId}>{label}</span>
-      <input {...props} aria-labelledby={labelId} aria-invalid={Boolean(error)} aria-describedby={describedBy} />
-      {hint ? <small className="profile-field-hint" id={hintId}>{hint}</small> : null}
-      {error ? <small className="profile-field-error" id={errorId}>{error}</small> : null}
-    </label>
-  )
-}
-
-function TextArea({ label, hint, error, className, ...props }: FieldProps & ComponentPropsWithRef<'textarea'>) {
-  const { labelId, hintId, errorId, describedBy } = useControlIds(hint, error)
-  return (
-    <label className={className}>
-      <span id={labelId}>{label}</span>
-      <textarea {...props} aria-labelledby={labelId} aria-invalid={Boolean(error)} aria-describedby={describedBy} />
-      {hint ? <small className="profile-field-hint" id={hintId}>{hint}</small> : null}
-      {error ? <small className="profile-field-error" id={errorId}>{error}</small> : null}
-    </label>
-  )
-}
-
-type SelectProps = FieldProps & ComponentPropsWithRef<'select'> & { placeholder: string; options: ReadonlyArray<{ value: string; label: string }> }
-
-function Select({ label, error, className, placeholder, options, hint: _hint, ...props }: SelectProps) {
-  const { labelId, errorId, describedBy } = useControlIds(undefined, error)
-  return (
-    <label className={className}>
-      <span id={labelId}>{label}</span>
-      <select {...props} aria-labelledby={labelId} aria-invalid={Boolean(error)} aria-describedby={describedBy}>
-        <option value="">{placeholder}</option>
-        {options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-      </select>
-      {error ? <small className="profile-field-error" id={errorId}>{error}</small> : null}
-    </label>
   )
 }

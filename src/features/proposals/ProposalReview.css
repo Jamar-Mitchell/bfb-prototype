@@ -108,3 +108,20 @@
   .proposal-version, .proposal-version-changes-page { padding: 14px 16px; }
   .proposal-change { grid-template-columns: 1fr; gap: 6px; }
 }
+
+/* Accepting and party details (FE-4.5). */
+.proposal-party-prompt { display: flex; gap: 10px; align-items: flex-start; background: #fffaf0; border: 1px solid #f3e5bf; border-radius: var(--radius-md); padding: 12px 14px; color: var(--amber); margin-top: 14px; }
+.proposal-party-prompt svg { flex: 0 0 auto; margin-top: 2px; }
+.proposal-party-prompt > div { display: flex; flex-direction: column; gap: 4px; }
+.proposal-party-prompt strong { color: var(--navy); font-size: var(--text-base); }
+.proposal-party-prompt p { margin: 0; color: var(--slate); font-size: var(--text-base); line-height: 1.5; }
+.proposal-party-link { display: inline-flex; align-items: center; gap: 5px; color: var(--blue); font-weight: 700; font-size: var(--text-base); margin-top: 2px; }
+.proposal-accept-summary { margin: 0 0 14px; display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: var(--radius-md); }
+.proposal-accept-summary > div { padding: 10px 13px; display: flex; flex-direction: column; gap: 2px; }
+.proposal-accept-summary > div + div { border-top: 1px solid var(--border); }
+.proposal-accept-summary dt { color: var(--text-subtle); font-size: var(--text-sm); font-weight: 700; }
+.proposal-accept-summary dd { margin: 0; color: var(--navy); font-size: var(--text-base); line-height: 1.5; }
+.proposal-accept-summary dd span { color: var(--muted); }
+.proposal-standing-accepted { background: var(--green-pale); border-color: #ccecdf; }
+.proposal-standing-accepted .match-side-title { color: var(--green) !important; }
+.proposal-next { margin-top: 4px !important; font-size: var(--text-base) !important; color: var(--slate) !important; }

@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { CircleAlert, CircleCheck, Cloud, CloudAlert, LoaderCircle, X } from 'lucide-react'
 
 import { formatAmount } from '../listings/money'
@@ -111,7 +111,8 @@ export function SendProposalDialog({ versionNumber, otherName, busy, error, onSe
   versionNumber: number
   otherName: string
   busy: boolean
-  error: string | null
+  /** A message, or the party details prompt. */
+  error: ReactNode
   onSend: (expiresInDays: number) => void
   onCancel: () => void
 }) {
@@ -134,7 +135,7 @@ export function SendProposalDialog({ versionNumber, otherName, busy, error, onSe
       event.preventDefault()
       onCancel()
     } else if (event.key === 'Tab') {
-      const focusable = Array.from(dialogRef.current?.querySelectorAll<HTMLElement>('button:not(:disabled), select:not(:disabled)') ?? [])
+      const focusable = Array.from(dialogRef.current?.querySelectorAll<HTMLElement>('button:not(:disabled), select:not(:disabled), a[href]') ?? [])
       const first = focusable[0]
       const last = focusable[focusable.length - 1]
       if (event.shiftKey && document.activeElement === first) {
@@ -167,7 +168,7 @@ export function SendProposalDialog({ versionNumber, otherName, busy, error, onSe
             </select>
             <p className="form-field-hint">{otherName} can respond until {formatMatchDate(respondBy.toISOString())}. After that the proposal expires.</p>
           </div>
-          {error && <p className="match-notice match-notice-error" role="alert">{error}</p>}
+          {typeof error === 'string' ? <p className="match-notice match-notice-error" role="alert">{error}</p> : error}
         </div>
         <div className="modal-footer">
           <button type="button" className="button button-secondary" ref={cancelRef} onClick={onCancel} disabled={busy}>Cancel</button>

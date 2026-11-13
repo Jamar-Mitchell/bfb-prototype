@@ -32,6 +32,7 @@ function upload(id: string, category: 'logo' | 'cover') {
 
 interface ServerOptions {
   business?: Business
+  path?: string
   reply?: (request: { method: string; url: string; body: unknown }) => MockReply | undefined
 }
 
@@ -72,7 +73,7 @@ async function openProfile(options: ServerOptions = {}) {
   api = mockApi(handler)
   render(
     <StrictMode>
-      <MemoryRouter initialEntries={['/profile']}>
+      <MemoryRouter initialEntries={[options.path ?? '/profile']}>
         <App />
       </MemoryRouter>
     </StrictMode>,
@@ -276,5 +277,53 @@ describe('profile editor', () => {
     await openProfile({ business: profileBusiness({ legal_name: 'Northstar LLC' }) })
 
     expect(screen.getByText('11% complete')).toBeInTheDocument()
+  })
+})
+
+describe('legal details for agreements', () => {
+  const section = () => screen.getByRole('region', { name: 'Legal details for agreements' })
+
+  it('says what is missing, and saves the legal name, entity type and whole address', async () => {
+    await openProfile()
+
+    expect(within(section()).getByText(/Still needed: legal name, entity type, street address, city, postal code and country/)).toBeInTheDocument()
+    expect(within(section()).getByText(/Private: never on your public profile/)).toBeInTheDocument()
+    expect(within(section()).getByLabelText('Legal name')).toBeDisabled()
+
+    fireEvent.click(within(section()).getByRole('button', { name: /Add legal details/ }))
+    fireEvent.change(within(section()).getByLabelText('Legal name'), { target: { value: 'Northstar Digital LLC' } })
+    fireEvent.change(within(section()).getByLabelText('Entity type'), { target: { value: 'llc' } })
+    fireEvent.change(within(section()).getByLabelText('Street address'), { target: { value: '1 Main Street' } })
+    fireEvent.change(within(section()).getByLabelText('City'), { target: { value: 'Detroit' } })
+    fireEvent.change(within(section()).getByLabelText('Postal code'), { target: { value: '48201' } })
+    fireEvent.change(within(section()).getByLabelText('Country'), { target: { value: 'US' } })
+    fireEvent.click(within(section()).getByRole('button', { name: /Save legal details/ }))
+
+    expect(await within(section()).findByText('Your legal details have been saved.')).toBeInTheDocument()
+    expect(patches()).toEqual([
+      {
+        legal_name: 'Northstar Digital LLC',
+        entity_type: 'llc',
+        registered_address: { line1: '1 Main Street', line2: null, city: 'Detroit', region: null, postal_code: '48201', country: 'US' },
+      },
+    ])
+    expect(within(section()).getByText('Ready for agreements.')).toBeInTheDocument()
+    expect(within(section()).getByRole('button', { name: /Edit legal details/ })).toBeInTheDocument()
+  })
+
+  it('opens for editing when linked from a proposal', async () => {
+    await openProfile({ path: '/profile?section=legal-details' })
+
+    expect(within(section()).getByLabelText('Legal name')).toBeEnabled()
+    expect(section()).toHaveFocus()
+    expect(within(section()).getByRole('button', { name: /Save legal details/ })).toBeInTheDocument()
+  })
+
+  it('is read-only for members', async () => {
+    await openProfile({ business: profileBusiness({ role: 'member', legal_name: 'Northstar LLC' }) })
+
+    expect(within(section()).getByLabelText('Legal name')).toHaveValue('Northstar LLC')
+    expect(within(section()).getByLabelText('Legal name')).toBeDisabled()
+    expect(within(section()).queryByRole('button', { name: /legal details/ })).not.toBeInTheDocument()
   })
 })

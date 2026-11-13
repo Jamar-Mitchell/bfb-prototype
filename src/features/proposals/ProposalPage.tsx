@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { ArrowLeft, FilePen, Lock, Repeat2, Undo2, X } from 'lucide-react'
+import { ArrowLeft, Check, FilePen, Lock, Repeat2, Undo2, X } from 'lucide-react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import { paths } from '../../app/router/paths'
@@ -12,7 +12,10 @@ import { PublicProfileLink } from '../businesses/PublicProfileLink'
 import { MatchBusinessHeader } from '../matching/MatchCard'
 import { canAnswerMatches } from '../matching/matchResponses'
 import { formatMatchDate } from '../matching/matchInboxDisplay'
+import { partyDetailsMissingFrom } from '../businesses/partyDetails'
+import { AcceptProposalDialog } from './AcceptProposalDialog'
 import { CloseProposalDialog } from './CloseProposalDialog'
+import { PartyDetailsPrompt } from './PartyDetailsPrompt'
 import { ProposalDocument } from './ProposalDocument'
 import {
   PROPOSAL_DECLINE_REASON_LABELS,
@@ -23,6 +26,7 @@ import {
   waitingOnText,
 } from './proposalCopy'
 import {
+  acceptVersion,
   counterProposal,
   declineProposal,
   getProposal,
@@ -56,6 +60,10 @@ export function proposalConflictText(error: ApiError): string {
       return 'This proposal closed since you opened it, so we loaded it again.'
     case 'not_your_turn':
       return 'This proposal changed since you opened it and it’s no longer your turn, so we loaded it again.'
+    case 'not_current_version':
+      return 'A newer version replaced the one you were accepting, so we loaded the current one. Read it before you answer.'
+    case 'already_accepted':
+      return 'Your business has already accepted this version, so we loaded it again.'
     default:
       return 'This proposal changed since you opened it, so we loaded it again.'
   }
@@ -84,8 +92,11 @@ function ProposalView({ proposalId }: { proposalId: string }) {
   const [loadError, setLoadError] = useState<unknown>(null)
   const [reloadKey, setReloadKey] = useState(0)
   const [notice, setNotice] = useState<string | null>(null)
-  const [dialog, setDialog] = useState<'decline' | 'withdraw' | null>(null)
+  const [dialog, setDialog] = useState<'accept' | 'decline' | 'withdraw' | null>(null)
   const [countering, setCountering] = useState(false)
+  const [accepting, setAccepting] = useState(false)
+  const [acceptMissing, setAcceptMissing] = useState<string[] | null>(null)
+  const [acceptError, setAcceptError] = useState<string | null>(null)
 
   useEffect(() => {
     let live = true
@@ -150,6 +161,34 @@ function ProposalView({ proposalId }: { proposalId: string }) {
     }
   }
 
+  const openAccept = () => {
+    setAcceptMissing(null)
+    setAcceptError(null)
+    setDialog('accept')
+  }
+
+  const accept = async () => {
+    if (!current) return
+    setAccepting(true)
+    setAcceptMissing(null)
+    setAcceptError(null)
+    try {
+      const updated = await acceptVersion(business.id, proposal.id, current.version_number)
+      setDialog(null)
+      setNotice(null)
+      setProposal(updated)
+      showToast(updated.status === 'accepted' ? `You and ${other.display_name} accepted version ${current.version_number}.` : `Version ${current.version_number} accepted.`)
+      void refreshWaitingProposals(business.id)
+    } catch (caught) {
+      const error = toApiError(caught)
+      if (error.code === 'party_details_missing') setAcceptMissing(partyDetailsMissingFrom(error.details))
+      else if (isConflict(error)) refresh(error)
+      else setAcceptError(`We couldn’t accept the proposal. ${error.userMessage}`)
+    } finally {
+      setAccepting(false)
+    }
+  }
+
   /** Declines or withdraws. A refusal reloads the page; anything else stays in the dialog. */
   const close = async (send: () => Promise<Proposal>, done: string) => {
     try {
@@ -185,8 +224,11 @@ function ProposalView({ proposalId }: { proposalId: string }) {
       <div className="match-layout proposal-review-layout">
         <div className="match-main">
           <section className={`match-panel proposal-standing proposal-standing-${proposal.status}`} aria-labelledby="proposal-standing-title">
-            <h2 id="proposal-standing-title" className="match-side-title">Where it stands</h2>
+            <h2 id="proposal-standing-title" className="match-side-title">{proposal.status === 'accepted' ? 'Accepted' : 'Where it stands'}</h2>
             <p>{proposalStandingText(proposal)}</p>
+            {proposal.status === 'accepted' && (
+              <p className="proposal-next">This version is final. Next, BFB prepares the Business Exchange Agreement from it for both businesses to sign; agreements and signatures arrive in the next release.</p>
+            )}
           </section>
           {current && <ProposalDocument version={current} names={names} mySide={proposal.me.side} />}
           <VersionTimeline proposal={proposal} businessId={business.id} />
@@ -196,6 +238,7 @@ function ProposalView({ proposalId }: { proposalId: string }) {
             proposal={proposal}
             business={business}
             countering={countering}
+            onAccept={openAccept}
             onCounter={() => void counter()}
             onDecline={() => setDialog('decline')}
             onWithdraw={() => setDialog('withdraw')}
@@ -217,6 +260,20 @@ function ProposalView({ proposalId }: { proposalId: string }) {
           </section>
         </aside>
       </div>
+      {dialog === 'accept' && current && (
+        <AcceptProposalDialog
+          proposal={proposal}
+          version={current}
+          busy={accepting}
+          error={
+            acceptMissing ? <PartyDetailsPrompt action="accept" missing={acceptMissing} />
+              : acceptError ? <p className="match-notice match-notice-error" role="alert">{acceptError}</p>
+                : null
+          }
+          onAccept={() => void accept()}
+          onCancel={() => setDialog(null)}
+        />
+      )}
       {dialog === 'decline' && current && (
         <CloseProposalDialog
           copy={{
@@ -258,10 +315,11 @@ function ProposalView({ proposalId }: { proposalId: string }) {
  * or declines; the sender withdraws; the business writing version 1 keeps editing. Members see
  * who can act instead. Closed proposals offer nothing.
  */
-function ActionsPanel({ proposal, business, countering, onCounter, onDecline, onWithdraw }: {
+function ActionsPanel({ proposal, business, countering, onAccept, onCounter, onDecline, onWithdraw }: {
   proposal: Proposal
   business: SessionBusiness
   countering: boolean
+  onAccept: () => void
   onCounter: () => void
   onDecline: () => void
   onWithdraw: () => void
@@ -303,12 +361,13 @@ function ActionsPanel({ proposal, business, countering, onCounter, onDecline, on
       <>
         {counterDraft
           ? <p>You’re writing version {counterDraft.version_number}, a counteroffer. {otherName} still sees version {current.version_number} until you send it.</p>
-          : <p>Send a counteroffer to change anything, or decline to close the proposal.</p>}
+          : <p>Accept version {current.version_number} as it is, send a counteroffer to change anything, or decline to close the proposal.</p>}
         <div className="match-answer-actions">
+          <button type="button" className="button button-primary" onClick={onAccept} disabled={countering}><Check size={16} aria-hidden="true" /> Accept</button>
           {counterDraft ? (
-            <Link className="button button-primary" to={paths.proposalEdit(proposal.id)}><FilePen size={16} aria-hidden="true" /> Continue your counteroffer</Link>
+            <Link className="button button-secondary" to={paths.proposalEdit(proposal.id)}><FilePen size={16} aria-hidden="true" /> Continue your counteroffer</Link>
           ) : (
-            <button type="button" className="button button-primary" onClick={onCounter} disabled={countering}>
+            <button type="button" className="button button-secondary" onClick={onCounter} disabled={countering}>
               <Repeat2 size={16} aria-hidden="true" /> {countering ? 'Starting…' : 'Counter'}
             </button>
           )}

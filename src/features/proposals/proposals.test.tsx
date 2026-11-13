@@ -7,7 +7,7 @@ import { useToastStore } from '../../components/feedback'
 import { ACCESS_TOKEN_KEY, clearStoredSession, REFRESH_TOKEN_KEY } from '../../lib/auth/tokens'
 import { useSessionStore } from '../../stores/session'
 import { apiErrorBody, mockApi } from '../../test/mockApi'
-import { draftProposal, MATCH_ID, PROPOSAL_ID, PROPOSALS, proposalServer, proposalSummary, type ProposalServerOptions } from '../../test/proposalServer'
+import { acceptedMatch, draftProposal, MATCH_ID, PROPOSAL_ID, PROPOSALS, proposalServer, proposalSummary, type ProposalServerOptions } from '../../test/proposalServer'
 import { proposalTiming } from './proposalCopy'
 import { proposalTab } from './proposalsApi'
 
@@ -187,13 +187,14 @@ describe('starting a proposal from an accepted match', () => {
     expect(useToastStore.getState().toasts.at(-1)?.message).toMatch(/Proposal started/)
   })
 
-  it('links to the open proposal when the match already has one', async () => {
-    start({ proposals: [proposalSummary({ match_id: MATCH_ID, status: 'sent', waiting_on: 'them' })] })
+  it('links to the open proposal the match carries', async () => {
+    start({ match: acceptedMatch({ proposal: { id: PROPOSAL_ID, status: 'sent', accepted_version_number: null } }) })
     renderAt(`/matches/${MATCH_ID}`)
 
     const panel = await screen.findByRole('region', { name: 'You both accepted' })
     expect(await within(panel).findByRole('link', { name: /Open the proposal/ })).toHaveAttribute('href', `/proposals/${PROPOSAL_ID}`)
-    expect(within(panel).getByText(/Waiting on Northside Studio/)).toBeInTheDocument()
+    expect(within(panel).getByText('Sent')).toBeInTheDocument()
+    expect(api!.calls('get', PROPOSALS).filter(([config]) => (config.params as { limit?: number }).limit !== 100)).toHaveLength(0)
     expect(within(panel).queryByRole('button', { name: 'Start a proposal' })).not.toBeInTheDocument()
   })
 
@@ -212,6 +213,16 @@ describe('starting a proposal from an accepted match', () => {
     expect(await within(panel).findByRole('link', { name: /Open the proposal/ })).toHaveAttribute('href', '/proposals/p-open')
     expect(within(panel).getByText('A proposal for this match is already open.')).toBeInTheDocument()
     expect(within(panel).queryByRole('button', { name: 'Start a proposal' })).not.toBeInTheDocument()
+  })
+
+  it('offers a new proposal after the last one closed', async () => {
+    start({ match: acceptedMatch({ proposal: { id: 'p-old', status: 'declined', accepted_version_number: null } }) })
+    renderAt(`/matches/${MATCH_ID}`)
+
+    const panel = await screen.findByRole('region', { name: 'You both accepted' })
+    expect(within(panel).getByText('The last proposal was declined. You can start a new one.')).toBeInTheDocument()
+    expect(within(panel).getByRole('button', { name: 'Start a proposal' })).toBeInTheDocument()
+    expect(within(panel).getByRole('link', { name: 'See the last proposal' })).toHaveAttribute('href', '/proposals/p-old')
   })
 
   it('shows a member no start button', async () => {

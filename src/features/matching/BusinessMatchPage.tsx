@@ -139,6 +139,7 @@ export function BusinessMatchPage() {
               business={business}
               matchId={match.id}
               otherName={other.display_name}
+              proposal={match.proposal ?? null}
               onMatchChanged={(message) => {
                 setNotice(message)
                 reload()
