@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from '../../App'
 import { clearStoredSession } from '../../lib/auth/tokens'
 import { useSessionStore } from '../../stores/session'
+import { mockApi } from '../../test/mockApi'
 
 function renderAt(path: string) {
   return render(
@@ -29,8 +30,13 @@ const cases: Array<{ path: string; heading: RegExp; shell: boolean }> = [
 ]
 
 describe('route table', () => {
+  let api: ReturnType<typeof mockApi>
+
   beforeEach(() => {
     localStorage.clear()
+    // These tests check that each screen renders, not its data: requests stay pending, so
+    // nothing reaches a real API.
+    api = mockApi(() => new Promise(() => {}))
     // App-shell routes need a session; the guard itself is covered in sessionGuards.test.tsx.
     useSessionStore.getState().setSession({
       accessToken: 'access-token',
@@ -44,6 +50,7 @@ describe('route table', () => {
 
   afterEach(() => {
     cleanup()
+    api.restore()
     clearStoredSession()
     vi.restoreAllMocks()
   })
