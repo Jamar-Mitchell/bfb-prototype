@@ -13,10 +13,10 @@ export type CreateMatchBody = Schemas['CreateMatchRequest']
 export type ApprovedBusiness = Schemas['ReviewQueueItem']
 
 /**
- * Staff match detail. `feedback` arrives with API-3.6; until then it is absent, and its
- * shape is read defensively (see `MatchFeedback`).
+ * Staff match detail. `feedback` (API-3.6) is read defensively (see `readFeedback`), so an
+ * API without it, or with an older shape, still renders.
  */
-export type AdminMatch = Schemas['AdminMatchResponse'] & { feedback?: unknown }
+export type AdminMatch = Omit<Schemas['AdminMatchResponse'], 'feedback'> & { feedback?: unknown }
 export type MatchParticipant = Schemas['ParticipantResponse']
 export type MatchComponent = Schemas['MatchComponentResponse']
 

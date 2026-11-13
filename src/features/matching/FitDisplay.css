@@ -17,3 +17,5 @@
 .fit-factor-partial .fit-factor-outcome { color: var(--blue); }
 .fit-factor-conflict .fit-factor-outcome { color: #a8323f; }
 .fit-factor-reason { flex-basis: 100%; color: var(--slate); font-size: var(--text-base); line-height: 1.5; }
+.fit-sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.fit-reasons { gap: 6px; }

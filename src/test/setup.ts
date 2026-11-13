@@ -6,6 +6,7 @@ import { afterEach, beforeAll } from 'vitest'
 import { resetCategoriesCache } from '../features/businesses/profileApi'
 import { resetBusinessProfile } from '../features/businesses/useBusinessProfile'
 import { resetImageUrls } from '../features/businesses/useImages'
+import { resetWaitingMatches } from '../features/matching/waitingMatches'
 import { apiClient } from '../lib/api/client'
 
 // Tests never reach a real API. A request a test did not mock (see `mockApi`) fails as a
@@ -22,4 +23,5 @@ afterEach(() => {
   resetBusinessProfile()
   resetCategoriesCache()
   resetImageUrls()
+  resetWaitingMatches()
 })

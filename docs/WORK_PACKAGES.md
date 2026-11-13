@@ -67,7 +67,7 @@ Recommended order is S0 through S8. The frontend S0 packages need no API work an
 | FE-2.8 | Public business profile from the API | FE-1.2, API-2.2 | done |
 | FE-3.1 | Marketplace search and filters from the API | FE-2.8, API-3.1 | done |
 | FE-3.2 | Saved businesses | FE-3.1, API-3.2 | done |
-| FE-3.3 | Match inbox and explainable match cards | FE-1.4, API-3.5 | in progress |
+| FE-3.3 | Match inbox and explainable match cards | FE-1.4, API-3.5 | done |
 | FE-3.4 | Accept, decline and feedback | FE-3.3, API-3.6 | todo |
 | FE-3.5 | Admin match workspace | FE-2.7, API-3.4 | done |
 
@@ -305,6 +305,7 @@ Scope:
 - A Matches page in the sidebar listing the active business's matches, with tabs for open, accepted and closed (declined, expired, withdrawn). A count of open matches waiting on your business on the sidebar item and the dashboard.
 - A match card: the other business (logo, name, location, verified badge), the fit band in words, the top two or three reasons, and the expiry ("Respond by 4 Dec").
 - Match detail at `/matches/:id`: each offer-need pair side by side with every factor as fits, partial, conflict or "needs confirmation", the operator note, both businesses' responses, and a link to the other business's public profile.
+  - Built: the dashboard hero's match count and featured match now come from the API. Its "Recommended for you" cards are still demo marketplace content (`src/mocks/businesses`) and still link to `/business/:id`.
 
 Done when:
 - Tests cover each band and factor outcome rendering as words (and no numbers), the empty state, and an expired match showing as closed.

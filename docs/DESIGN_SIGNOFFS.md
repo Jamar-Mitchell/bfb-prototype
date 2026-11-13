@@ -30,8 +30,12 @@ Last updated: 12 November 2026 (end of Phase 2, start of Phase 3).
 | 51 | New match, step 1 and 2: approved-business list with a name filter, then the business's suggested fits ranked best first, each with one line per offer-need pair, its fit band, and "Choose pairs" or "Open match" when one is already open | `/admin/matches/new` | FE-3.5 | [ ] |
 | 52 | Pair picker: a checkbox per offer-need pair with "Offer from … → Need from …", category, band and factor list; side card with the note for both businesses, the "Expires on" date (default 14 days) and "Create match"; the red "already have an open match" notice linking to it | `/admin/matches/new?business=<id>&candidate=<id>` | FE-3.5 | [ ] |
 | 53 | Match detail: note, offers and needs as snapshotted, responses with staff-only decline reasons, status card with expiry and withdrawal reason, feedback card (staff only, once the API sends it), and the withdraw dialog with a required reason | `/admin/matches/<id>` | FE-3.5 | [ ] |
+| 57 | "Matches" sidebar item (sparkles icon) with the count of open matches waiting on your business's answer. Staff who also have a business see it as well as the admin "Matches" item | Sidebar | FE-3.3 | [ ] |
+| 58 | Match inbox: Open / Accepted / Closed tabs (kept in the URL, Open shows the waiting count), a card grid with logo or initials, name, location, a blue "Reviewed by BFB" badge, the fit band pill, the top three reasons with tick, dash or question icons, a timing line ("Respond by 4 Dec" in amber, "You both accepted on …" in green, "Expired on …" grey) and "View match"; a status pill on accepted and closed cards; an empty state per tab | `/matches` | FE-3.3 | [ ] |
+| 59 | Match detail: "A note from BFB" in a pale-blue panel, "Why you were matched" with each pair as two cards ("Your offer" / "Corner Bakery's need", value or budget, delivery, timing) joined by an arrow, the pair's band and every factor; side cards for the other business with "View public profile", both responses, and the status with "Respond by" or "Closed" | `/matches/<id>` | FE-3.3 | [ ] |
+| 60 | Dashboard hero: the "12 strong matches" pill becomes "N matches waiting on you" (or "No matches waiting") and opens the inbox; the "Top fit today" card becomes the newest match waiting on you ("RESPOND BY 26 NOV", band in words) and is hidden when there is none; the button reads "See your matches" | `/dashboard` | FE-3.3 | [ ] |
 
-Phase 3 adds rows below 12, numbered from 41. Still to come: the business match cards and detail.
+Phase 3 adds rows below 12, numbered from 41.
 
 ## Product decisions
 
@@ -76,6 +80,9 @@ Decisions made to start Phase 3. Each can be changed later.
 | 54 | Choosing a business to match | The API has no staff business search, so the workspace lists approved businesses (up to 1,000, from the review list) and filters them by name in the browser. Add a search endpoint before the pilot grows? | |
 | 55 | Match expiry chosen by staff | A date, default 14 days away, from tomorrow up to 90 days; the match expires at the end of that day in the operator's time zone | |
 | 56 | Pairs preselected in the pair picker | None: staff tick each offer-need pair to introduce. Preselect the best pair? | |
+| 61 | "Reviewed by BFB" on match cards | The match's business summary has no verification flag, so the badge shows for an approved profile, not the public profile's "Verified business". Add verification to the match summary? | |
+| 62 | Reasons on a match card | The top three: what fits, then what partly fits, then what needs confirming. Conflicts only on the detail. The match list has no factors, so each card loads its match's detail (one request per card). Add the top reasons to the list API? | |
+| 63 | Closed matches tab | The API filters on one status at a time, so Closed reads the unfiltered list and keeps declined, expired and withdrawn matches in the browser. Add a "closed" filter to the API? | |
 
 ## Before staging
 

@@ -18,7 +18,12 @@ import { businesses } from '../../mocks/businesses'
 import { useSessionStore } from '../../stores/session'
 import type { Business } from '../businesses/profileApi'
 import { canEditProfile } from '../businesses/profileFields'
+import { BusinessLogo } from '../businesses/BusinessLogo'
+import { formatLocation } from '../businesses/profileLabels'
 import { useBusinessProfile } from '../businesses/useBusinessProfile'
+import { fitBandLabel } from '../matching/fitCopy'
+import { formatMatchDate } from '../matching/matchInboxDisplay'
+import { useWaitingMatches } from '../matching/waitingMatches'
 import { resumeStep, SUMMARY_STEP } from '../onboarding/onboardingSteps'
 import './Dashboard.css'
 
@@ -26,17 +31,21 @@ const dateFormat = new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'l
 
 interface DashboardProps {
   goMarketplace: () => void
+  goMatches: () => void
+  openMatch: (id: string) => void
   openBusiness: (id: number) => void
   openOnboarding: () => void
   openProfile: () => void
 }
 
 /**
- * The user's own business (name, categories, profile status) comes from the API. Matches,
- * exchanges, stats and activity stay demo content until the marketplace phases.
+ * The user's own business (name, categories, profile status) and the matches waiting on it
+ * come from the API. Recommendations, exchanges, stats and activity stay demo content until
+ * their phases.
  */
-export function Dashboard({ goMarketplace, openBusiness, openOnboarding, openProfile }: DashboardProps) {
+export function Dashboard({ goMarketplace, goMatches, openMatch, openBusiness, openOnboarding, openProfile }: DashboardProps) {
   const { business } = useBusinessProfile({ fresh: true })
+  const { count: waiting, first: nextMatch } = useWaitingMatches(useActiveBusiness().id)
   const firstName = useSessionStore((state) => state.user?.displayName.trim().split(/\s+/)[0]) || 'there'
   // Needs are listings now (FE-2.4), not profile answers: the need stays demo copy.
   const primaryNeed = 'marketing support'
@@ -50,7 +59,7 @@ export function Dashboard({ goMarketplace, openBusiness, openOnboarding, openPro
           <h1>Good evening, {firstName}.<br /><span>Your next growth move is here.</span></h1>
           <p>We found businesses looking for <strong>{primaryOffer.toLowerCase()}</strong> and offering the <strong>{primaryNeed.toLowerCase()}</strong> your team needs.</p>
           <div className="dashboard-hero-actions">
-            <button className="button button-primary" onClick={goMarketplace}>Explore your matches <ArrowRight size={17} /></button>
+            <button className="button button-primary" onClick={goMatches}>See your matches <ArrowRight size={17} /></button>
             <button className="button dashboard-ghost-button"><Plus size={16} /> Add what you need</button>
           </div>
           <ProfileNote business={business} openOnboarding={openOnboarding} openProfile={openProfile} />
@@ -58,12 +67,25 @@ export function Dashboard({ goMarketplace, openBusiness, openOnboarding, openPro
         <div className="dashboard-hero-visual">
           <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1000&q=88" alt="Business team reviewing growth plans" />
           <div className="dashboard-hero-shade" />
-          <div className="dashboard-match-count"><Sparkles size={16} /><span><strong>12 strong matches</strong><small>Based on your profile</small></span></div>
-          <div className="dashboard-featured-match">
-            <div className="featured-match-head"><span>TOP FIT TODAY</span><b>Strong</b></div>
-            <div><Avatar business={businesses[0]} size="small" /><span><strong>{businesses[0].name}</strong><small>{businesses[0].category} · {businesses[0].location}</small></span></div>
-            <button onClick={() => openBusiness(businesses[0].id)}>View match <ArrowUpRight size={14} /></button>
-          </div>
+          {waiting !== null && (
+            <button type="button" className="dashboard-match-count" onClick={goMatches}>
+              <Sparkles size={16} aria-hidden="true" />
+              <span>
+                <strong>{waiting === 0 ? 'No matches waiting' : `${waiting} ${waiting === 1 ? 'match' : 'matches'} waiting on you`}</strong>
+                <small>{waiting === 0 ? 'New introductions from BFB show here' : 'Answer before they expire'}</small>
+              </span>
+            </button>
+          )}
+          {nextMatch && (
+            <div className="dashboard-featured-match">
+              <div className="featured-match-head"><span>RESPOND BY {formatMatchDate(nextMatch.expires_at).toUpperCase()}</span><b>{fitBandLabel(nextMatch.fit_band)}</b></div>
+              <div>
+                <BusinessLogo business={nextMatch.other_business} size="small" />
+                <span><strong>{nextMatch.other_business.display_name}</strong><small>{formatLocation(nextMatch.other_business) || 'Matched by BFB'}</small></span>
+              </div>
+              <button onClick={() => openMatch(nextMatch.id)}>View match <ArrowUpRight size={14} /></button>
+            </div>
+          )}
         </div>
       </section>
       <div className="stats-grid">

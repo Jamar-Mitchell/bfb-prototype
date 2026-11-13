@@ -14,6 +14,7 @@ import {
   Plus,
   Search,
   ShieldCheck,
+  Sparkles,
   Users,
   X,
 } from 'lucide-react'
@@ -25,6 +26,7 @@ import { LogoutButton } from '../../features/auth/LogoutButton'
 import { BusinessSwitcher } from '../../features/businesses/BusinessSwitcher'
 import { ProfileProgressCard } from '../../features/businesses/ProfileProgressCard'
 import { ProfileStatusBanner } from '../../features/businesses/ProfileStatusBanner'
+import { useLoadWaitingMatches, useWaitingMatches } from '../../features/matching/waitingMatches'
 import { isPlatformStaff, useSessionStore } from '../../stores/session'
 import { Toaster } from '../feedback'
 import { Logo } from '../ui/Logo'
@@ -36,9 +38,20 @@ export function AppShell({ children }: { children: ReactNode }) {
   // Platform staff see the admin area; they may have no business of their own.
   const staff = useSessionStore((state) => isPlatformStaff(state.user))
   const hasBusiness = useSessionStore((state) => state.activeBusiness !== null)
-  const navItems = [
+  const activeBusinessId = useSessionStore((state) => state.activeBusiness?.id ?? null)
+  useLoadWaitingMatches(activeBusinessId)
+  const { count: waitingMatches } = useWaitingMatches(activeBusinessId)
+  const navItems: Array<{ id: string; label: string; icon: typeof LayoutDashboard; count?: string; countLabel?: string; unread?: boolean; prefix?: string }> = [
     { id: paths.dashboard, label: 'Dashboard', icon: LayoutDashboard },
     { id: paths.marketplace, label: 'Marketplace', icon: Compass },
+    {
+      id: paths.matches,
+      label: 'Matches',
+      icon: Sparkles,
+      prefix: `${paths.matches}/`,
+      count: waitingMatches ? String(waitingMatches) : undefined,
+      countLabel: waitingMatches ? `${waitingMatches} waiting on you` : undefined,
+    },
     { id: paths.saved, label: 'Saved businesses', icon: Bookmark },
     { id: paths.exchanges, label: 'Exchanges', icon: Handshake, count: '3' },
     { id: paths.messages, label: 'Messages', icon: MessageCircle, unread: true },
@@ -55,9 +68,9 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="sidebar-head"><Logo /><button className="icon-button mobile-close" onClick={() => setMobileOpen(false)}><X size={20} /></button></div>
         <nav className="side-nav">
           <span className="side-label">Workspace</span>
-          {navItems.map(({ id, label, icon: Icon, count, unread }) => (
-            <button key={id} className={pathname === id || (id === paths.marketplace && pathname.startsWith(businessPathPrefix)) ? 'active' : ''} onClick={() => { go(id); setMobileOpen(false) }}>
-              <Icon size={19} /> {label} {count && <span className="nav-count">{count}</span>} {unread && <span className="message-dot" />}
+          {navItems.map(({ id, label, icon: Icon, count, countLabel, unread, prefix }) => (
+            <button key={id} className={pathname === id || (prefix && pathname.startsWith(prefix)) || (id === paths.marketplace && pathname.startsWith(businessPathPrefix)) ? 'active' : ''} onClick={() => { go(id); setMobileOpen(false) }}>
+              <Icon size={19} /> {label} {count && <span className="nav-count" aria-label={countLabel}>{count}</span>} {unread && <span className="message-dot" />}
             </button>
           ))}
           <span className="side-label side-label-second">Manage</span>

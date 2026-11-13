@@ -11,6 +11,9 @@ export const paths = {
   dashboard: '/dashboard',
   marketplace: '/marketplace',
   saved: '/saved',
+  /** The active business's matches, and one match with why it was made. */
+  matches: '/matches',
+  match: (id: string) => `/matches/${id}`,
   exchanges: '/exchanges',
   messages: '/messages',
   profile: '/profile',
@@ -32,6 +35,8 @@ export const paths = {
 export const adminBusinessPattern = '/admin/businesses/:businessId'
 
 export const adminMatchPattern = '/admin/matches/:matchId'
+
+export const matchPattern = '/matches/:matchId'
 
 export const publicBusinessPattern = '/b/:businessId'
 

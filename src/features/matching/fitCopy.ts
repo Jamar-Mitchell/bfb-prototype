@@ -130,6 +130,25 @@ export function describeFactor(factor: FactorResult): FactorCopy {
   }
 }
 
+const REASON_ORDER: FactorOutcome[] = ['fits', 'partial', 'unknown']
+
+/**
+ * The top reasons behind a match, for a card: what fits first, then what partly fits, then what
+ * needs confirming, across its offer-need pairs in order. One per factor; conflicts are left
+ * for the detail page.
+ */
+export function topReasons(components: Array<{ factors: FactorResult[] }>, limit = 3): FactorCopy[] {
+  const all = components.flatMap((component) => component.factors.map(describeFactor))
+  const picked: FactorCopy[] = []
+  for (const outcome of REASON_ORDER) {
+    for (const factor of all) {
+      if (picked.length >= limit) return picked
+      if (factor.outcome === outcome && !picked.some((item) => item.factor === factor.factor)) picked.push(factor)
+    }
+  }
+  return picked
+}
+
 export const MATCH_STATUS_LABELS: Record<MatchStatus, string> = {
   proposed: 'Proposed',
   accepted: 'Accepted',
