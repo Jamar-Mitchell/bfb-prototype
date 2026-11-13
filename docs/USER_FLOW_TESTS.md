@@ -199,11 +199,21 @@ Use the match from flow 13 once both businesses accepted it. Log in as each owne
 |---|---|---|---|
 | 14.1 | As Northline's owner, open the accepted match | "You both accepted" panel with "Start a proposal" | [ ] |
 | 14.2 | As a member of Northline, open the same match | No start button; a line says owners and administrators can start one | [ ] |
-| 14.3 | As Northline's owner, press "Start a proposal" | Toast "Proposal started…"; the proposal page opens | [ ] |
+| 14.3 | As Northline's owner, press "Start a proposal" | Toast "Proposal started…"; the builder opens with one service per offer from the match, each with its value | [ ] |
 | 14.4 | Open `/proposals`, then each tab | Nothing under Waiting on you; the new proposal under Drafts as "Draft", "Not sent yet", "Waiting on you to send it" | [ ] |
 | 14.5 | Go back to the match | The panel links to the open proposal instead of offering to start one | [ ] |
 | 14.6 | As Harbor's owner, open `/proposals?tab=them` and the match | The proposal shows as "Being prepared" with no terms; the match links to it and has no start button | [ ] |
 | 14.7 | In two windows as Northline's owner and administrator, press "Start a proposal" in both before reloading | The second says a proposal is already open and links to it | [ ] |
+| 14.8 | In the builder, type a summary and dates, then stop typing | The bar shows "Unsaved changes", then "All changes saved"; the browser's network tab shows one save per pause, not one per field | [ ] |
+| 14.9 | Read "Before you send" and click an item | Each item is plain words ("Add an end date", "Logo concepts: add a due date") and takes you to its field | [ ] |
+| 14.10 | Look at the value comparison, then press "Add a cash adjustment of …" | Both totals and the difference in dollars, no score; the cash adjustment is filled with the business that provides less paying the difference | [ ] |
+| 14.11 | Add two milestones, one for each business, and move one up | Order changes and stays after a reload | [ ] |
+| 14.12 | Add a service from the other business's offers, and write one of your own | Both appear with the offer's title and value, or empty for the written one | [ ] |
+| 14.13 | Stop the API and edit a field | "Couldn't save your changes" with "Try again"; your text stays. Start the API and press "Try again": saved | [ ] |
+| 14.14 | Open the same draft in two windows, edit in both | The second save says the draft was saved somewhere else and loads the latest | [ ] |
+| 14.15 | Fill in everything until the checklist says "Everything needed is filled in", then Send | The dialog shows 14 days and the respond-by date; after sending, the proposal page opens and Harbor sees it under Waiting on you with "Respond by" | [ ] |
+| 14.16 | Start a proposal on another accepted match and "Discard draft" | Asks first; then back on the match, which offers "Start a proposal" again | [ ] |
+| 14.17 | As a member, open `/proposals/<id>/edit` | No editor; a note says owners and administrators write proposals | [ ] |
 
 ## 15. Across the app
 

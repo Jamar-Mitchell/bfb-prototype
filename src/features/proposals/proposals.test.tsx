@@ -168,18 +168,21 @@ describe('proposal tabs and timing', () => {
 })
 
 describe('starting a proposal from an accepted match', () => {
-  it('starts a proposal and opens it', async () => {
+  it('starts a proposal and opens the builder', async () => {
     start({
       reply: ({ method, url }) =>
-        method === 'post' && url === `/businesses/business-1/matches/${MATCH_ID}/proposals` ? { status: 201, data: draftProposal() } : undefined,
+        method === 'post' && url === `/businesses/business-1/matches/${MATCH_ID}/proposals`
+          ? { status: 201, data: draftProposal() }
+          : method === 'get' && (url.endsWith('/offers') || url === '/marketplace/listings')
+            ? { status: 200, data: url.endsWith('/offers') ? [] : { items: [], next_cursor: null } }
+            : undefined,
     })
     renderAt(`/matches/${MATCH_ID}`)
 
     const panel = await screen.findByRole('region', { name: 'You both accepted' })
     fireEvent.click(await within(panel).findByRole('button', { name: 'Start a proposal' }))
 
-    expect(await screen.findByText(/Your business is writing version 1/)).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Back to proposals' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Proposal to Northside Studio' })).toBeInTheDocument()
     expect(api!.calls('post', `/businesses/business-1/matches/${MATCH_ID}/proposals`)).toHaveLength(1)
     expect(useToastStore.getState().toasts.at(-1)?.message).toMatch(/Proposal started/)
   })
