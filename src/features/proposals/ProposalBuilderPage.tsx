@@ -242,8 +242,11 @@ function Builder({ business, proposal, draft, back, notice, onNotice, onReload }
       <div className="page-heading match-heading proposal-heading">
         <div>
           <span>PROPOSAL · VERSION {draft.version_number} DRAFT</span>
-          <h1>Proposal to {otherName}</h1>
-          <p>Only {business.name} can see this draft until you send it. Changes save as you go.</p>
+          <h1>{draft.based_on_version_number ? `Counteroffer to ${otherName}` : `Proposal to ${otherName}`}</h1>
+          <p>
+            {draft.based_on_version_number ? `A copy of version ${draft.based_on_version_number} to change as you need. ` : ''}
+            Only {business.name} can see this draft until you send it. Changes save as you go.
+          </p>
         </div>
       </div>
       {notice && <p className="match-notice match-notice-error" role="alert">{notice}</p>}

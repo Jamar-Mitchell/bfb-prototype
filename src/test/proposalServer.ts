@@ -1,5 +1,5 @@
 import type { BusinessMatch, MatchBusiness } from '../features/matching/matchInboxApi'
-import type { Proposal, ProposalSummary, ProposalTerms } from '../features/proposals/proposalsApi'
+import type { Proposal, ProposalSummary, ProposalTerms, SentVersion } from '../features/proposals/proposalsApi'
 import { apiBusiness, apiErrorBody, apiMembership, apiUser, tokenBody, type MockHandler, type MockReply, type MockRequest } from './mockApi'
 
 // Proposal fixtures and a fake API for proposal tests. The active business is `business-1`
@@ -35,6 +35,7 @@ export function proposalSummary(overrides: Partial<ProposalSummary> = {}): Propo
     waiting_on: 'us',
     summary: 'Brand sprint in exchange for six months of bookkeeping',
     current_version_number: 1,
+    accepted_version_number: null,
     has_draft: false,
     expires_at: '2026-11-27T12:00:00Z',
     closed_at: null,
@@ -101,12 +102,73 @@ export function draftProposal(overrides: Partial<Proposal> = {}, terms: Proposal
     },
     versions: [],
     closed_by_side: null,
+    accepted_version_number: null,
+    agreement_source_id: null,
     expires_at: null,
     closed_at: null,
     created_at: '2026-11-13T12:00:00Z',
     updated_at: '2026-11-13T12:00:00Z',
     ...overrides,
   }
+}
+
+/** Complete terms, ready to send. Milestones are deliberately not in date order. */
+export function completeTerms(overrides: Partial<ProposalTerms> = {}): ProposalTerms {
+  return prefilledTerms({
+    summary: 'Brand sprint in exchange for six months of bookkeeping',
+    start_date: '2027-01-04',
+    end_date: '2027-06-30',
+    sides: {
+      a: { services: [{ key: 's1', offer_id: 'offer-a', title: 'Brand identity sprint', description: 'Two-week sprint.', deliverables: ['Logo suite', 'Brand guide'], exclusions: ['Printing'], value_minor: 300000 }] },
+      b: { services: [{ key: 's2', offer_id: 'offer-b', title: 'Monthly bookkeeping', description: null, deliverables: ['Monthly reconciliation'], exclusions: [], value_minor: 270000 }] },
+    },
+    milestones: [
+      { key: 'm2', responsible: 'b', service_key: 's2', title: 'January books closed', description: null, due_date: '2027-02-10', acceptance_criteria: 'Reconciled ledger shared' },
+      { key: 'm1', responsible: 'a', service_key: 's1', title: 'Logo concepts', description: null, due_date: '2027-01-18', acceptance_criteria: 'Three concepts delivered as PDF' },
+    ],
+    review_period_days: 5,
+    revision_limit: 2,
+    cash_adjustment: { payer: 'b', amount_minor: 30000, timing: 'on_completion', note: null },
+    ip_terms: 'transfer_on_payment_and_completion',
+    confidentiality: true,
+    cancellation_notice_days: 14,
+    ...overrides,
+  })
+}
+
+export function sentVersion(overrides: Partial<SentVersion> = {}): SentVersion {
+  return {
+    version_number: 1,
+    author_side: 'b',
+    sent_at: '2026-11-13T12:30:00Z',
+    expires_at: '2026-11-27T12:30:00Z',
+    accepted_by: ['b'],
+    is_current: true,
+    based_on_version_number: null,
+    terms: completeTerms(),
+    ...overrides,
+  }
+}
+
+/**
+ * A sent proposal. By default Northside Studio (side b) sent version 1 and it is this
+ * business's turn; pass `current_version: sentVersion({ author_side: 'a', ... })` and
+ * `waiting_on: 'them'` for one this business sent.
+ */
+export function sentProposal(overrides: Partial<Proposal> = {}): Proposal {
+  const current = overrides.current_version ?? sentVersion()
+  const { terms: _terms, based_on_version_number: _based, ...summary } = current
+  return draftProposal({
+    status: current.version_number > 1 ? 'countered' : 'sent',
+    started_by_side: 'b',
+    waiting_on: current.author_side === 'a' ? 'them' : 'us',
+    current_version: current,
+    draft: null,
+    versions: [summary],
+    expires_at: current.expires_at,
+    updated_at: current.sent_at,
+    ...overrides,
+  })
 }
 
 export function acceptedMatch(overrides: Partial<BusinessMatch> = {}): BusinessMatch {

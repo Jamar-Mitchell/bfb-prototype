@@ -1377,6 +1377,133 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/businesses/{business_id}/proposals/{proposal_id}/counter": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start Counter
+         * @description Start a counter: a draft copied from the current version, by the business that
+         *     did not send it. Edit it with ``PUT .../draft`` and send it with
+         *     ``POST .../draft/send``.
+         */
+        post: operations["start_counter_api_v1_businesses__business_id__proposals__proposal_id__counter_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{business_id}/proposals/{proposal_id}/decline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decline
+         * @description Decline the current version, by the business that did not send it. Closes the
+         *     proposal. The reason and text are seen by staff only.
+         */
+        post: operations["decline_api_v1_businesses__business_id__proposals__proposal_id__decline_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{business_id}/proposals/{proposal_id}/withdraw": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Withdraw
+         * @description Withdraw the proposal, by the business that sent the current version. Closes
+         *     the proposal. The reason and text are seen by staff only.
+         */
+        post: operations["withdraw_api_v1_businesses__business_id__proposals__proposal_id__withdraw_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{business_id}/proposals/{proposal_id}/versions/{version_number}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Version
+         * @description One sent version in full. Drafts are never returned here.
+         */
+        get: operations["get_version_api_v1_businesses__business_id__proposals__proposal_id__versions__version_number__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{business_id}/proposals/{proposal_id}/versions/{version_number}/changes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Version Changes
+         * @description What changed from sent version ``from`` (default: the one before) to this sent
+         *     version, item by item.
+         */
+        get: operations["get_version_changes_api_v1_businesses__business_id__proposals__proposal_id__versions__version_number__changes_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{business_id}/proposals/{proposal_id}/versions/{version_number}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Accept
+         * @description Accept the current sent version. When both businesses have accepted it, the
+         *     proposal is ``accepted``, the version is final and the agreement source is
+         *     written.
+         */
+        post: operations["accept_api_v1_businesses__business_id__proposals__proposal_id__versions__version_number__accept_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/": {
         parameters: {
             query?: never;
@@ -1680,6 +1807,7 @@ export interface components {
             /** Components */
             components: components["schemas"]["BusinessMatchComponentResponse"][];
             my_feedback: components["schemas"]["MyFeedbackResponse"] | null;
+            proposal?: components["schemas"]["MatchProposalResponse"] | null;
             /**
              * Expires At
              * Format: date-time
@@ -1764,6 +1892,8 @@ export interface components {
             cover_upload_id?: string | null;
             /** Category Ids */
             category_ids?: string[] | null;
+            entity_type?: components["schemas"]["EntityType"] | null;
+            registered_address?: components["schemas"]["RegisteredAddress"] | null;
         };
         /**
          * BusinessResponse
@@ -1811,6 +1941,10 @@ export interface components {
             /** Submitted For Review At */
             submitted_for_review_at: string | null;
             latest_review: components["schemas"]["LatestReviewResponse"] | null;
+            entity_type: components["schemas"]["EntityType"] | null;
+            registered_address: components["schemas"]["RegisteredAddress"];
+            /** Party Details Missing */
+            party_details_missing: string[];
             /**
              * Created At
              * Format: date-time
@@ -1928,6 +2062,16 @@ export interface components {
             requires_review: boolean;
         };
         /**
+         * ChangeItem
+         * @enum {string}
+         */
+        ChangeItem: "terms" | "cash_adjustment" | "service" | "milestone";
+        /**
+         * ChangeKind
+         * @enum {string}
+         */
+        ChangeKind: "added" | "removed" | "changed";
+        /**
          * CompletenessResponse
          * @description ``score`` is 0 to 100. ``missing`` lists the items still needed before the
          *     business can submit for review, in this order: ``legal_name``, ``description``,
@@ -1981,6 +2125,16 @@ export interface components {
          */
         DeclineReason: "not_relevant" | "no_capacity" | "timing" | "budget" | "location" | "already_connected" | "other";
         /**
+         * DeclineRequest
+         * @description Decline the current version (API-4.3). Reason and text are seen by staff only,
+         *     never by the other business.
+         */
+        DeclineRequest: {
+            reason: components["schemas"]["ProposalDeclineReason"];
+            /** Text */
+            text?: string | null;
+        };
+        /**
          * Delivery
          * @description Offer delivery formats and need location preferences in one filter. Offer
          *     values only match offers and need values only match needs.
@@ -2017,6 +2171,12 @@ export interface components {
              */
             updated_at: string;
         };
+        /**
+         * EntityType
+         * @description The legal form of a business, named in the exchange agreement (API-4.4).
+         * @enum {string}
+         */
+        EntityType: "sole_proprietorship" | "llc" | "corporation" | "partnership" | "nonprofit" | "other";
         /** ErrorBody */
         ErrorBody: {
             /** Code */
@@ -2421,6 +2581,20 @@ export interface components {
              * Format: uuid
              */
             need_id: string;
+        };
+        /**
+         * MatchProposalResponse
+         * @description The match's proposal (API-4.4): the accepted one if any, else the newest.
+         */
+        MatchProposalResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            status: components["schemas"]["ProposalStatus"];
+            /** Accepted Version Number */
+            accepted_version_number: number | null;
         };
         /**
          * MatchResponse
@@ -2960,6 +3134,13 @@ export interface components {
          * @enum {string}
          */
         ProfileStatus: "draft" | "in_review" | "changes_requested" | "approved" | "suspended";
+        /**
+         * ProposalDeclineReason
+         * @description Fixed reason codes for declining a proposal (used from API-4.3). Seen by staff
+         *     only, as with matches.
+         * @enum {string}
+         */
+        ProposalDeclineReason: "value" | "scope" | "timing" | "terms" | "no_capacity" | "other";
         /** ProposalListResponse */
         ProposalListResponse: {
             /** Items */
@@ -2997,6 +3178,10 @@ export interface components {
             /** Versions */
             versions: components["schemas"]["VersionSummaryResponse"][];
             closed_by_side: components["schemas"]["Side"] | null;
+            /** Accepted Version Number */
+            accepted_version_number: number | null;
+            /** Agreement Source Id */
+            agreement_source_id: string | null;
             /** Expires At */
             expires_at: string | null;
             /** Closed At */
@@ -3038,6 +3223,8 @@ export interface components {
             summary: string | null;
             /** Current Version Number */
             current_version_number: number | null;
+            /** Accepted Version Number */
+            accepted_version_number: number | null;
             /** Has Draft */
             has_draft: boolean;
             /** Expires At */
@@ -3190,6 +3377,26 @@ export interface components {
             accept_terms: boolean;
             /** Invite Code */
             invite_code?: string | null;
+        };
+        /**
+         * RegisteredAddress
+         * @description A business's registered address, named in exchange agreements (API-4.4).
+         *     Private: never on the public profile. Sent as a whole: a field left out is
+         *     cleared.
+         */
+        RegisteredAddress: {
+            /** Line1 */
+            line1?: string | null;
+            /** Line2 */
+            line2?: string | null;
+            /** City */
+            city?: string | null;
+            /** Region */
+            region?: string | null;
+            /** Postal Code */
+            postal_code?: string | null;
+            /** Country */
+            country?: string | null;
         };
         /** RequestChangesRequest */
         RequestChangesRequest: {
@@ -3388,6 +3595,20 @@ export interface components {
          * @enum {string}
          */
         TeamSize: "just_me" | "2_10" | "11_50" | "51_200" | "201_plus";
+        /** TermsChange */
+        TermsChange: {
+            kind: components["schemas"]["ChangeKind"];
+            item: components["schemas"]["ChangeItem"];
+            /** Key */
+            key?: string | null;
+            side?: components["schemas"]["Side"] | null;
+            /** Field */
+            field?: string | null;
+            /** Before */
+            before?: unknown;
+            /** After */
+            after?: unknown;
+        };
         /**
          * TokenResponse
          * @description A new access token and the refresh token that replaces any previous one.
@@ -3517,6 +3738,18 @@ export interface components {
             token: string;
         };
         /**
+         * VersionChangesResponse
+         * @description What changed between two sent versions (API-4.3). See docs/PROPOSALS.md#changes.
+         */
+        VersionChangesResponse: {
+            /** From Version Number */
+            from_version_number: number;
+            /** To Version Number */
+            to_version_number: number;
+            /** Changes */
+            changes: components["schemas"]["TermsChange"][];
+        };
+        /**
          * VersionSummaryResponse
          * @description One sent version in the history list.
          */
@@ -3549,6 +3782,19 @@ export interface components {
         WithdrawMatchRequest: {
             /** Reason */
             reason: string;
+        };
+        /**
+         * WithdrawRequest
+         * @description Withdraw the proposal (API-4.3). Reason and text are seen by staff only.
+         */
+        WithdrawRequest: {
+            /**
+             * Reason
+             * @enum {string}
+             */
+            reason: "changed_plans" | "no_capacity" | "timing" | "other";
+            /** Text */
+            text?: string | null;
         };
     };
     responses: never;
@@ -7995,6 +8241,391 @@ export interface operations {
                 };
             };
             /** @description `proposal_incomplete` (`details.missing`) or `validation_error` */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    start_counter_api_v1_businesses__business_id__proposals__proposal_id__counter_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                proposal_id: string;
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalResponse"];
+                };
+            };
+            /** @description `unauthorized` or `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `business_role_required`: a member */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business, the caller is not a member, or the business is not part of the proposal */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `invalid_proposal_status`: closed, not this business's turn, or no draft (`details.reason`) */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decline_api_v1_businesses__business_id__proposals__proposal_id__decline_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                proposal_id: string;
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeclineRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalResponse"];
+                };
+            };
+            /** @description `unauthorized` or `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `business_role_required`: a member */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business, the caller is not a member, or the business is not part of the proposal */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `invalid_proposal_status`: closed, not this business's turn, or no draft (`details.reason`) */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    withdraw_api_v1_businesses__business_id__proposals__proposal_id__withdraw_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                proposal_id: string;
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WithdrawRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalResponse"];
+                };
+            };
+            /** @description `unauthorized` or `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `business_role_required`: a member */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business, the caller is not a member, or the business is not part of the proposal */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `invalid_proposal_status`: closed, not this business's turn, or no draft (`details.reason`) */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_version_api_v1_businesses__business_id__proposals__proposal_id__versions__version_number__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                proposal_id: string;
+                version_number: number;
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SentVersionResponse"];
+                };
+            };
+            /** @description `unauthorized` or `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: as for the proposal, or no such sent version */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_version_changes_api_v1_businesses__business_id__proposals__proposal_id__versions__version_number__changes_get: {
+        parameters: {
+            query?: {
+                from?: number | null;
+            };
+            header?: never;
+            path: {
+                proposal_id: string;
+                version_number: number;
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VersionChangesResponse"];
+                };
+            };
+            /** @description `unauthorized` or `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: as for the proposal, or no such sent version */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    accept_api_v1_businesses__business_id__proposals__proposal_id__versions__version_number__accept_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                proposal_id: string;
+                version_number: number;
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalResponse"];
+                };
+            };
+            /** @description `unauthorized` or `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `business_role_required`: a member */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business, the caller is not a member, or the business is not part of the proposal */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `invalid_proposal_status`: closed or expired, not the current version, or already accepted (`details.reason`, `details.current_version_number`) */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `party_details_missing` (`details.missing`) */
             422: {
                 headers: {
                     [name: string]: unknown;

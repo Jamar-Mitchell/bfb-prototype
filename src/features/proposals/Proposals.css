@@ -27,7 +27,7 @@
 .match-next-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 12px; }
 .match-next .match-answer-who { margin-top: 10px; font-size: var(--text-base); }
 
-/* The proposal page (until the full review arrives in FE-4.3). */
+/* Shared by the builder's read-only states. */
 .proposal-heading h1 { overflow-wrap: anywhere; }
 .proposal-overview { padding: 20px 21px; display: flex; flex-direction: column; gap: 14px; }
 .proposal-overview p { margin: 0; color: var(--slate); font-size: var(--text-lg); line-height: 1.6; }
