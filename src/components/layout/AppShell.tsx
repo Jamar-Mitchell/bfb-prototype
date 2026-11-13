@@ -67,7 +67,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     },
     { id: paths.agreements, label: 'Agreements', icon: ScrollText, prefix: `${paths.agreements}/` },
     { id: paths.saved, label: 'Saved businesses', icon: Bookmark },
-    { id: paths.exchanges, label: 'Exchanges', icon: Handshake, count: '3' },
+    { id: paths.exchanges, label: 'Exchanges', icon: Handshake, prefix: `${paths.exchanges}/` },
     { id: paths.messages, label: 'Messages', icon: MessageCircle, unread: true },
   ]
   const manageItems = [

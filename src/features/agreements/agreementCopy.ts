@@ -29,15 +29,17 @@ export function isDraftTerms(item: { legal_review_status: LegalReviewStatus }): 
 }
 
 /** Where the agreement stands, in a sentence or two. */
-export function agreementStandingText(agreement: Pick<Agreement, 'status' | 'accepted_version_number' | 'accepted_at' | 'expires_at' | 'updated_at'>, now = new Date()): string {
+export function agreementStandingText(agreement: Pick<Agreement, 'status' | 'accepted_version_number' | 'accepted_at' | 'expires_at' | 'updated_at'> & Partial<Pick<Agreement, 'signed_at' | 'exchange'>>, now = new Date()): string {
   const deadline = formatMatchDate(agreement.expires_at, now)
   switch (agreement.status) {
     case 'ready':
       return `Both businesses accepted version ${agreement.accepted_version_number} of the proposal on ${formatMatchDate(agreement.accepted_at, now)}, and BFB prepared this agreement from it. Next, each business names who signs for it. It must be signed by ${deadline}.`
     case 'signing':
       return `Both signers have confirmed and the agreement is out for signature. It must be signed by ${deadline}.`
-    case 'signed':
-      return 'Both businesses signed this agreement.'
+    case 'signed': {
+      const signed = agreement.signed_at ? `Both businesses signed this agreement on ${formatMatchDate(agreement.signed_at, now)}.` : 'Both businesses signed this agreement.'
+      return agreement.exchange ? `${signed} The exchange is active: each business now delivers its milestones.` : signed
+    }
     case 'expired':
       return `This agreement wasn’t signed by ${deadline}, so it expired. To go ahead, start a new proposal from the match.`
     case 'voided':
@@ -148,6 +150,8 @@ export function signingConflictText(error: ApiError): string {
           return 'You’ve already signed this agreement. The page shows it as it is now.'
         case 'signer_declined':
           return 'Your business’s signer declined, so your business can’t sign this agreement.'
+        case 'not_signed':
+          return 'This agreement isn’t signed yet, so there’s nothing to download. The page shows it as it is now.'
         case 'not_in_app':
           return 'This agreement is signed with the signature provider, not on BFB. Follow the link it sent you.'
         default:

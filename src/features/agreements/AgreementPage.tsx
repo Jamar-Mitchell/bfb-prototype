@@ -22,6 +22,7 @@ import {
 import { getAgreement, OPEN_AGREEMENT_STATUSES, signerFor, type Agreement, type AgreementParty } from './agreementsApi'
 import { DraftTermsBanner } from './DraftTermsBanner'
 import { NameSignerDialog } from './NameSignerDialog'
+import { SignedDocumentsPanel } from './SignedDocuments'
 import { SignersCard, YourSignaturePanel } from './SigningPanels'
 import '../matching/MatchInbox.css'
 import '../proposals/Proposals.css'
@@ -125,6 +126,7 @@ function AgreementView({ agreementId }: { agreementId: string }) {
       )}
       <div className="match-layout proposal-review-layout agreement-layout">
         <div className="match-main">
+          <SignedDocumentsPanel agreement={agreement} businessId={business.id} onConflict={onConflict} />
           <YourSignaturePanel
             agreement={agreement}
             userId={userId}
@@ -166,6 +168,8 @@ function AgreementView({ agreementId }: { agreementId: string }) {
             <dl className="match-status-facts">
               <div><dt>Status</dt><dd>{AGREEMENT_STATUS_LABELS[agreement.status]}</dd></div>
               {open && <div><dt>Sign by</dt><dd>{formatMatchDate(agreement.expires_at)}</dd></div>}
+              {agreement.signed_at && <div><dt>Signed</dt><dd>{formatMatchDate(agreement.signed_at)}</dd></div>}
+              {agreement.exchange && <div><dt>Exchange</dt><dd><Link to={paths.exchange(agreement.exchange.id)}>Active</Link></dd></div>}
               <div><dt>Proposal</dt><dd><Link to={paths.proposal(agreement.proposal_id)}>Version {agreement.accepted_version_number}</Link></dd></div>
               <div><dt>Exchange Terms</dt><dd><ExchangeTermsLink version={terms.version} short /></dd></div>
               <div><dt>Legal review</dt><dd>{LEGAL_REVIEW_LABELS[agreement.legal_review_status]}</dd></div>

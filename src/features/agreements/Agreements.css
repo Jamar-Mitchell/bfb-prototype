@@ -77,7 +77,17 @@
 .agreement-signer-others a { color: var(--blue); font-weight: 700; }
 .agreement-signer-replace { background: #fffaf0; border: 1px solid #f3e5bf; border-radius: var(--radius-md); padding: 9px 12px; }
 
+/* Signed documents (FE-5.3). */
+.agreement-signed { background: var(--green-pale); border-color: #ccecdf; }
+.agreement-signed .match-side-title { display: inline-flex; align-items: center; gap: 6px; }
+.agreement-signed > p { margin: 0; color: var(--slate); font-size: var(--text-lg); line-height: 1.55; }
+.agreement-signed-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.agreement-signed-actions .button-secondary { background: white; }
+.agreement-signed .agreement-signed-hashes { color: var(--text-subtle); font-size: var(--text-sm); line-height: 1.6; }
+.agreement-signed-hashes code { font-family: Menlo, Consolas, monospace; font-size: .95em; word-break: break-all; color: var(--slate); }
+
 @media (max-width: 620px) {
+  .agreement-signed-actions .button { width: 100%; }
   .agreement-confirm-fields { grid-template-columns: 1fr; }
 }
 

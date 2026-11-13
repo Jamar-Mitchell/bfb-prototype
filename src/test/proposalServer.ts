@@ -1,4 +1,5 @@
 import type { Agreement, AgreementSigner, AgreementSummary, ExchangeTerms, SignerConsent } from '../features/agreements/agreementsApi'
+import type { Exchange, ExchangeSummary } from '../features/exchanges/exchangesApi'
 import type { BusinessMatch, MatchBusiness } from '../features/matching/matchInboxApi'
 import type { Proposal, ProposalSummary, ProposalTerms, SentVersion } from '../features/proposals/proposalsApi'
 import { apiBusiness, apiErrorBody, apiMembership, apiUser, tokenBody, type MockHandler, type MockReply, type MockRequest } from './mockApi'
@@ -16,6 +17,9 @@ export const AGREEMENT_ID = '8a1b2c3d-4444-4d5e-8f60-0123456789ab'
 export const AGREEMENTS = '/businesses/business-1/agreements'
 export const AGREEMENT = `${AGREEMENTS}/${AGREEMENT_ID}`
 export const TERMS_VERSION = '2026-11-draft-1'
+export const EXCHANGE_ID = '4c5d6e7f-5555-4e6f-9a70-0123456789ab'
+export const EXCHANGES = '/businesses/business-1/exchanges'
+export const EXCHANGE = `${EXCHANGES}/${EXCHANGE_ID}`
 
 export const studio: MatchBusiness = {
   id: STUDIO_ID,
@@ -313,6 +317,71 @@ export function exchangeTerms(overrides: Partial<ExchangeTerms> = {}): ExchangeT
   }
 }
 
+/** The agreement once both businesses signed: the exchange is active and the documents are stored. */
+export function signedAgreement(overrides: Partial<Agreement> = {}): Agreement {
+  return agreementDetail({
+    status: 'signed',
+    signature_provider: 'development',
+    signing_started_at: '2026-11-19T12:00:00Z',
+    signed_at: '2026-11-20T12:00:00Z',
+    signers: [
+      confirmedSigner('a', { status: 'signed', signed_at: '2026-11-20T12:00:00Z' }),
+      confirmedSigner('b', { status: 'signed', signed_at: '2026-11-19T15:00:00Z' }),
+    ],
+    exchange: { id: EXCHANGE_ID, status: 'active' },
+    signed_document: { content_type: 'text/html; charset=utf-8', document_sha256: '7d1e'.repeat(16), certificate_sha256: '9a2b'.repeat(16), created_at: '2026-11-20T12:00:00Z' },
+    ...overrides,
+  })
+}
+
+export function exchangeSummary(overrides: Partial<ExchangeSummary> = {}): ExchangeSummary {
+  return {
+    id: EXCHANGE_ID,
+    status: 'active',
+    agreement_id: AGREEMENT_ID,
+    proposal_id: PROPOSAL_ID,
+    match_id: MATCH_ID,
+    my_side: 'a',
+    other_business: studio,
+    milestone_count: 3,
+    next_due_date: '2027-01-18',
+    activated_at: '2026-11-20T12:00:00Z',
+    created_at: '2026-11-20T12:00:00Z',
+    updated_at: '2026-11-20T12:00:00Z',
+    ...overrides,
+  }
+}
+
+/** An active exchange: Northstar Digital (side a) delivers milestones 1 and 3, Northside Studio milestone 2. */
+export function exchangeDetail(overrides: Partial<Exchange> = {}): Exchange {
+  const milestone = (sequence: number, side: 'a' | 'b', title: string, due: string | null, extra: Partial<Exchange['milestones'][number]> = {}) => ({
+    id: `milestone-${sequence}`,
+    sequence,
+    key: `m${sequence}`,
+    service_key: side === 'a' ? 's1' : 's2',
+    responsible_side: side,
+    responsible_business_id: side === 'a' ? 'business-1' : STUDIO_ID,
+    receiving_business_id: side === 'a' ? STUDIO_ID : 'business-1',
+    title,
+    description: null,
+    due_date: due,
+    acceptance_criteria: null,
+    status: 'pending' as const,
+    ...extra,
+  })
+  return {
+    ...exchangeSummary(),
+    business_a_id: 'business-1',
+    business_b_id: STUDIO_ID,
+    milestones: [
+      milestone(1, 'a', 'Logo concepts', '2027-01-18', { acceptance_criteria: 'Three concepts delivered as PDF' }),
+      milestone(2, 'b', 'First monthly reconciliation', '2027-02-10', { description: 'January books closed.' }),
+      milestone(3, 'a', 'Final brand guide', null),
+    ],
+    ...overrides,
+  }
+}
+
 export interface ProposalServerOptions {
   role?: 'owner' | 'administrator' | 'member'
   /** Every proposal the business has; the list filters them like the API does. */
@@ -322,6 +391,9 @@ export interface ProposalServerOptions {
   /** Every agreement the business has; the list filters them like the API does. */
   agreements?: AgreementSummary[]
   agreement?: Agreement
+  /** The business's active exchanges, and the one exchange the detail route returns. */
+  exchanges?: ExchangeSummary[]
+  exchange?: Exchange
   reply?: (request: MockRequest) => MockReply | Promise<MockReply> | undefined
 }
 
@@ -331,7 +403,7 @@ function matchesFilters(item: ProposalSummary, params: { status?: string; waitin
   return true
 }
 
-export function proposalServer({ role = 'owner', proposals = [], proposal = draftProposal(), match = acceptedMatch(), agreements = [], agreement = agreementDetail(), reply }: ProposalServerOptions = {}): MockHandler {
+export function proposalServer({ role = 'owner', proposals = [], proposal = draftProposal(), match = acceptedMatch(), agreements = [], agreement = agreementDetail(), exchanges = [], exchange = exchangeDetail(), reply }: ProposalServerOptions = {}): MockHandler {
   return async (request) => {
     const custom = await reply?.(request)
     if (custom) return custom
@@ -351,6 +423,8 @@ export function proposalServer({ role = 'owner', proposals = [], proposal = draf
       return { status: 200, data: { items: agreements.filter((item) => !status || item.status === status), next_cursor: null } }
     }
     if (method === 'get' && url === `${AGREEMENTS}/${agreement.id}`) return { status: 200, data: agreement }
+    if (method === 'get' && url === EXCHANGES) return { status: 200, data: { items: exchanges, next_cursor: null } }
+    if (method === 'get' && url === `${EXCHANGES}/${exchange.id}`) return { status: 200, data: exchange }
     if (method === 'get' && url === '/legal/exchange-terms') return { status: 200, data: exchangeTerms() }
     return { status: 404, data: apiErrorBody('not_found') }
   }

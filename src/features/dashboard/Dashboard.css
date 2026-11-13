@@ -97,3 +97,8 @@ button.dashboard-match-count { border: 0; font: inherit; text-align: left; curso
   .dashboard-match-count { right: 14px; top: 14px; }
   .stats-grid { grid-template-columns: 1fr; }
 }
+
+/* Real active exchanges (FE-5.3). */
+ul.exchange-list { list-style: none; margin: 0; padding: 0; }
+.dashboard-panel-note { margin: 0; padding: 14px 0 4px; border-top: 1px solid var(--border); color: var(--muted); font-size: var(--text-sm); line-height: 1.55; }
+.dashboard-panel-note .dashboard-profile-action { display: inline-flex; }
