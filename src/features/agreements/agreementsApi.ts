@@ -1,4 +1,4 @@
-import { apiGet } from '../../lib/api/requests'
+import { apiGet, apiPost, apiPut } from '../../lib/api/requests'
 import type { components } from '../../lib/api/schema'
 
 type Schemas = components['schemas']
@@ -14,6 +14,9 @@ export type AgreementParty = Schemas['AgreementPartyResponse']
 export type AgreementLink = Schemas['AgreementSummaryResponse']
 export type LegalReviewStatus = Schemas['LegalReviewStatus']
 export type ExchangeTerms = Schemas['LegalDocumentResponse']
+export type AgreementSigner = Schemas['AgreementSignerResponse']
+export type SignerConsent = Schemas['SignerConsentResponse']
+export type Side = Schemas['Side']
 
 /** Statuses an agreement can still move from. The rest are final. */
 export const OPEN_AGREEMENT_STATUSES: readonly AgreementStatus[] = ['ready', 'signing']
@@ -89,4 +92,29 @@ export function getExchangeTerms(version?: string): Promise<ExchangeTerms> {
   return version
     ? apiGet('/legal/exchange-terms/{version}', { path: { version } })
     : apiGet('/legal/exchange-terms')
+}
+
+// Signers and signing (API-5.3, API-5.4). Each business names one signer, an owner or
+// administrator of it, who confirms name, title, authority and consent. Once both have
+// confirmed, signing starts; with the development provider the signer signs in BFB by typing
+// their full name.
+
+/** Owner or administrator. Names the business's signer, or replaces them while the agreement is `ready`. */
+export function nameSigner(businessId: string, agreementId: string, body: Schemas['NameSignerRequest']): Promise<AgreementSigner> {
+  return apiPut('/businesses/{business_id}/agreements/{agreement_id}/signer', body, { path: { business_id: businessId, agreement_id: agreementId } })
+}
+
+/** The named signer only. The second confirmation starts signing. */
+export function confirmSigner(businessId: string, agreementId: string, body: Schemas['ConfirmSignerRequest']): Promise<AgreementSigner> {
+  return apiPost('/businesses/{business_id}/agreements/{agreement_id}/signer/confirm', body, { path: { business_id: businessId, agreement_id: agreementId } })
+}
+
+/** Development provider only: the confirmed signer signs by typing their full name. Resolves with the agreement. */
+export function signAgreement(businessId: string, agreementId: string, fullName: string): Promise<Agreement> {
+  return apiPost('/businesses/{business_id}/agreements/{agreement_id}/sign', { full_name: fullName }, { path: { business_id: businessId, agreement_id: agreementId } })
+}
+
+/** The signer named for a side, if any. */
+export function signerFor(agreement: Pick<Agreement, 'signers'>, side: Side): AgreementSigner | null {
+  return agreement.signers.find((signer) => signer.side === side) ?? null
 }

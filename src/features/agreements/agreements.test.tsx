@@ -130,8 +130,8 @@ describe('agreement page', () => {
     expect(items[1]).toHaveTextContent('Corporation')
 
     const signing = screen.getByRole('region', { name: 'Signing' })
-    expect(signing).toHaveTextContent('Signing comes next.')
-    expect(within(signing).queryByRole('button')).not.toBeInTheDocument()
+    expect(signing).toHaveTextContent('Each business names one owner or administrator to sign.')
+    expect(signing).toHaveTextContent('Must be signed by 16 Dec.')
   })
 
   it('shows the draft banner while the documents are drafts, and not once they are reviewed', async () => {

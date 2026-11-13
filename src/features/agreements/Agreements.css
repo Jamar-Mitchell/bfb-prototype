@@ -28,11 +28,58 @@
 .match-status-facts dd a { color: var(--blue); }
 .match-status-facts dd .agreement-terms-link { overflow-wrap: anywhere; }
 
-/* Placeholder until signing (FE-5.2): neutral, no call to action. */
-.agreement-signing-next { background: var(--surface-muted); }
-.agreement-signing-next svg { color: var(--muted); }
-.agreement-signing-next p { margin: 0; color: var(--slate); font-size: var(--text-base); line-height: 1.5; }
-.agreement-signing-next p strong { color: var(--navy); font-size: var(--text-lg); }
+/* Signing (FE-5.2): who signs for each business, the signer dialog, and the named signer's
+   confirm and sign forms. Built from the parties list, the match dialog and the answer panel. */
+.agreement-signers-intro, .agreement-signers-deadline { margin: 0; color: var(--slate); font-size: var(--text-base); line-height: 1.5; }
+.agreement-signers-deadline { color: var(--muted); font-size: var(--text-sm); }
+.agreement-signers .match-answer-who { margin: 0; color: var(--muted); font-size: var(--text-base); line-height: 1.5; }
+.agreement-signer-list { list-style: none; margin: 0; padding: 0; width: 100%; display: flex; flex-direction: column; gap: 10px; }
+.agreement-signer { border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface-muted); padding: 11px 13px; display: flex; flex-direction: column; gap: 3px; }
+.agreement-signer p { margin: 0; font-size: var(--text-base); line-height: 1.5; overflow-wrap: anywhere; }
+.agreement-signer-name { color: var(--navy); font-weight: 600; }
+.agreement-signer .match-pill { font-size: var(--text-2xs); padding: 2px 8px; white-space: nowrap; }
+.agreement-signer-pill-not_named { color: var(--muted); }
+.agreement-signer-pill-named { background: #fffaf0; border-color: #f3e5bf; color: #9a6700; }
+.agreement-signer-pill-confirmed { background: var(--pale-blue); border-color: #c9e5ff; color: var(--blue); }
+.agreement-signer-pill-signed { background: var(--green-pale); border-color: #ccecdf; color: var(--green); }
+.agreement-signer-pill-declined { background: #fef3f2; border-color: #f4c7c3; color: #b42318; }
+
+.agreement-your-signature .match-side-title { display: inline-flex; align-items: center; gap: 6px; }
+.agreement-your-signature > p { font-size: var(--text-lg) !important; }
+.agreement-confirm-form, .agreement-sign-form { width: 100%; display: flex; flex-direction: column; gap: 14px; }
+.agreement-confirm-form > p, .agreement-sign-form > p { margin: 0; color: var(--slate); font-size: var(--text-lg); line-height: 1.55; }
+.agreement-confirm-form .form-field, .agreement-sign-form .form-field, .agreement-your-signature .match-notice { margin: 0; }
+.agreement-confirm-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.agreement-consent-draft { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; font-size: var(--text-base) !important; color: var(--muted) !important; }
+.agreement-consent-draft .match-pill { font-size: var(--text-2xs); padding: 2px 8px; }
+.agreement-consent { border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface-muted); padding: 12px 14px; }
+.agreement-consent.form-field-invalid { border-color: #efcbd0; background: #fff7f8; }
+.agreement-consent .auth-checkbox { font-size: var(--text-base); line-height: 1.55; }
+.agreement-consent .auth-checkbox input { margin-top: 2px; }
+.agreement-consent .form-field-error { margin: 6px 0 0 28px; }
+.agreement-sign-form input { font-family: Georgia, 'Times New Roman', serif; font-size: 19px; }
+.agreement-sign-statement { font-size: var(--text-sm) !important; color: var(--muted) !important; }
+.agreement-confirm-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.agreement-signer-dialog { width: min(560px, 100%); }
+.agreement-signer-dialog .modal-body { display: flex; flex-direction: column; gap: 14px; }
+.agreement-signer-dialog .match-dialog-intro, .agreement-signer-dialog .form-field, .agreement-signer-dialog .match-notice { margin: 0; }
+.agreement-signer-choices { border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.agreement-signer-choices legend { padding: 0; margin-bottom: 8px; color: var(--navy); font-size: var(--text-base); font-weight: 700; }
+.agreement-signer-choice { display: flex; align-items: center; gap: 11px; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 10px 13px; cursor: pointer; }
+.agreement-signer-choice.selected { border-color: var(--blue); background: #f4f9ff; }
+.agreement-signer-choice input { width: 17px; height: 17px; margin: 0; accent-color: var(--blue); flex: 0 0 auto; }
+.agreement-signer-choice > span:not(.match-pill) { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+.agreement-signer-choice strong { color: var(--navy); font-size: var(--text-lg); }
+.agreement-signer-choice small { color: var(--muted); font-size: var(--text-sm); overflow-wrap: anywhere; }
+.agreement-signer-choice .match-pill { font-size: var(--text-2xs); padding: 2px 8px; white-space: nowrap; }
+.agreement-signer-others, .agreement-signer-replace { margin: 0; color: var(--slate); font-size: var(--text-base); line-height: 1.5; }
+.agreement-signer-others a { color: var(--blue); font-weight: 700; }
+.agreement-signer-replace { background: #fffaf0; border: 1px solid #f3e5bf; border-radius: var(--radius-md); padding: 9px 12px; }
+
+@media (max-width: 620px) {
+  .agreement-confirm-fields { grid-template-columns: 1fr; }
+}
 
 .agreement-parties { list-style: none; margin: 0; padding: 0; width: 100%; display: flex; flex-direction: column; gap: 10px; }
 .agreement-party { border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface-muted); padding: 11px 13px; display: flex; flex-direction: column; gap: 3px; }

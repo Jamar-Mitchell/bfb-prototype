@@ -708,6 +708,67 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/agreements/{agreement_id}/void": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Void Agreement
+         * @description Cancel an unsigned (``ready`` or ``signing``) agreement, with a reason. The
+         *     provider's envelope is voided too. Audited as ``agreement.voided``.
+         */
+        post: operations["void_agreement_api_v1_admin_agreements__agreement_id__void_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/agreements/{agreement_id}/signed-document": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Signed Document
+         * @description A short-lived URL to the signed agreement, for staff.
+         */
+        get: operations["get_signed_document_api_v1_admin_agreements__agreement_id__signed_document_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/agreements/{agreement_id}/certificate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Certificate
+         * @description A short-lived URL to the signature certificate, for staff.
+         */
+        get: operations["get_certificate_api_v1_admin_agreements__agreement_id__certificate_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/businesses/{business_id}/uploads": {
         parameters: {
             query?: never;
@@ -1608,6 +1669,173 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/businesses/{business_id}/agreements/{agreement_id}/signer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Name Signer
+         * @description Name (or replace) the business's signer while the agreement is ``ready``.
+         *     Replacing clears the previous signer's confirmations.
+         */
+        put: operations["name_signer_api_v1_businesses__business_id__agreements__agreement_id__signer_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{business_id}/agreements/{agreement_id}/signer/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Confirm Signer
+         * @description The named signer confirms their name, title, authority to sign and consent to
+         *     electronic records and signatures, each an explicit ``true``. The second
+         *     confirmation starts signing (``409 signature_provider_unavailable`` when no
+         *     provider is enabled here).
+         */
+        post: operations["confirm_signer_api_v1_businesses__business_id__agreements__agreement_id__signer_confirm_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{business_id}/agreements/{agreement_id}/sign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sign Agreement
+         * @description The business's confirmed signer signs in BFB by typing their full name
+         *     (development provider only). Records the IP address and user agent. When this is
+         *     the last signature the agreement becomes ``signed``.
+         */
+        post: operations["sign_agreement_api_v1_businesses__business_id__agreements__agreement_id__sign_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{business_id}/agreements/{agreement_id}/signed-document": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Signed Document
+         * @description A short-lived URL to the signed agreement: the agreement as generated with the
+         *     signature certificate appended.
+         */
+        get: operations["get_signed_document_api_v1_businesses__business_id__agreements__agreement_id__signed_document_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{business_id}/agreements/{agreement_id}/certificate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Certificate
+         * @description A short-lived URL to the signature certificate on its own.
+         */
+        get: operations["get_certificate_api_v1_businesses__business_id__agreements__agreement_id__certificate_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{business_id}/exchanges": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Exchanges
+         * @description The business's exchanges, newest first.
+         */
+        get: operations["list_exchanges_api_v1_businesses__business_id__exchanges_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{business_id}/exchanges/{exchange_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Exchange
+         * @description One exchange with its milestones, in order.
+         */
+        get: operations["get_exchange_api_v1_businesses__business_id__exchanges__exchange_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/webhooks/signatures/{provider}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Receive Signature Event
+         * @description Verify and process one provider event. Idempotent.
+         */
+        post: operations["receive_signature_event_api_v1_webhooks_signatures__provider__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/": {
         parameters: {
             query?: never;
@@ -1640,6 +1868,55 @@ export interface components {
          * @enum {string}
          */
         AccountStatus: "active" | "suspended" | "deactivated";
+        /**
+         * AdminAgreementResponse
+         * @description An agreement as staff see it after a void.
+         */
+        AdminAgreementResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            status: components["schemas"]["AgreementStatus"];
+            /**
+             * Proposal Id
+             * Format: uuid
+             */
+            proposal_id: string;
+            /**
+             * Match Id
+             * Format: uuid
+             */
+            match_id: string;
+            /**
+             * Business A Id
+             * Format: uuid
+             */
+            business_a_id: string;
+            /**
+             * Business B Id
+             * Format: uuid
+             */
+            business_b_id: string;
+            /** Signature Provider */
+            signature_provider: string | null;
+            /** Signing Started At */
+            signing_started_at: string | null;
+            /** Signed At */
+            signed_at: string | null;
+            /** Voided At */
+            voided_at: string | null;
+            /** Voided By User Id */
+            voided_by_user_id: string | null;
+            /** Void Reason */
+            void_reason: string | null;
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+        };
         /**
          * AdminBusinessResponse
          * @description Everything a reviewer needs to decide: the full profile including private
@@ -1988,6 +2265,21 @@ export interface components {
             content_sha256: string;
             /** Html */
             html: string;
+            /** Signers */
+            signers: components["schemas"]["AgreementSignerResponse"][];
+            signer_consent: components["schemas"]["SignerConsentResponse"];
+            /** Signature Provider */
+            signature_provider: string | null;
+            /** Signing Started At */
+            signing_started_at: string | null;
+            /** Signed At */
+            signed_at: string | null;
+            /** Voided At */
+            voided_at: string | null;
+            /** Void Reason */
+            void_reason: string | null;
+            exchange: components["schemas"]["ExchangeSummaryResponse"] | null;
+            signed_document: components["schemas"]["SignedDocumentSummary"] | null;
             /**
              * Generated At
              * Format: date-time
@@ -2008,6 +2300,44 @@ export interface components {
              * Format: date-time
              */
             updated_at: string;
+        };
+        /** AgreementSignerResponse */
+        AgreementSignerResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            side: components["schemas"]["Side"];
+            /**
+             * Business Id
+             * Format: uuid
+             */
+            business_id: string;
+            /** User Id */
+            user_id: string | null;
+            /** Full Name */
+            full_name: string;
+            /** Title */
+            title: string | null;
+            /** Email */
+            email: string;
+            status: components["schemas"]["SignerStatus"];
+            /**
+             * Named At
+             * Format: date-time
+             */
+            named_at: string;
+            /** Confirmed */
+            confirmed: boolean;
+            /** Authority Confirmed At */
+            authority_confirmed_at: string | null;
+            /** Esign Consent At */
+            esign_consent_at: string | null;
+            /** Consent Text Version */
+            consent_text_version: string | null;
+            /** Signed At */
+            signed_at: string | null;
         };
         /**
          * AgreementStatus
@@ -2396,6 +2726,23 @@ export interface components {
          * @enum {string}
          */
         ComponentRole: "provider" | "client";
+        /**
+         * ConfirmSignerRequest
+         * @description ``POST .../signer/confirm`` by the named signer. Both confirmations must be
+         *     the JSON value ``true``.
+         */
+        ConfirmSignerRequest: {
+            /** Full Name */
+            full_name: string;
+            /** Title */
+            title: string;
+            /** Authority Confirmed */
+            authority_confirmed: boolean;
+            /** Esign Consent */
+            esign_consent: boolean;
+            /** Consent Text Version */
+            consent_text_version: string;
+        };
         /** CreateMatchRequest */
         CreateMatchRequest: {
             /**
@@ -2492,6 +2839,169 @@ export interface components {
         /** ErrorResponse */
         ErrorResponse: {
             error: components["schemas"]["ErrorBody"];
+        };
+        /** ExchangeListItem */
+        ExchangeListItem: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            status: components["schemas"]["ExchangeStatus"];
+            /**
+             * Agreement Id
+             * Format: uuid
+             */
+            agreement_id: string;
+            /**
+             * Proposal Id
+             * Format: uuid
+             */
+            proposal_id: string;
+            /**
+             * Match Id
+             * Format: uuid
+             */
+            match_id: string;
+            my_side: components["schemas"]["Side"];
+            other_business: components["schemas"]["MatchBusinessSummary"];
+            /** Milestone Count */
+            milestone_count: number;
+            /** Next Due Date */
+            next_due_date: string | null;
+            /**
+             * Activated At
+             * Format: date-time
+             */
+            activated_at: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** ExchangeListResponse */
+        ExchangeListResponse: {
+            /** Items */
+            items: components["schemas"]["ExchangeListItem"][];
+            /** Next Cursor */
+            next_cursor: string | null;
+        };
+        /** ExchangeMilestoneResponse */
+        ExchangeMilestoneResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Sequence */
+            sequence: number;
+            /** Key */
+            key: string;
+            /** Service Key */
+            service_key: string | null;
+            responsible_side: components["schemas"]["Side"];
+            /**
+             * Responsible Business Id
+             * Format: uuid
+             */
+            responsible_business_id: string;
+            /**
+             * Receiving Business Id
+             * Format: uuid
+             */
+            receiving_business_id: string;
+            /** Title */
+            title: string;
+            /** Description */
+            description: string | null;
+            /** Due Date */
+            due_date: string | null;
+            /** Acceptance Criteria */
+            acceptance_criteria: string | null;
+            status: components["schemas"]["MilestoneStatus"];
+        };
+        /**
+         * ExchangeResponse
+         * @description One exchange with its milestones, in order.
+         */
+        ExchangeResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            status: components["schemas"]["ExchangeStatus"];
+            /**
+             * Agreement Id
+             * Format: uuid
+             */
+            agreement_id: string;
+            /**
+             * Proposal Id
+             * Format: uuid
+             */
+            proposal_id: string;
+            /**
+             * Match Id
+             * Format: uuid
+             */
+            match_id: string;
+            my_side: components["schemas"]["Side"];
+            other_business: components["schemas"]["MatchBusinessSummary"];
+            /** Milestone Count */
+            milestone_count: number;
+            /** Next Due Date */
+            next_due_date: string | null;
+            /**
+             * Activated At
+             * Format: date-time
+             */
+            activated_at: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /**
+             * Business A Id
+             * Format: uuid
+             */
+            business_a_id: string;
+            /**
+             * Business B Id
+             * Format: uuid
+             */
+            business_b_id: string;
+            /** Milestones */
+            milestones: components["schemas"]["ExchangeMilestoneResponse"][];
+        };
+        /**
+         * ExchangeStatus
+         * @enum {string}
+         */
+        ExchangeStatus: "active";
+        /**
+         * ExchangeSummaryResponse
+         * @description The exchange on an agreement detail, once signed (API-5.5).
+         */
+        ExchangeSummaryResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            status: components["schemas"]["ExchangeStatus"];
         };
         /**
          * FactorResultResponse
@@ -2996,6 +3506,11 @@ export interface components {
             business_name: string;
             role: components["schemas"]["BusinessRole"];
         };
+        /**
+         * MilestoneStatus
+         * @enum {string}
+         */
+        MilestoneStatus: "pending";
         /** MilestoneTerms */
         MilestoneTerms: {
             /** Key */
@@ -3049,6 +3564,21 @@ export interface components {
             decline_reason: components["schemas"]["DeclineReason"] | null;
             /** Decline Text */
             decline_text: string | null;
+        };
+        /**
+         * NameSignerRequest
+         * @description ``PUT .../signer``: who signs for the caller's business.
+         */
+        NameSignerRequest: {
+            /**
+             * User Id
+             * Format: uuid
+             */
+            user_id: string;
+            /** Full Name */
+            full_name?: string | null;
+            /** Title */
+            title?: string | null;
         };
         /** NeedCreateRequest */
         NeedCreateRequest: {
@@ -3915,6 +4445,69 @@ export interface components {
             b?: components["schemas"]["SideTerms"];
         };
         /**
+         * SignAgreementRequest
+         * @description ``POST .../sign`` (development provider): the signer types their full name,
+         *     exactly as confirmed (case and extra spaces do not matter).
+         */
+        SignAgreementRequest: {
+            /** Full Name */
+            full_name: string;
+        };
+        /**
+         * SignedDocumentSummary
+         * @description The stored signed agreement and certificate (API-5.5). Fetch URLs with
+         *     ``GET .../signed-document`` and ``GET .../certificate``.
+         */
+        SignedDocumentSummary: {
+            /** Content Type */
+            content_type: string;
+            /** Document Sha256 */
+            document_sha256: string;
+            /** Certificate Sha256 */
+            certificate_sha256: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /**
+         * SignedFileResponse
+         * @description A short-lived URL to read the signed agreement or its certificate.
+         */
+        SignedFileResponse: {
+            /** Url */
+            url: string;
+            /**
+             * Url Expires At
+             * Format: date-time
+             */
+            url_expires_at: string;
+            /** Content Type */
+            content_type: string;
+            /** Sha256 */
+            sha256: string;
+        };
+        /**
+         * SignerConsentResponse
+         * @description The wording the signer confirms, to show next to each checkbox.
+         */
+        SignerConsentResponse: {
+            /** Version */
+            version: string;
+            /** Authority */
+            authority: string;
+            /** Esign Consent */
+            esign_consent: string;
+            /** Is Draft */
+            is_draft: boolean;
+        };
+        /**
+         * SignerStatus
+         * @enum {string}
+         */
+        SignerStatus: "pending" | "signed" | "declined";
+        /**
          * TeamMemberResponse
          * @description One person in a business, as listed on the team page.
          */
@@ -4118,12 +4711,30 @@ export interface components {
             /** Is Current */
             is_current: boolean;
         };
+        /** VoidAgreementRequest */
+        VoidAgreementRequest: {
+            /** Reason */
+            reason: string;
+        };
         /**
          * WaitingOn
          * @description Whose turn it is, from the reading business's point of view.
          * @enum {string}
          */
         WaitingOn: "us" | "them";
+        /**
+         * WebhookReceivedResponse
+         * @description ``POST /webhooks/signatures/{provider}``: the event was accepted.
+         */
+        WebhookReceivedResponse: {
+            /**
+             * Received
+             * @default true
+             */
+            received: boolean;
+            /** Duplicate */
+            duplicate: boolean;
+        };
         /** WithdrawMatchRequest */
         WithdrawMatchRequest: {
             /** Reason */
@@ -6086,6 +6697,220 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    void_agreement_api_v1_admin_agreements__agreement_id__void_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                agreement_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VoidAgreementRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminAgreementResponse"];
+                };
+            };
+            /** @description `unauthorized` or `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `forbidden`: not support or administrator */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found` */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `invalid_agreement_status`: already signed, expired or voided */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description `signature_provider_error` */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    get_signed_document_api_v1_admin_agreements__agreement_id__signed_document_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                agreement_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SignedFileResponse"];
+                };
+            };
+            /** @description `unauthorized` or `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `forbidden`: not support or administrator */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found` */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `invalid_agreement_status` with `details.reason` `not_signed` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_certificate_api_v1_admin_agreements__agreement_id__certificate_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                agreement_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SignedFileResponse"];
+                };
+            };
+            /** @description `unauthorized` or `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `forbidden`: not support or administrator */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found` */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `invalid_agreement_status` with `details.reason` `not_signed` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -9195,6 +10020,519 @@ export interface operations {
                 };
             };
             /** @description `not_found`: no such business, the caller is not a member, or the business is not part of the agreement */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    name_signer_api_v1_businesses__business_id__agreements__agreement_id__signer_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                agreement_id: string;
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NameSignerRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgreementSignerResponse"];
+                };
+            };
+            /** @description `unauthorized` or `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `business_role_required` */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business, the caller is not a member, or the business is not part of the agreement */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `invalid_agreement_status`: `details.reason` is `signing_started` or `closed` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `invalid_signer`: not an owner or administrator of the business; `validation_error` */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    confirm_signer_api_v1_businesses__business_id__agreements__agreement_id__signer_confirm_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                agreement_id: string;
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmSignerRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgreementSignerResponse"];
+                };
+            };
+            /** @description `unauthorized` or `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_agreement_signer` */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business, the caller is not a member, or the business is not part of the agreement */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `invalid_agreement_status`: `details.reason` is `signing_started` or `closed` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `signer_confirmation_required`; `invalid_signer`: no longer an owner or administrator; `validation_error` */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `signature_provider_error` */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    sign_agreement_api_v1_businesses__business_id__agreements__agreement_id__sign_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                agreement_id: string;
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SignAgreementRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgreementResponse"];
+                };
+            };
+            /** @description `unauthorized` or `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_agreement_signer` */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business, the caller is not a member, or the business is not part of the agreement */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `invalid_agreement_status`: `details.reason` is `not_signing`, `already_signed`, `signer_declined`, `not_in_app` or `closed` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `signature_name_mismatch`; `invalid_signer`; `validation_error` */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    get_signed_document_api_v1_businesses__business_id__agreements__agreement_id__signed_document_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                agreement_id: string;
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SignedFileResponse"];
+                };
+            };
+            /** @description `unauthorized` or `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business, the caller is not a member, or the business is not part of the agreement */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `invalid_agreement_status` with `details.reason` `not_signed` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_certificate_api_v1_businesses__business_id__agreements__agreement_id__certificate_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                agreement_id: string;
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SignedFileResponse"];
+                };
+            };
+            /** @description `unauthorized` or `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business, the caller is not a member, or the business is not part of the agreement */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `invalid_agreement_status` with `details.reason` `not_signed` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_exchanges_api_v1_businesses__business_id__exchanges_get: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["ExchangeStatus"] | null;
+                cursor?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExchangeListResponse"];
+                };
+            };
+            /** @description `invalid_cursor` */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `unauthorized` or `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business, the caller is not a member, or the business is not part of the exchange */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_exchange_api_v1_businesses__business_id__exchanges__exchange_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                exchange_id: string;
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExchangeResponse"];
+                };
+            };
+            /** @description `unauthorized` or `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business, the caller is not a member, or the business is not part of the exchange */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    receive_signature_event_api_v1_webhooks_signatures__provider__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                provider: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WebhookReceivedResponse"];
+                };
+            };
+            /** @description `invalid_webhook_payload` */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `invalid_webhook_signature` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such provider here */
             404: {
                 headers: {
                     [name: string]: unknown;

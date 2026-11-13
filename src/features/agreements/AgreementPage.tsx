@@ -1,11 +1,13 @@
-import { useEffect, useState } from 'react'
-import { ArrowLeft, ArrowUpRight, FileSearch, PenLine } from 'lucide-react'
+import { useCallback, useEffect, useState } from 'react'
+import { ArrowLeft, ArrowUpRight, FileSearch } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 
 import { paths } from '../../app/router/paths'
-import { EmptyState, ErrorState, LoadingState } from '../../components/feedback'
-import { toApiError } from '../../lib/api/errors'
+import { EmptyState, ErrorState, LoadingState, showToast } from '../../components/feedback'
+import { toApiError, type ApiError } from '../../lib/api/errors'
+import { updateBusinessRole } from '../../lib/businesses/activeBusiness'
 import { useActiveBusiness } from '../../lib/businesses/useActiveBusiness'
+import { useSessionStore } from '../../stores/session'
 import { formatMatchDate } from '../matching/matchInboxDisplay'
 import { AgreementFrame } from './AgreementFrame'
 import {
@@ -15,9 +17,12 @@ import {
   formatAddress,
   isDraftTerms,
   LEGAL_REVIEW_LABELS,
+  signingConflictText,
 } from './agreementCopy'
-import { getAgreement, OPEN_AGREEMENT_STATUSES, type Agreement, type AgreementParty } from './agreementsApi'
+import { getAgreement, OPEN_AGREEMENT_STATUSES, signerFor, type Agreement, type AgreementParty } from './agreementsApi'
 import { DraftTermsBanner } from './DraftTermsBanner'
+import { NameSignerDialog } from './NameSignerDialog'
+import { SignersCard, YourSignaturePanel } from './SigningPanels'
 import '../matching/MatchInbox.css'
 import '../proposals/Proposals.css'
 import '../proposals/ProposalReview.css'
@@ -26,7 +31,8 @@ import './Agreements.css'
 /**
  * `/agreements/:id`: the Exchange Agreement BFB generated from an accepted proposal, as a
  * document in a sandboxed frame, with where it stands, the parties as named in it, the Exchange
- * Terms version it incorporates and its fingerprint. Signing (FE-5.2) goes in the side column.
+ * Terms version it incorporates and its fingerprint. Who signs for each business is in the side
+ * column; the named signer confirms and signs in "Your signature" above the document (FE-5.2).
  */
 export function AgreementPage() {
   const { agreementId = '' } = useParams()
@@ -38,6 +44,9 @@ function AgreementView({ agreementId }: { agreementId: string }) {
   const [agreement, setAgreement] = useState<Agreement | null>(null)
   const [loadError, setLoadError] = useState<unknown>(null)
   const [reloadKey, setReloadKey] = useState(0)
+  const [notice, setNotice] = useState<string | null>(null)
+  const [naming, setNaming] = useState(false)
+  const userId = useSessionStore((state) => state.user?.id)
 
   useEffect(() => {
     let live = true
@@ -53,6 +62,16 @@ function AgreementView({ agreementId }: { agreementId: string }) {
       live = false
     }
   }, [business.id, agreementId, reloadKey])
+
+  const reload = useCallback(() => setReloadKey((key) => key + 1), [])
+
+  /** A signing action was refused because something changed: load the agreement again and say why. */
+  const onConflict = useCallback((error: ApiError) => {
+    if (error.code === 'business_role_required') updateBusinessRole(business.id, 'member')
+    setNaming(false)
+    setNotice(signingConflictText(error))
+    reload()
+  }, [business.id, reload])
 
   const back = <Link className="back-button match-back" to={paths.agreements}><ArrowLeft size={17} aria-hidden="true" /> Back to agreements</Link>
 
@@ -100,11 +119,26 @@ function AgreementView({ agreementId }: { agreementId: string }) {
           </div>
         </div>
       </div>
+      {notice && <p className="match-notice match-notice-error" role="alert">{notice}</p>}
       {isDraftTerms(agreement) && (
         <DraftTermsBanner detail="This agreement was generated from draft legal documents for testing BFB. Don’t rely on it, and don’t exchange real work under it." />
       )}
       <div className="match-layout proposal-review-layout agreement-layout">
         <div className="match-main">
+          <YourSignaturePanel
+            agreement={agreement}
+            userId={userId}
+            businessId={business.id}
+            onAgreement={(updated) => {
+              setNotice(null)
+              setAgreement(updated)
+            }}
+            onReload={() => {
+              setNotice(null)
+              reload()
+            }}
+            onConflict={onConflict}
+          />
           <section className={`match-panel proposal-standing agreement-standing-${agreement.status}`} aria-labelledby="agreement-standing-title">
             <h2 id="agreement-standing-title" className="match-side-title">Where it stands</h2>
             <p>{agreementStandingText(agreement)}</p>
@@ -126,13 +160,7 @@ function AgreementView({ agreementId }: { agreementId: string }) {
           </section>
         </div>
         <aside className="match-side">
-          <section className="match-panel match-panel-body agreement-signing-next" aria-labelledby="agreement-signing-title" data-slot="signing">
-            {/* FE-5.2 replaces this panel with signer setup and signing. */}
-            <h2 id="agreement-signing-title" className="match-side-title">Signing</h2>
-            <PenLine size={20} aria-hidden="true" />
-            <p><strong>Signing comes next.</strong></p>
-            <p>{open ? 'Each business will name who signs for it here, and that person will sign on BFB.' : 'This agreement can no longer be signed.'}</p>
-          </section>
+          <SignersCard agreement={agreement} business={business} onNameSigner={() => setNaming(true)} />
           <section className="match-panel match-panel-body" aria-labelledby="agreement-status-title">
             <h2 id="agreement-status-title" className="match-side-title">Status</h2>
             <dl className="match-status-facts">
@@ -154,6 +182,22 @@ function AgreementView({ agreementId }: { agreementId: string }) {
           </section>
         </aside>
       </div>
+      {naming && (
+        <NameSignerDialog
+          business={business}
+          agreementId={agreement.id}
+          userId={userId}
+          current={signerFor(agreement, agreement.my_side)}
+          onNamed={(signer) => {
+            setNaming(false)
+            setNotice(null)
+            setAgreement({ ...agreement, signers: [...agreement.signers.filter((item) => item.side !== signer.side), signer].sort((x, y) => x.side.localeCompare(y.side)) })
+            showToast(signer.user_id === userId ? 'You’re named to sign. Confirm your details to continue.' : `${signer.full_name} is named to sign. They confirm their details next.`)
+          }}
+          onConflict={onConflict}
+          onCancel={() => setNaming(false)}
+        />
+      )}
     </>
   )
 }
