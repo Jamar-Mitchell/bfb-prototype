@@ -34,6 +34,7 @@ import {
   type ProposalWithdrawReason,
   type Side,
 } from './proposalsApi'
+import { VersionTimeline } from './VersionTimeline'
 import { refreshWaitingProposals } from './waitingProposals'
 import '../matching/MatchInbox.css'
 import '../team/TeamPage.css'
@@ -188,6 +189,7 @@ function ProposalView({ proposalId }: { proposalId: string }) {
             <p>{proposalStandingText(proposal)}</p>
           </section>
           {current && <ProposalDocument version={current} names={names} mySide={proposal.me.side} />}
+          <VersionTimeline proposal={proposal} businessId={business.id} />
         </div>
         <aside className="match-side">
           <ActionsPanel

@@ -25,13 +25,14 @@ import { MatchInboxPage } from '../../features/matching/MatchInboxPage'
 import { MessagesPage } from '../../features/messages/MessagesPage'
 import { ProposalBuilderPage } from '../../features/proposals/ProposalBuilderPage'
 import { ProposalPage } from '../../features/proposals/ProposalPage'
+import { ProposalVersionPage } from '../../features/proposals/ProposalVersionPage'
 import { ProposalsPage } from '../../features/proposals/ProposalsPage'
 import { SavedBusinessesPage } from '../../features/saved/SavedBusinessesPage'
 import { Onboarding } from '../../features/onboarding/Onboarding'
 import { AcceptInvitePage } from '../../features/team/AcceptInvitePage'
 import { TeamPage } from '../../features/team/TeamPage'
 import { businesses } from '../../mocks/businesses'
-import { adminBusinessPattern, adminMatchPattern, getBusinessIdFromPath, isBusinessUuid, matchPattern, paths, proposalEditPattern, proposalPattern, publicBusinessPattern } from './paths'
+import { adminBusinessPattern, adminMatchPattern, getBusinessIdFromPath, isBusinessUuid, matchPattern, paths, proposalEditPattern, proposalPattern, proposalVersionPattern, publicBusinessPattern } from './paths'
 import { useActiveBusinessId, useMemberships } from '../../lib/businesses/useActiveBusiness'
 import { RequireAuth } from './RequireAuth'
 import { RequireBusiness } from './RequireBusiness'
@@ -152,6 +153,7 @@ export const routes: RouteObject[] = [
               { path: paths.proposals, element: <ProposalsPage /> },
               { path: proposalPattern, element: <ProposalPage /> },
               { path: proposalEditPattern, element: <ProposalBuilderPage /> },
+              { path: proposalVersionPattern, element: <ProposalVersionPage /> },
               { path: '/business/:id/*', element: <BusinessRoute /> },
               { path: paths.exchanges, element: <ExchangesPage /> },
               { path: paths.messages, element: <MessagesPage /> },
