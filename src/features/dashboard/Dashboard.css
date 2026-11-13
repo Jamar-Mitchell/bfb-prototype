@@ -16,6 +16,7 @@
 .dashboard-hero-visual > img { object-fit: cover; }
 .dashboard-hero-shade { background: linear-gradient(90deg, var(--navy) 0%, rgba(var(--navy-rgb), .12) 48%, rgba(var(--navy-rgb), .3)); }
 .dashboard-match-count { position: absolute; top: 18px; right: 18px; background: rgba(255,255,255,.94); border-radius: var(--radius-lg); padding: 9px 11px; display: flex; align-items: center; gap: 8px; color: var(--blue); box-shadow: 0 8px 20px rgba(var(--navy-rgb), .12); }
+button.dashboard-match-count { border: 0; font: inherit; text-align: left; cursor: pointer; }
 .dashboard-match-count span { display: flex; flex-direction: column; }
 .dashboard-match-count strong { color: var(--navy); font-size: var(--text-xs); }
 .dashboard-match-count small { color: var(--muted); font-size: var(--text-3xs); margin-top: 1px; }

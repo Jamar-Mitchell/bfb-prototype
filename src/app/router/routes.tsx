@@ -19,14 +19,16 @@ import { Dashboard } from '../../features/dashboard/Dashboard'
 import { ExchangesPage } from '../../features/exchanges/ExchangesPage'
 import { LandingPage } from '../../features/landing/LandingPage'
 import { ListingsPage } from '../../features/listings/ListingsPage'
+import { BusinessMatchPage } from '../../features/matching/BusinessMatchPage'
 import { Marketplace } from '../../features/matching/Marketplace'
+import { MatchInboxPage } from '../../features/matching/MatchInboxPage'
 import { MessagesPage } from '../../features/messages/MessagesPage'
 import { SavedBusinessesPage } from '../../features/saved/SavedBusinessesPage'
 import { Onboarding } from '../../features/onboarding/Onboarding'
 import { AcceptInvitePage } from '../../features/team/AcceptInvitePage'
 import { TeamPage } from '../../features/team/TeamPage'
 import { businesses } from '../../mocks/businesses'
-import { adminBusinessPattern, adminMatchPattern, getBusinessIdFromPath, isBusinessUuid, paths, publicBusinessPattern } from './paths'
+import { adminBusinessPattern, adminMatchPattern, getBusinessIdFromPath, isBusinessUuid, matchPattern, paths, publicBusinessPattern } from './paths'
 import { useActiveBusinessId, useMemberships } from '../../lib/businesses/useActiveBusiness'
 import { RequireAuth } from './RequireAuth'
 import { RequireBusiness } from './RequireBusiness'
@@ -77,6 +79,8 @@ function DashboardRoute() {
   return (
     <Dashboard
       goMarketplace={() => go(paths.marketplace)}
+      goMatches={() => go(paths.matches)}
+      openMatch={(id) => go(paths.match(id))}
       openBusiness={(id) => go(paths.business(id))}
       openOnboarding={() => go(paths.onboarding)}
       openProfile={() => go(paths.profile)}
@@ -140,6 +144,8 @@ export const routes: RouteObject[] = [
               { path: paths.dashboard, element: <DashboardRoute /> },
               { path: paths.marketplace, element: <Marketplace /> },
               { path: paths.saved, element: <SavedBusinessesPage /> },
+              { path: paths.matches, element: <MatchInboxPage /> },
+              { path: matchPattern, element: <BusinessMatchPage /> },
               { path: '/business/:id/*', element: <BusinessRoute /> },
               { path: paths.exchanges, element: <ExchangesPage /> },
               { path: paths.messages, element: <MessagesPage /> },

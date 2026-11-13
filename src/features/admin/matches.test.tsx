@@ -170,7 +170,8 @@ afterEach(() => {
 describe('matches list', () => {
   it('opens from the admin nav and lists matches with words for fit', async () => {
     openAt('/admin')
-    fireEvent.click(await screen.findByRole('button', { name: /Matches/ }))
+    // Staff with a business also have the business's own Matches item; the admin one comes last.
+    fireEvent.click((await screen.findAllByRole('button', { name: /Matches/ })).at(-1)!)
 
     expect(await screen.findByRole('heading', { level: 1, name: 'Concierge matches.' })).toBeInTheDocument()
     const rows = within(await screen.findByRole('list', { name: 'Matches' })).getAllByRole('listitem')
