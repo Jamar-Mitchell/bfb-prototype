@@ -1,0 +1,81 @@
+/* Agreements (FE-5.1): the list, the agreement page and the public Exchange Terms. New screens
+   with no prototype: built from the proposal pages' panels, pills, rows and status card. */
+
+/* The draft banner. Loud on purpose: red border, pale red ground, never dismissable. */
+.agreement-draft-banner { display: flex; gap: 12px; align-items: flex-start; background: #fef3f2; border: 2px solid #b42318; border-radius: var(--radius-lg); padding: 13px 16px; margin: 0 0 18px; color: #b42318; }
+.agreement-draft-banner svg { flex: 0 0 auto; margin-top: 1px; }
+.agreement-draft-banner > div { display: flex; flex-direction: column; gap: 3px; }
+.agreement-draft-banner strong { font-size: var(--text-lg); line-height: 1.45; }
+.agreement-draft-banner p { margin: 0; color: var(--slate); font-size: var(--text-base); line-height: 1.5; }
+
+.agreement-pill-ready, .agreement-pill-signing { background: var(--pale-blue); border-color: #c9e5ff; color: var(--blue); }
+.agreement-pill-signed { background: var(--green-pale); border-color: #ccecdf; color: var(--green); }
+.agreement-pill-expired, .agreement-pill-voided { color: var(--muted); }
+.agreement-pill-draft { background: #fef3f2; border-color: #f4c7c3; color: #b42318; }
+.agreement-row-expired, .agreement-row-voided { background: #fbfcfd; }
+.proposal-row-facts a { color: var(--blue); font-weight: 600; }
+
+/* The agreement page. */
+.agreement-standing-ready, .agreement-standing-signing { background: #f4f9ff; border-color: #dceeff; }
+.agreement-standing-signed { background: var(--green-pale); border-color: #ccecdf; }
+.agreement-standing-expired, .agreement-standing-voided { background: #fbfcfd; }
+.agreement-document { overflow: hidden; }
+.agreement-document .match-panel-head a { color: var(--blue); font-weight: 700; }
+.agreement-frame { display: block; width: 100%; border: 0; background: white; }
+.agreement-fingerprint { margin: 0; padding: 12px 21px 16px; border-top: 1px solid var(--border); color: var(--text-subtle); font-size: var(--text-sm); line-height: 1.6; }
+.agreement-fingerprint code { font-family: Menlo, Consolas, monospace; font-size: .95em; word-break: break-all; color: var(--slate); }
+.agreement-terms-link { display: inline-flex; align-items: center; gap: 3px; color: var(--blue); font-weight: 700; }
+.match-status-facts dd a { color: var(--blue); }
+.match-status-facts dd .agreement-terms-link { overflow-wrap: anywhere; }
+
+/* Placeholder until signing (FE-5.2): neutral, no call to action. */
+.agreement-signing-next { background: var(--surface-muted); }
+.agreement-signing-next svg { color: var(--muted); }
+.agreement-signing-next p { margin: 0; color: var(--slate); font-size: var(--text-base); line-height: 1.5; }
+.agreement-signing-next p strong { color: var(--navy); font-size: var(--text-lg); }
+
+.agreement-parties { list-style: none; margin: 0; padding: 0; width: 100%; display: flex; flex-direction: column; gap: 10px; }
+.agreement-party { border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface-muted); padding: 11px 13px; display: flex; flex-direction: column; gap: 3px; }
+.agreement-party-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.agreement-party-head strong { color: var(--navy); font-size: var(--text-lg); overflow-wrap: anywhere; }
+.agreement-party-head .match-pill { font-size: var(--text-2xs); padding: 2px 8px; }
+.agreement-party p { margin: 0; color: var(--slate); font-size: var(--text-base); line-height: 1.5; overflow-wrap: anywhere; }
+.agreement-party-muted { color: var(--muted) !important; }
+.agreement-parties-note { margin: 0; color: var(--muted); font-size: var(--text-sm); line-height: 1.5; }
+
+@media (max-width: 620px) {
+  .agreement-fingerprint { padding-left: 16px; padding-right: 16px; }
+  .agreement-draft-banner { padding: 11px 13px; }
+}
+
+/* The public Exchange Terms page. */
+.legal-page-main { max-width: 880px; }
+.legal-page { background: white; border: 1px solid var(--border); border-radius: var(--radius-xl); overflow: hidden; }
+.legal-page-head { padding: 26px 28px 20px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
+.legal-page-head > span { color: var(--blue); font-size: var(--text-md); font-weight: 800; letter-spacing: .08em; }
+.legal-page-head h1 { margin: 0; color: var(--navy); font-size: 30px; }
+.legal-page-head > p { margin: 0; color: var(--slate); font-size: var(--text-lg); line-height: 1.6; }
+.legal-page-facts { margin: 6px 0 0; display: flex; flex-wrap: wrap; gap: 6px 26px; }
+.legal-page-facts > div { display: flex; gap: 7px; font-size: var(--text-base); }
+.legal-page-facts dt { color: var(--muted); }
+.legal-page-facts dd { margin: 0; color: var(--navy); font-weight: 700; }
+.legal-page-replaced { background: #fffaf0; border: 1px solid #f3e5bf; border-radius: var(--radius-md); padding: 9px 12px; font-size: var(--text-base) !important; }
+.legal-page-replaced a { color: var(--blue); font-weight: 700; }
+.legal-page .agreement-draft-banner { margin: 20px 28px 0; }
+.legal-page-body { padding: 8px 28px 24px; color: #1d2433; font-family: Georgia, 'Times New Roman', serif; font-size: 17px; line-height: 1.65; overflow-wrap: anywhere; }
+.legal-page-body h1, .legal-page-body h2, .legal-page-body h3 { color: var(--navy); line-height: 1.3; margin: 1.6em 0 .5em; }
+.legal-page-body h1 { font-size: 26px; }
+.legal-page-body h2 { font-size: 21px; }
+.legal-page-body h3 { font-size: 18px; }
+.legal-page-body blockquote { margin: 1.2em 0; padding: .4em 1em; border-left: 3px solid #b42318; background: #fef3f2; }
+.legal-page-body code { font-family: Menlo, Consolas, monospace; font-size: .85em; word-break: break-all; }
+.legal-page-body hr { border: 0; border-top: 1px solid var(--border); margin: 1.6em 0; }
+.legal-page-fingerprint { padding-left: 28px; padding-right: 28px; }
+
+@media (max-width: 620px) {
+  .legal-page-head, .legal-page-body { padding-left: 16px; padding-right: 16px; }
+  .legal-page .agreement-draft-banner { margin: 16px 16px 0; }
+  .legal-page-fingerprint { padding-left: 16px; padding-right: 16px; }
+  .legal-page-head h1 { font-size: 25px; }
+  .legal-page-body { font-size: 16px; }
+}

@@ -1,3 +1,4 @@
+import type { Agreement, AgreementSummary, ExchangeTerms } from '../features/agreements/agreementsApi'
 import type { BusinessMatch, MatchBusiness } from '../features/matching/matchInboxApi'
 import type { Proposal, ProposalSummary, ProposalTerms, SentVersion } from '../features/proposals/proposalsApi'
 import { apiBusiness, apiErrorBody, apiMembership, apiUser, tokenBody, type MockHandler, type MockReply, type MockRequest } from './mockApi'
@@ -11,6 +12,10 @@ export const STUDIO_ID = '6a1f2c3d-1111-4a2b-9c3d-0123456789ab'
 export const PROPOSALS = '/businesses/business-1/proposals'
 export const PROPOSAL = `${PROPOSALS}/${PROPOSAL_ID}`
 export const MATCH = `/businesses/business-1/matches/${MATCH_ID}`
+export const AGREEMENT_ID = '8a1b2c3d-4444-4d5e-8f60-0123456789ab'
+export const AGREEMENTS = '/businesses/business-1/agreements'
+export const AGREEMENT = `${AGREEMENTS}/${AGREEMENT_ID}`
+export const TERMS_VERSION = '2026-11-draft-1'
 
 export const studio: MatchBusiness = {
   id: STUDIO_ID,
@@ -104,6 +109,7 @@ export function draftProposal(overrides: Partial<Proposal> = {}, terms: Proposal
     closed_by_side: null,
     accepted_version_number: null,
     agreement_source_id: null,
+    agreement: null,
     expires_at: null,
     closed_at: null,
     created_at: '2026-11-13T12:00:00Z',
@@ -192,12 +198,76 @@ export function acceptedMatch(overrides: Partial<BusinessMatch> = {}): BusinessM
   }
 }
 
+const address = { line1: '1 Main Street', line2: null, city: 'Detroit', region: 'MI', postal_code: '48201', country: 'US' }
+
+/** The agreement generated when both businesses accepted version 1. Northstar Digital is side a. */
+export function agreementDetail(overrides: Partial<Agreement> = {}): Agreement {
+  return {
+    id: AGREEMENT_ID,
+    status: 'ready',
+    proposal_id: PROPOSAL_ID,
+    match_id: MATCH_ID,
+    agreement_source_id: 'source-1',
+    accepted_version_number: 1,
+    accepted_at: '2026-11-16T12:00:00Z',
+    my_side: 'a',
+    parties: [
+      { side: 'a', business_id: 'business-1', display_name: 'Northstar Digital', legal_name: 'Northstar Digital LLC', entity_type: 'llc', registered_address: address, accepted_at: '2026-11-15T12:00:00Z' },
+      { side: 'b', business_id: STUDIO_ID, display_name: 'Northside Studio', legal_name: 'Northside Studio Inc.', entity_type: 'corporation', registered_address: { ...address, line1: '9 River Road' }, accepted_at: '2026-11-16T12:00:00Z' },
+    ],
+    template: { version: '2026-11-draft-1', legal_review_status: 'draft', content_sha256: 'b'.repeat(64) },
+    exchange_terms: { version: TERMS_VERSION, legal_review_status: 'draft', content_sha256: 'c'.repeat(64) },
+    legal_review_status: 'draft',
+    content_sha256: '4f0e'.repeat(16),
+    html: '<!DOCTYPE html><html lang="en"><body><h1>Business Exchange Agreement</h1></body></html>',
+    generated_at: '2026-11-16T12:00:00Z',
+    expires_at: '2026-12-16T12:00:00Z',
+    created_at: '2026-11-16T12:00:00Z',
+    updated_at: '2026-11-16T12:00:00Z',
+    ...overrides,
+  }
+}
+
+export function agreementSummary(overrides: Partial<AgreementSummary> = {}): AgreementSummary {
+  return {
+    id: AGREEMENT_ID,
+    status: 'ready',
+    proposal_id: PROPOSAL_ID,
+    match_id: MATCH_ID,
+    my_side: 'a',
+    other_business: studio,
+    legal_review_status: 'draft',
+    content_sha256: '4f0e'.repeat(16),
+    expires_at: '2026-12-16T12:00:00Z',
+    created_at: '2026-11-16T12:00:00Z',
+    updated_at: '2026-11-16T12:00:00Z',
+    ...overrides,
+  }
+}
+
+export function exchangeTerms(overrides: Partial<ExchangeTerms> = {}): ExchangeTerms {
+  return {
+    kind: 'exchange_terms',
+    version: TERMS_VERSION,
+    legal_review_status: 'draft',
+    is_current: true,
+    content_sha256: 'c'.repeat(64),
+    published_at: '2026-11-13T18:00:00Z',
+    body: '# BFB Exchange Terms',
+    html: '<h1>BFB Exchange Terms</h1>\n<h2>1. How these terms work</h2>\n<p>These terms apply to every exchange.</p>',
+    ...overrides,
+  }
+}
+
 export interface ProposalServerOptions {
   role?: 'owner' | 'administrator' | 'member'
   /** Every proposal the business has; the list filters them like the API does. */
   proposals?: ProposalSummary[]
   proposal?: Proposal
   match?: BusinessMatch
+  /** Every agreement the business has; the list filters them like the API does. */
+  agreements?: AgreementSummary[]
+  agreement?: Agreement
   reply?: (request: MockRequest) => MockReply | Promise<MockReply> | undefined
 }
 
@@ -207,7 +277,7 @@ function matchesFilters(item: ProposalSummary, params: { status?: string; waitin
   return true
 }
 
-export function proposalServer({ role = 'owner', proposals = [], proposal = draftProposal(), match = acceptedMatch(), reply }: ProposalServerOptions = {}): MockHandler {
+export function proposalServer({ role = 'owner', proposals = [], proposal = draftProposal(), match = acceptedMatch(), agreements = [], agreement = agreementDetail(), reply }: ProposalServerOptions = {}): MockHandler {
   return async (request) => {
     const custom = await reply?.(request)
     if (custom) return custom
@@ -222,6 +292,12 @@ export function proposalServer({ role = 'owner', proposals = [], proposal = draf
       return { status: 200, data: { items: proposals.filter((item) => matchesFilters(item, params)), next_cursor: null } }
     }
     if (method === 'get' && url === PROPOSAL) return { status: 200, data: proposal }
+    if (method === 'get' && url === AGREEMENTS) {
+      const status = (config.params as { status?: string } | undefined)?.status
+      return { status: 200, data: { items: agreements.filter((item) => !status || item.status === status), next_cursor: null } }
+    }
+    if (method === 'get' && url === `${AGREEMENTS}/${agreement.id}`) return { status: 200, data: agreement }
+    if (method === 'get' && url === '/legal/exchange-terms') return { status: 200, data: exchangeTerms() }
     return { status: 404, data: apiErrorBody('not_found') }
   }
 }

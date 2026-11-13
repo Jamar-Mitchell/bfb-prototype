@@ -99,7 +99,8 @@ export function PublicBusinessProfilePage() {
   )
 }
 
-function PublicHeader() {
+/** The logged-out header of public pages: log in and join, or back to the dashboard. */
+export function PublicHeader() {
   const go = useAppNavigate()
   const loggedIn = useSessionStore((state) => state.status === 'authenticated')
 

@@ -687,6 +687,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/legal-documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Publish Legal Document
+         * @description Publish a new version of the Exchange Terms or the Exchange Agreement template.
+         *     It becomes the current version of its kind at once and can never be changed.
+         */
+        post: operations["publish_legal_document_api_v1_admin_legal_documents_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/businesses/{business_id}/uploads": {
         parameters: {
             query?: never;
@@ -1069,6 +1090,47 @@ export interface paths {
          *     whether that business has saved this one.
          */
         get: operations["get_public_business_profile_api_v1_public_businesses__target_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/legal/exchange-terms": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Current Exchange Terms
+         * @description The current (newest published) Exchange Terms.
+         */
+        get: operations["current_exchange_terms_api_v1_legal_exchange_terms_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/legal/exchange-terms/{version}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Exchange Terms Version
+         * @description Any published version of the Exchange Terms, for example the one an agreement
+         *     incorporates.
+         */
+        get: operations["exchange_terms_version_api_v1_legal_exchange_terms__version__get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1504,6 +1566,48 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/businesses/{business_id}/agreements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Agreements
+         * @description The business's agreements, newest first, without the HTML. ``status`` filters
+         *     on the effective status.
+         */
+        get: operations["list_agreements_api_v1_businesses__business_id__agreements_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{business_id}/agreements/{agreement_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Agreement
+         * @description The agreement in full: parties, legal document versions, hash and the rendered
+         *     HTML document.
+         */
+        get: operations["get_agreement_api_v1_businesses__business_id__agreements__agreement_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/": {
         parameters: {
             query?: never;
@@ -1613,6 +1717,33 @@ export interface components {
              * Format: date-time
              */
             updated_at: string;
+        };
+        /** AdminLegalDocumentResponse */
+        AdminLegalDocumentResponse: {
+            kind: components["schemas"]["LegalDocumentKind"];
+            /** Version */
+            version: string;
+            legal_review_status: components["schemas"]["LegalReviewStatus"];
+            /** Is Current */
+            is_current: boolean;
+            /** Content Sha256 */
+            content_sha256: string;
+            /**
+             * Published At
+             * Format: date-time
+             */
+            published_at: string;
+            /** Body */
+            body: string;
+            /** Html */
+            html: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Published By User Id */
+            published_by_user_id: string | null;
         };
         /** AdminMatchFeedbackListResponse */
         AdminMatchFeedbackListResponse: {
@@ -1724,6 +1855,177 @@ export interface components {
             display_name: string;
             role: components["schemas"]["BusinessRole"];
         };
+        /** AgreementAddressResponse */
+        AgreementAddressResponse: {
+            /** Line1 */
+            line1: string | null;
+            /** Line2 */
+            line2: string | null;
+            /** City */
+            city: string | null;
+            /** Region */
+            region: string | null;
+            /** Postal Code */
+            postal_code: string | null;
+            /** Country */
+            country: string | null;
+        };
+        /** AgreementDocumentVersion */
+        AgreementDocumentVersion: {
+            /** Version */
+            version: string;
+            legal_review_status: components["schemas"]["LegalReviewStatus"];
+            /** Content Sha256 */
+            content_sha256: string;
+        };
+        /** AgreementListItem */
+        AgreementListItem: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            status: components["schemas"]["AgreementStatus"];
+            /**
+             * Proposal Id
+             * Format: uuid
+             */
+            proposal_id: string;
+            /**
+             * Match Id
+             * Format: uuid
+             */
+            match_id: string;
+            my_side: components["schemas"]["Side"];
+            other_business: components["schemas"]["MatchBusinessSummary"];
+            legal_review_status: components["schemas"]["LegalReviewStatus"];
+            /** Content Sha256 */
+            content_sha256: string;
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** AgreementListResponse */
+        AgreementListResponse: {
+            /** Items */
+            items: components["schemas"]["AgreementListItem"][];
+            /** Next Cursor */
+            next_cursor: string | null;
+        };
+        /**
+         * AgreementPartyResponse
+         * @description One party as named in the agreement, from the agreement source.
+         */
+        AgreementPartyResponse: {
+            side: components["schemas"]["Side"];
+            /**
+             * Business Id
+             * Format: uuid
+             */
+            business_id: string;
+            /** Display Name */
+            display_name: string | null;
+            /** Legal Name */
+            legal_name: string | null;
+            /** Entity Type */
+            entity_type: string | null;
+            registered_address: components["schemas"]["AgreementAddressResponse"];
+            /** Accepted At */
+            accepted_at: string | null;
+        };
+        /**
+         * AgreementResponse
+         * @description One agreement in full, as both participating businesses see it.
+         */
+        AgreementResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            status: components["schemas"]["AgreementStatus"];
+            /**
+             * Proposal Id
+             * Format: uuid
+             */
+            proposal_id: string;
+            /**
+             * Match Id
+             * Format: uuid
+             */
+            match_id: string;
+            /**
+             * Agreement Source Id
+             * Format: uuid
+             */
+            agreement_source_id: string;
+            /** Accepted Version Number */
+            accepted_version_number: number;
+            /**
+             * Accepted At
+             * Format: date-time
+             */
+            accepted_at: string;
+            my_side: components["schemas"]["Side"];
+            /** Parties */
+            parties: components["schemas"]["AgreementPartyResponse"][];
+            template: components["schemas"]["AgreementDocumentVersion"];
+            exchange_terms: components["schemas"]["AgreementDocumentVersion"];
+            legal_review_status: components["schemas"]["LegalReviewStatus"];
+            /** Content Sha256 */
+            content_sha256: string;
+            /** Html */
+            html: string;
+            /**
+             * Generated At
+             * Format: date-time
+             */
+            generated_at: string;
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /**
+         * AgreementStatus
+         * @enum {string}
+         */
+        AgreementStatus: "ready" | "signing" | "signed" | "expired" | "voided";
+        /**
+         * AgreementSummaryResponse
+         * @description The agreement on a proposal or match detail.
+         */
+        AgreementSummaryResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            status: components["schemas"]["AgreementStatus"];
+        };
         /** ApproveRequest */
         ApproveRequest: {
             /** Notes */
@@ -1808,6 +2110,7 @@ export interface components {
             components: components["schemas"]["BusinessMatchComponentResponse"][];
             my_feedback: components["schemas"]["MyFeedbackResponse"] | null;
             proposal?: components["schemas"]["MatchProposalResponse"] | null;
+            agreement?: components["schemas"]["AgreementSummaryResponse"] | null;
             /**
              * Expires At
              * Format: date-time
@@ -2340,6 +2643,39 @@ export interface components {
              */
             decided_at: string;
         };
+        /**
+         * LegalDocumentKind
+         * @enum {string}
+         */
+        LegalDocumentKind: "exchange_terms" | "exchange_agreement_template";
+        /**
+         * LegalDocumentResponse
+         * @description A published version, as anyone may read it.
+         */
+        LegalDocumentResponse: {
+            kind: components["schemas"]["LegalDocumentKind"];
+            /** Version */
+            version: string;
+            legal_review_status: components["schemas"]["LegalReviewStatus"];
+            /** Is Current */
+            is_current: boolean;
+            /** Content Sha256 */
+            content_sha256: string;
+            /**
+             * Published At
+             * Format: date-time
+             */
+            published_at: string;
+            /** Body */
+            body: string;
+            /** Html */
+            html: string;
+        };
+        /**
+         * LegalReviewStatus
+         * @enum {string}
+         */
+        LegalReviewStatus: "draft" | "reviewed";
         /** ListingRef */
         ListingRef: {
             /**
@@ -3182,6 +3518,7 @@ export interface components {
             accepted_version_number: number | null;
             /** Agreement Source Id */
             agreement_source_id: string | null;
+            agreement: components["schemas"]["AgreementSummaryResponse"] | null;
             /** Expires At */
             expires_at: string | null;
             /** Closed At */
@@ -3347,6 +3684,15 @@ export interface components {
             /** Link Url */
             link_url: string | null;
             file: components["schemas"]["PortfolioFile"] | null;
+        };
+        /** PublishLegalDocumentRequest */
+        PublishLegalDocumentRequest: {
+            kind: components["schemas"]["LegalDocumentKind"];
+            /** Version */
+            version: string;
+            legal_review_status: components["schemas"]["LegalReviewStatus"];
+            /** Body */
+            body: string;
         };
         /**
          * RefreshRequest
@@ -5684,6 +6030,66 @@ export interface operations {
             };
         };
     };
+    publish_legal_document_api_v1_admin_legal_documents_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PublishLegalDocumentRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminLegalDocumentResponse"];
+                };
+            };
+            /** @description `unauthorized` or `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `forbidden`: not support or administrator */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `legal_document_version_exists`: the kind already has this version */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `invalid_legal_document`: draft notice or placeholders are wrong; `validation_error` */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     upload_api_v1_businesses__business_id__uploads_post: {
         parameters: {
             query?: never;
@@ -7268,6 +7674,66 @@ export interface operations {
             };
         };
     };
+    current_exchange_terms_api_v1_legal_exchange_terms_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LegalDocumentResponse"];
+                };
+            };
+        };
+    };
+    exchange_terms_version_api_v1_legal_exchange_terms__version__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                version: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LegalDocumentResponse"];
+                };
+            };
+            /** @description `not_found`: no such version */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     search_listings_api_v1_marketplace_listings_get: {
         parameters: {
             query?: {
@@ -8632,6 +9098,118 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    list_agreements_api_v1_businesses__business_id__agreements_get: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["AgreementStatus"] | null;
+                cursor?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgreementListResponse"];
+                };
+            };
+            /** @description `invalid_cursor` */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `unauthorized` or `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business, the caller is not a member, or the business is not part of the agreement */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_agreement_api_v1_businesses__business_id__agreements__agreement_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                agreement_id: string;
+                business_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgreementResponse"];
+                };
+            };
+            /** @description `unauthorized` or `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business, the caller is not a member, or the business is not part of the agreement */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

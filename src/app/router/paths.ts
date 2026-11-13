@@ -21,6 +21,12 @@ export const paths = {
   proposalEdit: (id: string) => `/proposals/${id}/edit`,
   /** One sent version of a proposal, read-only. */
   proposalVersion: (id: string, versionNumber: number) => `/proposals/${id}/versions/${versionNumber}`,
+  /** The active business's agreements, and one agreement. */
+  agreements: '/agreements',
+  agreement: (id: string) => `/agreements/${id}`,
+  /** The Exchange Terms, current or one version. Public: works logged out, outside the app shell. */
+  exchangeTerms: '/legal/exchange-terms',
+  exchangeTermsVersion: (version: string) => `/legal/exchange-terms/${encodeURIComponent(version)}`,
   exchanges: '/exchanges',
   messages: '/messages',
   profile: '/profile',
@@ -52,6 +58,10 @@ export const proposalPattern = '/proposals/:proposalId'
 export const proposalEditPattern = '/proposals/:proposalId/edit'
 
 export const proposalVersionPattern = '/proposals/:proposalId/versions/:versionNumber'
+
+export const agreementPattern = '/agreements/:agreementId'
+
+export const exchangeTermsVersionPattern = '/legal/exchange-terms/:version'
 
 export const publicBusinessPattern = '/b/:businessId'
 
