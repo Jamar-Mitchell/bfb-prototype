@@ -64,6 +64,10 @@ export type ApiErrorCode =
   | 'portfolio_version_conflict'
   | 'invalid_portfolio_batch'
   | 'portfolio_item_incomplete'
+  // Matches (API-3.4)
+  | 'match_exists'
+  | 'invalid_match_pair'
+  | 'invalid_match_status'
   // Marketplace (API-3.1)
   | 'invalid_cursor'
   // Feature codes are added by later packages; keep the type open for them.
@@ -128,6 +132,9 @@ export const API_ERROR_MESSAGES: Record<string, string> = {
   invalid_portfolio_batch: 'The portfolio changed since you loaded it. Reload it and try again.',
   portfolio_item_incomplete: 'Each work sample needs a file, a link, or both.',
   invalid_cursor: 'These results changed since you loaded them. Start again from the top.',
+  match_exists: 'These two businesses already have an open match.',
+  invalid_match_pair: 'One of the chosen offers or needs is no longer available. Reload and choose again.',
+  invalid_match_status: 'This match is no longer open, so nothing was changed.',
 }
 
 /** User-facing copy for an error code. Unknown codes fall back to the generic message. */

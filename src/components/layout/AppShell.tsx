@@ -8,6 +8,7 @@ import {
   Compass,
   Handshake,
   LayoutDashboard,
+  Link2,
   Menu,
   MessageCircle,
   Plus,
@@ -68,8 +69,11 @@ export function AppShell({ children }: { children: ReactNode }) {
           {staff && (
             <>
               <span className="side-label side-label-second">Admin</span>
-              <button className={pathname === paths.admin || pathname.startsWith(`${paths.admin}/`) ? 'active' : ''} onClick={() => { go(paths.admin); setMobileOpen(false) }}>
+              <button className={pathname === paths.admin || pathname.startsWith(`${paths.admin}/businesses/`) ? 'active' : ''} onClick={() => { go(paths.admin); setMobileOpen(false) }}>
                 <ShieldCheck size={19} /> Review queue
+              </button>
+              <button className={pathname === paths.adminMatches || pathname.startsWith(`${paths.adminMatches}/`) ? 'active' : ''} onClick={() => { go(paths.adminMatches); setMobileOpen(false) }}>
+                <Link2 size={19} /> Matches
               </button>
             </>
           )}

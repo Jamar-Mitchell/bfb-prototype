@@ -2,6 +2,9 @@ import { Navigate, Outlet, useLocation, useParams, useRoutes, type RouteObject }
 
 import { AppShell } from '../../components/layout/AppShell'
 import { AdminBusinessPage } from '../../features/admin/AdminBusinessPage'
+import { MatchDetailPage } from '../../features/admin/MatchDetailPage'
+import { MatchesPage } from '../../features/admin/MatchesPage'
+import { NewMatchPage } from '../../features/admin/NewMatchPage'
 import { ReviewQueuePage } from '../../features/admin/ReviewQueuePage'
 import { ForgotPasswordPage } from '../../features/auth/ForgotPasswordPage'
 import { LoginPage } from '../../features/auth/LoginPage'
@@ -23,7 +26,7 @@ import { Onboarding } from '../../features/onboarding/Onboarding'
 import { AcceptInvitePage } from '../../features/team/AcceptInvitePage'
 import { TeamPage } from '../../features/team/TeamPage'
 import { businesses } from '../../mocks/businesses'
-import { adminBusinessPattern, getBusinessIdFromPath, isBusinessUuid, paths, publicBusinessPattern } from './paths'
+import { adminBusinessPattern, adminMatchPattern, getBusinessIdFromPath, isBusinessUuid, paths, publicBusinessPattern } from './paths'
 import { useActiveBusinessId, useMemberships } from '../../lib/businesses/useActiveBusiness'
 import { RequireAuth } from './RequireAuth'
 import { RequireBusiness } from './RequireBusiness'
@@ -118,6 +121,9 @@ export const routes: RouteObject[] = [
             children: [
               { path: paths.admin, element: <ReviewQueuePage /> },
               { path: adminBusinessPattern, element: <AdminBusinessPage /> },
+              { path: paths.adminMatches, element: <MatchesPage /> },
+              { path: paths.adminNewMatch, element: <NewMatchPage /> },
+              { path: adminMatchPattern, element: <MatchDetailPage /> },
             ],
           },
         ],

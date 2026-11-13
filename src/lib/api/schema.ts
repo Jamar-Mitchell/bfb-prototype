@@ -578,6 +578,94 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/match-candidates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Match Candidates
+         * @description Other approved businesses with an active offer meeting an active need in the
+         *     same category, in either direction, ranked best fit first. Ranked, never scored.
+         */
+        get: operations["match_candidates_api_v1_admin_match_candidates_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/matches": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Matches
+         * @description Matches newest first. ``status`` filters on the effective status (a proposed
+         *     match past its expiry is ``expired``); ``business_id`` on either participant.
+         */
+        get: operations["list_matches_api_v1_admin_matches_get"];
+        put?: never;
+        /**
+         * Create Match
+         * @description Create a concierge match between two approved businesses from chosen active
+         *     offer-need pairs. Fit is evaluated and snapshotted now. Expires in 14 days unless
+         *     ``expires_at`` is given.
+         */
+        post: operations["create_match_api_v1_admin_matches_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/matches/{match_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Match
+         * @description One match with both responses, decline reasons and the snapshotted pairs.
+         */
+        get: operations["get_match_api_v1_admin_matches__match_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/matches/{match_id}/withdraw": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Withdraw Match
+         * @description ``proposed`` -> ``withdrawn``. Not allowed once expired or closed.
+         */
+        post: operations["withdraw_match_api_v1_admin_matches__match_id__withdraw_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/businesses/{business_id}/uploads": {
         parameters: {
             query?: never;
@@ -1165,6 +1253,57 @@ export interface components {
              */
             updated_at: string;
         };
+        /**
+         * AdminMatchResponse
+         * @description Everything staff see about one match.
+         */
+        AdminMatchResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            status: components["schemas"]["MatchStatus"];
+            source: components["schemas"]["MatchSource"];
+            fit_band: components["schemas"]["FitBand"];
+            business_a: components["schemas"]["MatchBusinessSummary"];
+            business_b: components["schemas"]["MatchBusinessSummary"];
+            business_a_response: components["schemas"]["MatchResponse"];
+            business_b_response: components["schemas"]["MatchResponse"];
+            /** Component Count */
+            component_count: number;
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+            /** Closed At */
+            closed_at: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Operator Note */
+            operator_note: string | null;
+            /** Created By User Id */
+            created_by_user_id: string | null;
+            /** Participants */
+            participants: components["schemas"]["ParticipantResponse"][];
+            /** Components */
+            components: components["schemas"]["MatchComponentResponse"][];
+            /** Withdrawn At */
+            withdrawn_at: string | null;
+            /** Withdrawn By User Id */
+            withdrawn_by_user_id: string | null;
+            /** Withdrawal Reason */
+            withdrawal_reason: string | null;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
         /** AdminMemberResponse */
         AdminMemberResponse: {
             /**
@@ -1328,6 +1467,17 @@ export interface components {
             location_country: string | null;
             service_area: components["schemas"]["ServiceArea"] | null;
         };
+        /**
+         * CandidatePair
+         * @description One offer meeting one need, live values. ``offer.business_id`` is the provider.
+         */
+        CandidatePair: {
+            offer: components["schemas"]["ListingRef"];
+            need: components["schemas"]["ListingRef"];
+            fit_band: components["schemas"]["FitBand"];
+            /** Factors */
+            factors: components["schemas"]["FactorResultResponse"][];
+        };
         /** CategoryFacet */
         CategoryFacet: {
             category: components["schemas"]["CategorySummary"];
@@ -1385,6 +1535,31 @@ export interface components {
             /** Missing */
             missing: string[];
         };
+        /** CreateMatchRequest */
+        CreateMatchRequest: {
+            /**
+             * Business A Id
+             * Format: uuid
+             */
+            business_a_id: string;
+            /**
+             * Business B Id
+             * Format: uuid
+             */
+            business_b_id: string;
+            /** Pairs */
+            pairs: components["schemas"]["MatchPairRequest"][];
+            /** Operator Note */
+            operator_note?: string | null;
+            /** Expires At */
+            expires_at?: string | null;
+        };
+        /**
+         * DeclineReason
+         * @description Fixed reason codes a business can give when declining (API-3.5).
+         * @enum {string}
+         */
+        DeclineReason: "not_relevant" | "no_capacity" | "timing" | "budget" | "location" | "already_connected" | "other";
         /**
          * Delivery
          * @description Offer delivery formats and need location preferences in one filter. Offer
@@ -1410,6 +1585,28 @@ export interface components {
         ErrorResponse: {
             error: components["schemas"]["ErrorBody"];
         };
+        /**
+         * FactorResultResponse
+         * @description One factor's result. ``reason`` is a stable code from docs/MATCHING.md.
+         */
+        FactorResultResponse: {
+            /** Factor */
+            factor: string;
+            /** Result */
+            result: string;
+            /** Reason */
+            reason: string;
+            /** Values */
+            values: {
+                [key: string]: unknown;
+            };
+        };
+        /**
+         * FitBand
+         * @description How well two businesses fit, from best to worst. Never a number.
+         * @enum {string}
+         */
+        FitBand: "strong" | "potential" | "limited";
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -1519,6 +1716,28 @@ export interface components {
              * Format: date-time
              */
             decided_at: string;
+        };
+        /** ListingRef */
+        ListingRef: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Business Id
+             * Format: uuid
+             */
+            business_id: string;
+            /** Title */
+            title: string;
+            /**
+             * Category Id
+             * Format: uuid
+             */
+            category_id: string;
+            /** Category Name */
+            category_name: string | null;
         };
         /**
          * ListingStatus
@@ -1638,6 +1857,145 @@ export interface components {
             items: (components["schemas"]["MarketplaceOffer"] | components["schemas"]["MarketplaceNeed"])[];
             /** Next Cursor */
             next_cursor: string | null;
+        };
+        /** MatchBusinessSummary */
+        MatchBusinessSummary: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Display Name */
+            display_name: string;
+            profile_status: components["schemas"]["ProfileStatus"];
+            /** Logo Url */
+            logo_url: string | null;
+            /** Location City */
+            location_city: string | null;
+            /** Location Region */
+            location_region: string | null;
+            /** Location Country */
+            location_country: string | null;
+            service_area: components["schemas"]["ServiceArea"] | null;
+        };
+        /** MatchCandidateResponse */
+        MatchCandidateResponse: {
+            business: components["schemas"]["MatchBusinessSummary"];
+            fit_band: components["schemas"]["FitBand"];
+            /** Open Match Id */
+            open_match_id: string | null;
+            /** Pairs */
+            pairs: components["schemas"]["CandidatePair"][];
+        };
+        /** MatchCandidatesResponse */
+        MatchCandidatesResponse: {
+            business: components["schemas"]["MatchBusinessSummary"];
+            /** Items */
+            items: components["schemas"]["MatchCandidateResponse"][];
+        };
+        /**
+         * MatchComponentResponse
+         * @description One offer-need pair as snapshotted when the match was created.
+         */
+        MatchComponentResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Position */
+            position: number;
+            direction: components["schemas"]["MatchDirection"];
+            /** Offer Id */
+            offer_id: string | null;
+            /** Need Id */
+            need_id: string | null;
+            fit_band: components["schemas"]["FitBand"];
+            /** Offer */
+            offer: {
+                [key: string]: unknown;
+            };
+            /** Need */
+            need: {
+                [key: string]: unknown;
+            };
+            /** Factors */
+            factors: components["schemas"]["FactorResultResponse"][];
+            /** Evaluated On */
+            evaluated_on: string | null;
+        };
+        /**
+         * MatchDirection
+         * @description Which business offers in a component: ``a_to_b`` means business A's offer meets
+         *     business B's need.
+         * @enum {string}
+         */
+        MatchDirection: "a_to_b" | "b_to_a";
+        /** MatchListResponse */
+        MatchListResponse: {
+            /** Items */
+            items: components["schemas"]["MatchSummaryResponse"][];
+            /** Next Cursor */
+            next_cursor: string | null;
+        };
+        /** MatchPairRequest */
+        MatchPairRequest: {
+            /**
+             * Offer Id
+             * Format: uuid
+             */
+            offer_id: string;
+            /**
+             * Need Id
+             * Format: uuid
+             */
+            need_id: string;
+        };
+        /**
+         * MatchResponse
+         * @description One business's answer to a match.
+         * @enum {string}
+         */
+        MatchResponse: "pending" | "accepted" | "declined";
+        /**
+         * MatchSource
+         * @description Where a match came from. Only ``concierge`` (staff-created) is used for now.
+         * @enum {string}
+         */
+        MatchSource: "concierge" | "system" | "discovery" | "partner";
+        /**
+         * MatchStatus
+         * @enum {string}
+         */
+        MatchStatus: "proposed" | "accepted" | "declined" | "expired" | "withdrawn";
+        /** MatchSummaryResponse */
+        MatchSummaryResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            status: components["schemas"]["MatchStatus"];
+            source: components["schemas"]["MatchSource"];
+            fit_band: components["schemas"]["FitBand"];
+            business_a: components["schemas"]["MatchBusinessSummary"];
+            business_b: components["schemas"]["MatchBusinessSummary"];
+            business_a_response: components["schemas"]["MatchResponse"];
+            business_b_response: components["schemas"]["MatchResponse"];
+            /** Component Count */
+            component_count: number;
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+            /** Closed At */
+            closed_at: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
         };
         /** MemberRoleUpdateRequest */
         MemberRoleUpdateRequest: {
@@ -1861,6 +2219,22 @@ export interface components {
             delivery_format?: components["schemas"]["DeliveryFormat"] | null;
             /** Location Restrictions */
             location_restrictions?: string | null;
+        };
+        /**
+         * ParticipantResponse
+         * @description One business's side of a match. Decline reasons are staff only.
+         */
+        ParticipantResponse: {
+            side: components["schemas"]["Side"];
+            business: components["schemas"]["MatchBusinessSummary"];
+            response: components["schemas"]["MatchResponse"];
+            /** Responded At */
+            responded_at: string | null;
+            /** Responded By User Id */
+            responded_by_user_id: string | null;
+            decline_reason: components["schemas"]["DeclineReason"] | null;
+            /** Decline Text */
+            decline_text: string | null;
         };
         /**
          * PasswordResetConfirmRequest
@@ -2241,6 +2615,11 @@ export interface components {
          */
         ServiceArea: "local" | "regional" | "national" | "international";
         /**
+         * Side
+         * @enum {string}
+         */
+        Side: "a" | "b";
+        /**
          * TeamMemberResponse
          * @description One person in a business, as listed on the team page.
          */
@@ -2394,6 +2773,11 @@ export interface components {
              * Format: password
              */
             token: string;
+        };
+        /** WithdrawMatchRequest */
+        WithdrawMatchRequest: {
+            /** Reason */
+            reason: string;
         };
     };
     responses: never;
@@ -3895,6 +4279,324 @@ export interface operations {
                 };
             };
             /** @description `invalid_profile_status`: not in review */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    match_candidates_api_v1_admin_match_candidates_get: {
+        parameters: {
+            query: {
+                business_id: string;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MatchCandidatesResponse"];
+                };
+            };
+            /** @description `unauthorized` or `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `forbidden`: not support or administrator */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `business_not_approved` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_matches_api_v1_admin_matches_get: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["MatchStatus"] | null;
+                business_id?: string | null;
+                cursor?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MatchListResponse"];
+                };
+            };
+            /** @description `unauthorized` or `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `forbidden`: not support or administrator */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_match_api_v1_admin_matches_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateMatchRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminMatchResponse"];
+                };
+            };
+            /** @description `unauthorized` or `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `forbidden`: not support or administrator */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such business */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `business_not_approved`, `invalid_listing_status` or `match_exists` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `validation_error` (including a business matched with itself) or `invalid_match_pair` */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    get_match_api_v1_admin_matches__match_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                match_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminMatchResponse"];
+                };
+            };
+            /** @description `unauthorized` or `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `forbidden`: not support or administrator */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such match */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    withdraw_match_api_v1_admin_matches__match_id__withdraw_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                match_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WithdrawMatchRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminMatchResponse"];
+                };
+            };
+            /** @description `unauthorized` or `access_token_expired` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `forbidden`: not support or administrator */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `not_found`: no such match */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description `invalid_match_status`: not open */
             409: {
                 headers: {
                     [name: string]: unknown;

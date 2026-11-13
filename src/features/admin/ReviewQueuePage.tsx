@@ -7,6 +7,7 @@ import { EmptyState, ErrorState, LoadingState } from '../../components/feedback'
 import { toApiError } from '../../lib/api/errors'
 import { businessInitials } from '../businesses/businessDisplay'
 import type { AdminBusinessLocationState } from './AdminBusinessPage'
+import { AdminTabs } from './AdminTabs'
 import { listReviewQueue, QUEUE_PAGE_SIZE, type ReviewQueue, type ReviewQueueItem } from './adminApi'
 import { formatDateTime } from './adminDisplay'
 import './Admin.css'
@@ -61,6 +62,7 @@ export function ReviewQueuePage() {
           <p>Check each profile, then approve it or ask for changes. Oldest submissions first.</p>
         </div>
       </div>
+      <AdminTabs />
       {error ? (
         <ErrorState title="We couldn’t load the review queue" error={error} onRetry={() => setReloadKey((key) => key + 1)} />
       ) : !queue ? (
